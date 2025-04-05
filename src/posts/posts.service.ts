@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FindOptionsWhere, LessThan, MoreThan, QueryRunner, Repository } from 'typeorm';
 import { PostsModel } from './entity/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,10 +6,10 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { CommonService } from 'src/common/common.service';
-import { ConfigService } from '@nestjs/config';
-import { ENV_HOST_KEY, ENV_PROTOCOL_KEY } from 'src/common/const/env-keys.const';
 import { ImageModel } from 'src/common/entity/image.entity';
 import { DEFAULT_POST_FIND_OPTIONS } from './const/default-post-find-options.const';
+import { ConfigType } from '@nestjs/config';
+import appConfig from 'src/configs/app.config';
 
 @Injectable()
 export class PostsService {
@@ -19,7 +19,8 @@ export class PostsService {
     @InjectRepository(ImageModel)
     private readonly imageRepository: Repository<ImageModel>,
     private readonly commonServices: CommonService,
-    private readonly configService: ConfigService,
+    @Inject(appConfig.KEY)
+    private readonly config: ConfigType<typeof appConfig>
   ) {}
   async getAllPosts() {
     return this.postsRepository.find();
@@ -96,8 +97,8 @@ export class PostsService {
      */
     const lastItem = posts.length > 0 && posts.length === dto.take ? posts[posts.length - 1] : null;
 
-    const protocol = this.configService.get<string>(ENV_PROTOCOL_KEY);
-    const host = this.configService.get<string>(ENV_HOST_KEY);
+    const protocol = this.config.http.protocol
+    const host = this.config.http.host;
 
     const nextURL = lastItem && new URL(`${protocol}://${host}/posts`);
 

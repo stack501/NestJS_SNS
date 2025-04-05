@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { BasePaginationDto } from './dto/base-pagination.dto';
 import { FindManyOptions, FindOptionsOrder, FindOptionsWhere, Repository } from 'typeorm';
 import { BaseModel } from './entity/base.entity';
 import { FILTER_MAPPER } from './const/filter-mapper.const';
-import { ConfigService } from '@nestjs/config';
-import { ENV_HOST_KEY, ENV_PROTOCOL_KEY } from './const/env-keys.const';
+import { ConfigType } from '@nestjs/config';
+import appConfig from 'src/configs/app.config';
 
 @Injectable()
 export class CommonService {
     constructor(
-        private readonly configService: ConfigService
+        @Inject(appConfig.KEY)
+        private readonly config: ConfigType<typeof appConfig>
     ){}
 
     paginate<T extends BaseModel>(
@@ -71,8 +72,8 @@ export class CommonService {
 
         const lastItem = results.length > 0 && results.length === dto.take ? results[results.length - 1] : null;
     
-        const protocol = this.configService.get<string>(ENV_PROTOCOL_KEY);
-        const host = this.configService.get<string>(ENV_HOST_KEY);
+        const protocol = this.config.http.protocol;
+        const host = this.config.http.host;
 
         const nextURL = lastItem && new URL(`${protocol}://${host}/${path}`);
     

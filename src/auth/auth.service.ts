@@ -1,18 +1,19 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersModel } from 'src/users/entity/users.entity';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { ConfigService } from '@nestjs/config';
-import { ENV_HASH_ROUNDS_KEY, ENV_JWT_SECRET_KEY } from 'src/common/const/env-keys.const';
+import { ConfigType } from '@nestjs/config';
+import appConfig from 'src/configs/app.config';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly jwtService: JwtService,
         private readonly usersService: UsersService,
-        private readonly configService: ConfigService,
+        @Inject(appConfig.KEY)
+        private readonly config: ConfigType<typeof appConfig>
     ) {}
 
     /**
@@ -94,7 +95,7 @@ export class AuthService {
         try {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return this.jwtService.verify(token, {
-                secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
+                secret: this.config.jwt.secretKey,
             });
         } catch (error) {
             throw new UnauthorizedException(`${error} : 토큰이 만료되었거나 잘못된 토큰입니다.`);
@@ -160,7 +161,7 @@ export class AuthService {
         };
 
         return this.jwtService.sign(payload, {
-            secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
+            secret: this.config.jwt.secretKey,
             //seconds
             expiresIn: isRefreshToken ? 3600 : 300,
         })
@@ -204,7 +205,7 @@ export class AuthService {
     async registerWithEmail(user: RegisterUserDto) {
         const hash = await bcrypt.hash(
             user.password,
-            parseInt(this.configService.get<string>(ENV_HASH_ROUNDS_KEY)!),
+            parseInt(this.config.encrypt.hash_Rounds!),
         );
 
         const newUser = await this.usersService.createUser({

@@ -9,8 +9,7 @@ import { UsersModel } from './users/entity/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ConfigModule } from '@nestjs/config';
-import { ENV_DB_DATABASE_KEY, ENV_DB_HOST_KEY, ENV_DB_PASSWORD_KEY, ENV_DB_PORT_KEY, ENV_DB_USERNAME_KEY } from './common/const/env-keys.const';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 import { ImageModel } from './common/entity/image.entity';
@@ -23,6 +22,8 @@ import { CommentsModule } from './posts/comments/comments.module';
 import { RolesGuard } from './users/guard/roles.guard';
 import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
 import { UserFollowersModel } from './users/entity/user-followers.entity';
+import appConfig from './configs/app.config';
+import dbConfig from './configs/db.config';
 
 @Module({
   imports: [
@@ -35,26 +36,34 @@ import { UserFollowersModel } from './users/entity/user-followers.entity';
       serveRoot: '/public',
     }),
     ConfigModule.forRoot({
-      envFilePath: '.env',
-      isGlobal: true,
+      isGlobal: true, // 전체적으로 사용하기 위해
+      envFilePath: `src/configs/env/.${process.env.NODE_ENV}.env`,
+      load: [appConfig, dbConfig],
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env[ENV_DB_HOST_KEY],
-      port: parseInt(process.env[ENV_DB_PORT_KEY]!),
-      username: process.env[ENV_DB_USERNAME_KEY],
-      password: process.env[ENV_DB_PASSWORD_KEY],
-      database: process.env[ENV_DB_DATABASE_KEY],
-      entities: [
-        PostsModel,
-        UsersModel,
-        ImageModel,
-        ChatsModel,
-        MessagesModel,
-        CommentsModel,
-        UserFollowersModel,
-      ],
-      synchronize: true, //프로덕션 환경에선 false해야함
+    // TypeOrmModule을 ConfigService를 통해 동적으로 설정합니다.
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          type: 'postgres',
+          host: configService.get<string>('db.host'),
+          port: configService.get<number>('db.port'),
+          username: configService.get<string>('db.username'),
+          password: configService.get<string>('db.password'),
+          database: configService.get<string>('db.database'),
+          entities: [
+            PostsModel,
+            UsersModel,
+            ImageModel,
+            ChatsModel,
+            MessagesModel,
+            CommentsModel,
+            UserFollowersModel,
+          ],
+          synchronize: true,
+        };
+      },
     }),
     UsersModule,
     AuthModule,
