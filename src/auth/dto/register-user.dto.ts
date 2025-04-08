@@ -1,5 +1,9 @@
-import { PickType } from "@nestjs/mapped-types";
-import { UsersModel } from "src/users/entity/users.entity";
+import { IsString } from "class-validator";
+import { LoginDto } from "./login.dto";
+import { ApiProperty } from "@nestjs/swagger";
 
-export class RegisterUserDto extends PickType(UsersModel, ['nickname', 'email', 'password']) {
+export class RegisterUserDto extends LoginDto {
+    @IsString()
+    @ApiProperty({ description: '닉네임', example: ''})
+    nickname: string;
 }

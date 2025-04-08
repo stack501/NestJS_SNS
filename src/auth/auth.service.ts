@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { ConfigType } from '@nestjs/config';
 import appConfig from 'src/configs/app.config';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -163,7 +164,7 @@ export class AuthService {
         return this.jwtService.sign(payload, {
             secret: this.config.jwt.secretKey,
             //seconds
-            expiresIn: isRefreshToken ? 3600 : 300,
+            expiresIn: isRefreshToken ? 2592000 : 3600,
         })
     }
 
@@ -174,8 +175,8 @@ export class AuthService {
         }
     }
 
-    async authenticateWithEmailAndPassword(user: Pick<UsersModel, 'email' | 'password'>) {
-        const existingUser = await this.usersService.getUserByEmail(user.email);
+    async authenticateWithEmailAndPassword(loginDto: LoginDto) {
+        const existingUser = await this.usersService.getUserByEmail(loginDto.email);
 
         if (!existingUser) {
             throw new UnauthorizedException('존재하지 않는 사용자입니다.');
@@ -187,7 +188,7 @@ export class AuthService {
          * 1) 입력된 비밀번호
          * 2) 기존 해시(hash) -> 사용자 정보에 저장되어있는 hash
          */
-        const passOk = await bcrypt.compare(user.password, existingUser.password);
+        const passOk = await bcrypt.compare(loginDto.password, existingUser.password);
 
         if (!passOk) {
             throw new UnauthorizedException('비밀번호가 틀렸습니다.');
@@ -196,8 +197,8 @@ export class AuthService {
         return existingUser;
     }
 
-    async loginWithEmail(user: Pick<UsersModel, 'email' | 'password'>) {
-        const existingUser = await this.authenticateWithEmailAndPassword(user);
+    async loginWithEmail(loginDto: LoginDto) {
+        const existingUser = await this.authenticateWithEmailAndPassword(loginDto);
 
         return this.loginUser(existingUser);
     }
