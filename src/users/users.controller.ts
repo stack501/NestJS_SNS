@@ -6,6 +6,8 @@ import { User } from './decorator/user.decorator';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { QueryRunnerDecorator } from 'src/common/decorator/query-runner.decorator';
 import { QueryRunner } from 'typeorm';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { AuthScheme } from 'src/common/const/auth-schema.const';
 
 @Controller('users')
 export class UsersController {
@@ -23,14 +25,24 @@ export class UsersController {
   //     password,
   //   });
   // }
-
+  
   @Get()
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+      summary: '모든 사용자 불러오기', 
+      description: 'DB에 등록된 모든 사용자를 불러옵니다.' 
+  })
   @Roles(RoleEnum.ADMIN)
   getUsers() {
     return this.usersService.getAllUsers();
   }
 
   @Get('follow/me')
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+      summary: '팔로우한 사용자 불러오기', 
+      description: '나를 팔로우한 사용자들을 불러옵니다. includeNotConfirmed가 true인 경우 -> 내가 아직 수락하지 않은 팔로우들입니다.' 
+  })
   async getFollow(
     @User() user: UsersModel,
     @Query('includeNotConfirmed', new DefaultValuePipe(false), ParseBoolPipe) includeNotConfirmed: boolean,
@@ -39,6 +51,11 @@ export class UsersController {
   }
 
   @Post('follow/:id')
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+      summary: '팔로우 요청', 
+      description: 'User Id에 해당하는 사용자에게 팔로우 요청하기' 
+  })
   async postFollow(
     @User() user: UsersModel,
     @Param('id', ParseIntPipe) followeeId: number,
@@ -49,6 +66,11 @@ export class UsersController {
   }
 
   @Patch('follow/:id/confirm')
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+      summary: '팔로우 수락', 
+      description: '나에게 팔로우 요청한 사용자를 수락합니다.' 
+  })
   @UseInterceptors(TransactionInterceptor)
   async patchFollowConfirm(
     @User() user: UsersModel,
@@ -75,6 +97,11 @@ export class UsersController {
   }
 
   @Delete('follow/:id')
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+      summary: '팔로우 삭제', 
+      description: '나에게 팔로우 되어있는 사용자를 삭제합니다.' 
+  })
   @UseInterceptors(TransactionInterceptor)
   async deleteFollow(
     @User() user: UsersModel,
