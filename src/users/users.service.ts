@@ -144,6 +144,17 @@ export class UsersService {
     async deleteFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
         const repository = this.getUserFollowersRepository(qr);
 
+        const existingRelation = await repository.findOneBy({
+            follower: { id: followerId },
+            followee: { id: followeeId },
+        });
+
+        if (!existingRelation) {
+            throw new BadRequestException(
+                `팔로우 하지 않은 사용자입니다.`
+            );
+        }
+
         await repository.delete({
             follower: {
                 id: followerId,
