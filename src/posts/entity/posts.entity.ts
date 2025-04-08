@@ -9,7 +9,6 @@ import { CommentsModel } from '../comments/entity/comments.entity';
 @Entity()
 export class PostsModel extends BaseModel {
   @ManyToOne(() => UsersModel, (user) => user.posts, {
-    eager: true,
     nullable: false,
   })
   @JoinTable()

@@ -33,21 +33,25 @@ export class CommentsService {
             );
     }
 
-    async getCommentById(id: number) {
-        const comment = await this.commentsRepository.findOne({
+    async getCommentById(postId: number, commentId: number, qr?: QueryRunner) {
+        const repository = this.getRepository(qr);
+        const comment = await repository.findOne({
             where: {
-                id,
+                post: {
+                    id: postId,
+                },
+                id: commentId,
             },
             ...DEFAULT_COMMENT_FIND_OPTIONS,
         });
 
         if (!comment) {
             throw new BadRequestException(
-                `id: ${id} Comment는 존재하지 않습니다.`
+                `id: ${commentId} Comment는 존재하지 않습니다.`
             )
         }
 
-        return comment;
+        return { repository, comment };
     }
 
     getRepository(qr?: QueryRunner) {
@@ -73,26 +77,22 @@ export class CommentsService {
 
     async updateComment(
         dto: UpdateCommentsDto,
+        postId: number,
         commentId: number,
+        qr?: QueryRunner
     ) {
-        const comment = await this.commentsRepository.findOne({
-            where: {
-                id: commentId,
-            }
-        });
-
-        if(!comment) {
-            throw new BadRequestException(
-                `존재하지 않는 Comment 입니다. ${commentId}`
-            );
-        }
+        const { repository } = await this.getCommentById(postId, commentId, qr);
         
-        const prevComment = await this.commentsRepository.preload({
+        const prevComment = await repository.preload({
             id: commentId,
             ...dto,
         });
 
-        const newComment = await this.commentsRepository.save(
+        if (!prevComment) {
+            throw new BadRequestException(`댓글을 찾을 수 없습니다. id: ${commentId}`);
+        }
+
+        const newComment = await repository.save(
             {
                 ...prevComment,
             }
@@ -101,20 +101,12 @@ export class CommentsService {
         return newComment;
     }
 
-    async deleteComment(commentId: number, qr?: QueryRunner) {
-        const repository = this.getRepository(qr);
-
-        const comment = await repository.findOne({
-            where: {
-                id: commentId,
-            }
-        });
-
-        if(!comment) {
-            throw new BadRequestException(
-                `존재하지 않는 Comment 입니다. ${commentId}`
-            );
-        }
+    async deleteComment(
+        postId: number,
+        commentId: number,
+        qr?: QueryRunner
+    ) {
+        const { repository } = await this.getCommentById(postId, commentId, qr);
 
         return await repository.delete(commentId);
     }
