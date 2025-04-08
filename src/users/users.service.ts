@@ -109,7 +109,23 @@ export class UsersService {
         }));
     }
 
-    async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+    async getRequestAllFollowee(followerId: number, qr?: QueryRunner) {
+        const repository = this.getUserFollowersRepository(qr);
+
+        const existing = await repository.find({
+            where: {
+                follower: { id: followerId},
+            },
+            relations: {
+                follower: true,
+                followee: true,
+            },
+        });
+
+        return existing;
+    }
+
+    async getExistingFollow(followerId: number, followeeId: number, qr?: QueryRunner, isConfirmed: boolean = true) {
         const repository = this.getUserFollowersRepository(qr);
 
         const existing = await repository.findOne({
@@ -119,13 +135,20 @@ export class UsersService {
                 },
                 followee: {
                     id: followeeId,
-                }
+                },
+                isConfirmed,
             },
             relations: {
                 follower: true,
                 followee: true,
             }
         });
+
+        return { repository, existing };
+    }
+
+    async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+        const { repository, existing } = await this. getExistingFollow(followerId, followeeId, qr);
 
         if(!existing) {
             throw new BadRequestException(
@@ -141,15 +164,10 @@ export class UsersService {
         return true;
     }
 
-    async deleteFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
-        const repository = this.getUserFollowersRepository(qr);
+    async deleteFollow(followerId: number, followeeId: number, qr?: QueryRunner, isConfirmed: boolean = true) {
+        const { repository, existing } = await this. getExistingFollow(followerId, followeeId, qr, isConfirmed);
 
-        const existingRelation = await repository.findOneBy({
-            follower: { id: followerId },
-            followee: { id: followeeId },
-        });
-
-        if (!existingRelation) {
+        if (!existing) {
             throw new BadRequestException(
                 `팔로우 하지 않은 사용자입니다.`
             );

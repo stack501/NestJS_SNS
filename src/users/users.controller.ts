@@ -1,7 +1,7 @@
 import { Controller, DefaultValuePipe, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Roles } from './decorator/roles.decorator';
-import { RoleEnum, UsersModel } from './entity/users.entity';
+import { RoleEnum } from './entity/users.entity';
 import { User } from './decorator/user.decorator';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { QueryRunnerDecorator } from 'src/common/decorator/query-runner.decorator';
@@ -44,10 +44,10 @@ export class UsersController {
       description: '나를 팔로우한 사용자들을 불러옵니다. includeNotConfirmed가 true인 경우 -> 내가 아직 수락하지 않은 팔로우들입니다.' 
   })
   async getFollow(
-    @User() user: UsersModel,
+    @User('id') userId: number,
     @Query('includeNotConfirmed', new DefaultValuePipe(false), ParseBoolPipe) includeNotConfirmed: boolean,
   ) {
-    return this.usersService.getFollowers(user.id, includeNotConfirmed);
+    return this.usersService.getFollowers(userId, includeNotConfirmed);
   }
 
   @Post('follow/:id')
@@ -57,12 +57,43 @@ export class UsersController {
       description: 'User Id에 해당하는 사용자에게 팔로우 요청하기' 
   })
   async postFollow(
-    @User() user: UsersModel,
+    @User('id') userId: number,
     @Param('id', ParseIntPipe) followeeId: number,
   ) {
-    await this.usersService.followUser(user.id, followeeId);
+    await this.usersService.followUser(userId, followeeId);
 
     return true;
+  }
+
+  @Delete('follow/:id/cancel')
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+      summary: '팔로우 요청 취소', 
+      description: '내가 요청한 팔로우를 취소합니다.' 
+  })
+  @UseInterceptors(TransactionInterceptor)
+  async deleteFollowCancel(
+    @User('id') userId: number,
+    @Param('id', ParseIntPipe) followeeId: number,
+    @QueryRunnerDecorator() qr: QueryRunner,
+  ) {
+    await this.usersService.deleteFollow(userId, followeeId, qr, false);
+
+    return true;
+  }
+
+  @Get('follow/me/requests')
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+      summary: '팔로우 요청 보기', 
+      description: '내가 요청한 미수락된 팔로우들을 확인합니다.' 
+  })
+  async getRequestsFollow(
+    @User('id') userId: number,
+  ) {
+    const existing = await this.usersService.getRequestAllFollowee(userId);
+
+    return existing;
   }
 
   @Patch('follow/:id/confirm')
@@ -73,14 +104,14 @@ export class UsersController {
   })
   @UseInterceptors(TransactionInterceptor)
   async patchFollowConfirm(
-    @User() user: UsersModel,
+    @User('id') userId: number,
     @Param('id', ParseIntPipe) followerId: number,
     @QueryRunnerDecorator() qr: QueryRunner,
   ) {
-    await this.usersService.confirmFollow(followerId, user.id, qr);
+    await this.usersService.confirmFollow(followerId, userId, qr);
 
     await this.usersService.incrementFollowerCount(
-      user.id,
+      userId,
       'followerCount',
       1,
       qr,
@@ -99,27 +130,27 @@ export class UsersController {
   @Delete('follow/:id')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
-      summary: '팔로우 삭제', 
-      description: '나에게 팔로우 되어있는 사용자를 삭제합니다.' 
+      summary: '언팔로우', 
+      description: '내가 팔로우 중인 사용자를 언팔로우합니다.' 
   })
   @UseInterceptors(TransactionInterceptor)
   async deleteFollow(
-    @User() user: UsersModel,
+    @User('id') userId: number,
     @Param('id', ParseIntPipe) followeeId: number,
     @QueryRunnerDecorator() qr: QueryRunner,
   ) {
-    await this.usersService.deleteFollow(user.id, followeeId);
+    await this.usersService.deleteFollow(userId, followeeId);
 
     await this.usersService.decrementFollowerCount(
-      user.id,
-      'followerCount',
+      userId,
+      'followeeCount',
       1,
       qr,
     );
 
     await this.usersService.decrementFollowerCount(
       followeeId,
-      'followeeCount',
+      'followerCount',
       1,
       qr,
     );
