@@ -84,6 +84,9 @@ export class UsersModel extends BaseModel {
     @OneToMany(() => MessagesModel, (message) => message.author)
     messages: MessagesModel[];
 
+    @OneToMany(() => MessagesModel, (message) => message.whisperTargetUser)
+    whisperMessages : MessagesModel[];
+
     @OneToMany(() => CommentsModel, (comment) => comment.author)
     comments: CommentsModel[];
 

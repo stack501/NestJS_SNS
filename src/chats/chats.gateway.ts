@@ -69,6 +69,9 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatew
 
             socket.user = user;
 
+            // 각 사용자에게 고유한 룸(예: user id)을 할당하여 join 시킵니다.
+            await socket.join(user.id.toString());
+
             return true;
         } catch (e) {
             console.log(e);
@@ -112,21 +115,52 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatew
         @MessageBody() dto: CreateMessagesDto,
         @ConnectedSocket() socket: Socket & {user: UsersModel},
     ) {
-        const chatExists = await this.chatsService.checkIfChatExists(dto.chatId);
+        if(dto.chatId !== undefined && dto.chatId !== null) {
+            const chatExists = await this.chatsService.checkIfChatExists(dto.chatId);
 
-        if(!chatExists) {
-            throw new WsException({
-                code: 100,
-                message: `존재하지 않는 chat 입니다. chatId: ${dto.chatId}`,
-            });
+            if(!chatExists) {
+                throw new WsException({
+                    code: 100,
+                    message: `존재하지 않는 chat 입니다. chatId: ${dto.chatId}`,
+                });
+            }
+        }
+
+        if(dto.whisperTargetId !== undefined && dto.whisperTargetId !== null) {
+            const userExists = await this.usersService.checkIfUserExists(dto.whisperTargetId);
+
+            if(!userExists) {
+                throw new WsException({
+                    code: 100,
+                    message: `존재하지 않는 user 입니다. whisperTargetId: ${dto.whisperTargetId}`,
+                });
+            }
         }
 
         const message = await this.messagesService.createMessage(dto, socket.user.id) as MessagesModel;
 
         // broadcast
-        socket.to(message.chat.id.toString()).emit('receive_message', message.message);
+        if (message.chat && message.chat.id) {
+            // 해당 채팅방에 join된 모든 사용자에게 메시지 전달.
+            socket.to(message.chat.id.toString()).emit('receive_message', message.message);
+        }
 
-        // room 통신
+        // 귓속말인 경우 (whisperTargetId가 있을 때)
+        if (dto.whisperTargetId) {
+            // 대상 사용자는 연결 시 자신을 user id로 join 했으므로, 해당 룸으로 emit 하면 귓속말이 전달됩니다.
+            this.server.to(dto.whisperTargetId.toString()).emit('receive_whisper', {
+                message: message.message,
+                from: socket.user.id,
+            });
+    
+            // 발신자에게도 귓속말 전송(본인도 귓속말 내역을 확인하도록)
+            socket.emit('receive_whisper', {
+                message: message.message,
+                from: socket.user.id,
+            });
+        }
+
+        // room 통신 (특정 room에 속해있는 소켓들에게 브로드캐스트)
         // this.server.in(message.chatId.toString()).emit('receive_message', message.message);
     }
 }

@@ -6,6 +6,13 @@ import { CommonService } from "src/common/common.service";
 import { BasePaginationDto } from "src/common/dto/base-pagination.dto";
 import { CreateMessagesDto } from "./dto/create-messages.dto";
 
+interface SavePayload {
+    author: { id: number };
+    message: string;
+    chat?: { id: number };
+    whisperTargetUser?: { id: number };
+}
+
 @Injectable()
 export class ChatsMessagesService {
     constructor(
@@ -18,15 +25,20 @@ export class ChatsMessagesService {
         dto: CreateMessagesDto,
         authorId: number,
     ) {
-        const message = await this.messagesRepository.save({
-            chat: {
-                id: dto.chatId,
-            },
-            author: {
-                id: authorId,
-            },
+        const savePayload: SavePayload = {
+            author: { id: authorId },
             message: dto.message,
-        });
+        };
+
+        if (dto.chatId !== undefined && dto.chatId !== null) {
+            savePayload.chat = { id: dto.chatId };
+        }
+
+        if (dto.whisperTargetId !== undefined && dto.whisperTargetId !== null) {
+            savePayload.whisperTargetUser = { id: dto.whisperTargetId };
+        }
+    
+        const message = await this.messagesRepository.save(savePayload);
 
         return this.messagesRepository.findOne({
             where: {
@@ -34,6 +46,7 @@ export class ChatsMessagesService {
             },
             relations: {
                 chat: true,
+                whisperTargetUser: true,
             }
         });
     }

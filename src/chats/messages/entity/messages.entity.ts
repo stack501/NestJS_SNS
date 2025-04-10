@@ -12,6 +12,9 @@ export class MessagesModel extends BaseModel {
     @ManyToOne(() => UsersModel, (user) => user.messages)
     author: UsersModel;
 
+    @ManyToOne(() => UsersModel, (user) => user.messages)
+    whisperTargetUser: UsersModel;
+
     @Column()
     @IsString()
     message: string;

@@ -21,6 +21,16 @@ export class UsersService {
         return qr ? qr.manager.getRepository<UserFollowersModel>(UserFollowersModel) : this.userFollowersRepository;
     }
 
+    async checkIfUserExists(id: number) {
+        const exists = this.getUsersRepository().exists({
+            where: {
+                id,
+            },
+        })
+
+        return exists;
+    }
+
     async createUser(user: Pick<UsersModel, 'email' | 'nickname' | 'password'>) {
         // 1) 닉네임 중복이 없는지 확인
         // exist() -> 만약 조건에 해당되는 값이 있으면 true 반환
