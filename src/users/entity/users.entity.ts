@@ -19,6 +19,13 @@ export enum RoleEnum {
 @Entity()
 export class UsersModel extends BaseModel {
     @Column({
+        unique: true,
+        nullable: true,
+    })
+    @IsString()
+    google: string;
+
+    @Column({
         length: 20,
         unique: true,
     })

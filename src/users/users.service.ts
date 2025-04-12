@@ -31,7 +31,7 @@ export class UsersService {
         return exists;
     }
 
-    async createUser(user: Pick<UsersModel, 'email' | 'nickname' | 'password'>) {
+    async createUser(user: Partial<UsersModel>) {
         // 1) 닉네임 중복이 없는지 확인
         // exist() -> 만약 조건에 해당되는 값이 있으면 true 반환
         const nicknameExists = await this.usersRepository.exists({
@@ -58,11 +58,46 @@ export class UsersService {
             nickname: user.nickname,
             email: user.email,
             password: user.password,
+            google: user.google,
         });
 
         const newUser = await this.usersRepository.save(userObj);
 
         return newUser;
+    }
+
+    async findOrCreateByGoogle({
+        email,
+        displayName,
+        googleId,
+    }: {
+        email: string;
+        displayName: string;
+        googleId: string;
+    }): Promise<UsersModel> {
+        // 먼저, google 필드가 googleId와 매칭되는 사용자가 있는지 확인
+        let user = await this.usersRepository.findOne({ where: { google: googleId } });
+        
+        // 만약 사용자가 없다면, email로도 찾을 수 있다면 두 가지를 병합할 수도 있음
+        if (!user && email) {
+            user = await this.usersRepository.findOne({ where: { email } });
+        }
+    
+        // 사용자가 존재하지 않는다면 신규 생성
+        if (!user) {
+            user = await this.createUser({
+                email,
+                nickname: displayName,
+                password: '',       // 구글 로그인은 패스워드가 필요 없으므로 빈 문자열 지정
+                google: googleId,   // 구글 고유 식별자 저장
+            });
+        } else if (!user.google) {
+            // 기존에 email로 가입된 사용자의 경우, 구글 연동이 안 되어 있다면 google 필드 업데이트
+            user.google = googleId;
+            await this.usersRepository.save(user);
+        }
+    
+        return user;
     }
 
     async getAllUsers() {

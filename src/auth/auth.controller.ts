@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Req, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -7,6 +7,9 @@ import { IsPublicEnum } from 'src/common/const/is-public.const';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { AuthScheme } from 'src/common/const/auth-schema.const';
+import { GoogleAuthGuard } from './guard/google-auth.guard';
+import { User } from 'src/users/decorator/user.decorator';
+import { UsersModel } from 'src/users/entity/users.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -85,5 +88,19 @@ export class AuthController {
     @Body() body: RegisterUserDto,
   ) {
     return this.authService.registerWithEmail(body);
+  }
+
+  @Get("login/google")
+  @UseGuards(GoogleAuthGuard)
+  @IsPublic(IsPublicEnum.IS_PUBLIC)
+  googleAuth() {
+    console.log('GET google/login')
+  }
+
+  @Get("google/callback")
+  @UseGuards(GoogleAuthGuard)
+  @IsPublic(IsPublicEnum.IS_PUBLIC)
+  googleAuthRedirect(@User() user: UsersModel) {
+    return this.authService.loginUser(user);
   }
 }
