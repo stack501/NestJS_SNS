@@ -34,31 +34,34 @@ export class UsersService {
     async createUser(user: Partial<UsersModel>) {
         // 1) 닉네임 중복이 없는지 확인
         // exist() -> 만약 조건에 해당되는 값이 있으면 true 반환
-        const nicknameExists = await this.usersRepository.exists({
-            where: {
-                nickname: user.nickname,
-            }
-        });
+        if (user.nickname !== null) {
+            const nicknameExists = await this.usersRepository.exists({
+                where: {
+                    nickname: user.nickname,
+                }
+            });
 
-        if(nicknameExists) {
-            throw new BadRequestException('이미 존재하는 nickname 입니다!');
+            if(nicknameExists) {
+                throw new BadRequestException('이미 존재하는 nickname 입니다!');
+            }
         }
 
-        const emailExists = await this.usersRepository.exists({
-            where: {
-                email: user.email,
+        if (user.email !== null) { // email이 존재할 때만 중복 검사를 진행
+            const emailExists = await this.usersRepository.exists({
+                where: {
+                    email: user.email,
+                }
+            });
+            if (emailExists) {
+                throw new BadRequestException('이미 존재하는 email 입니다!');
             }
-        });
-
-        if(emailExists) {
-            throw new BadRequestException('이미 존재하는 email 입니다!');
         }
-
         const userObj = this.usersRepository.create({
             nickname: user.nickname,
             email: user.email,
             password: user.password,
             google: user.google,
+            kakao: user.kakao,
         });
 
         const newUser = await this.usersRepository.save(userObj);
@@ -94,6 +97,45 @@ export class UsersService {
         } else if (!user.google) {
             // 기존에 email로 가입된 사용자의 경우, 구글 연동이 안 되어 있다면 google 필드 업데이트
             user.google = googleId;
+            await this.usersRepository.save(user);
+        }
+    
+        return user;
+    }
+
+    async findOrCreateByKakao({
+        email,
+        nickname,
+        kakaoId,
+    }: {
+        email: string;
+        nickname: string;
+        kakaoId: string;
+    }): Promise<UsersModel> {
+        // 먼저, kako 필드가 kakaoId와 매칭되는 사용자가 있는지 확인
+        let user = await this.usersRepository.findOne({ where: { kakao: kakaoId } });
+        
+        // 만약 사용자가 없다면, email로도 찾을 수 있다면 두 가지를 병합할 수도 있음
+        if (!user && email) {
+            user = await this.usersRepository.findOne({ where: { email } });
+        }
+
+        //todo: 카카오 임시로 이메일 설정
+        if (!email) {
+            email = 'stack@test.com';
+        }
+    
+        // 사용자가 존재하지 않는다면 신규 생성
+        if (!user) {
+            user = await this.createUser({
+                email,
+                nickname: nickname,
+                password: '',       // 카카오 로그인은 패스워드가 필요 없으므로 빈 문자열 지정
+                kakao: kakaoId,   // 카카오 고유 식별자 저장
+            });
+        } else if (!user.kakao) {
+            // 기존에 email로 가입된 사용자의 경우, 구글 연동이 안 되어 있다면 google 필드 업데이트
+            user.kakao = kakaoId;
             await this.usersRepository.save(user);
         }
     

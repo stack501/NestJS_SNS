@@ -26,6 +26,13 @@ export class UsersModel extends BaseModel {
     google: string;
 
     @Column({
+        unique: true,
+        nullable: true,
+    })
+    @IsString()
+    kakao: string;
+
+    @Column({
         length: 20,
         unique: true,
     })
