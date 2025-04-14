@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UsersModel } from './entity/users.entity';
 import { QueryRunner, Repository } from 'typeorm';
 import { UserFollowersModel } from './entity/user-followers.entity';
+import { ProviderData } from 'src/common/interfaces/provider-data.interface';
+import { AuthProvider } from 'src/common/enums/auth-provider.enum';
 
 @Injectable()
 export class UsersService {
@@ -69,77 +71,75 @@ export class UsersService {
         return newUser;
     }
 
+    async findOrCreateUserByProvider({
+        email,
+        nickname,
+        providerId,
+        providerKey,
+      }: ProviderData): Promise<UsersModel> {
+        // provider 필드에 맞는 사용자를 찾음 (예: user.google 또는 user.kakao)
+        let user = await this.usersRepository.findOne({ where: { [providerKey]: providerId } });
+        
+        // 사용자가 없으면, 이메일로도 찾음 (이메일이 있으면)
+        if (!user && email) {
+          user = await this.usersRepository.findOne({ where: { email } });
+        }
+        
+        // 예를 들어, 카카오의 경우 임시 이메일 설정 (요구사항에 따라 다른 provider도 처리 가능)
+        if (providerKey === AuthProvider.KAKAO && !email) {
+          email = 'stack@test.com';
+        }
+        
+        // 사용자가 없으면 신규 생성
+        if (!user) {
+          const createData: Partial<UsersModel> = {
+            email,
+            nickname: nickname || email,  // 닉네임이 없으면 email 등을 기본값으로 사용
+            password: '',                // 소셜 로그인은 패스워드 필요 없음
+            [providerKey]: providerId,
+          };
+          user = await this.createUser(createData);
+        } else if (!user[providerKey]) {
+          // 기존에 이메일로 가입된 사용자의 경우 해당 provider 연동이 안 되어있으면, 업데이트
+          user[providerKey] = providerId;
+          await this.usersRepository.save(user);
+        }
+        
+        return user;
+    }
+
     async findOrCreateByGoogle({
         email,
         displayName,
         googleId,
-    }: {
+      }: {
         email: string;
         displayName: string;
         googleId: string;
-    }): Promise<UsersModel> {
-        // 먼저, google 필드가 googleId와 매칭되는 사용자가 있는지 확인
-        let user = await this.usersRepository.findOne({ where: { google: googleId } });
-        
-        // 만약 사용자가 없다면, email로도 찾을 수 있다면 두 가지를 병합할 수도 있음
-        if (!user && email) {
-            user = await this.usersRepository.findOne({ where: { email } });
-        }
-    
-        // 사용자가 존재하지 않는다면 신규 생성
-        if (!user) {
-            user = await this.createUser({
-                email,
-                nickname: displayName,
-                password: '',       // 구글 로그인은 패스워드가 필요 없으므로 빈 문자열 지정
-                google: googleId,   // 구글 고유 식별자 저장
-            });
-        } else if (!user.google) {
-            // 기존에 email로 가입된 사용자의 경우, 구글 연동이 안 되어 있다면 google 필드 업데이트
-            user.google = googleId;
-            await this.usersRepository.save(user);
-        }
-    
-        return user;
+      }): Promise<UsersModel> {
+        return await this.findOrCreateUserByProvider({
+          email,
+          nickname: displayName,
+          providerId: googleId,
+          providerKey: AuthProvider.GOOGLE,
+        });
     }
-
+      
     async findOrCreateByKakao({
         email,
         nickname,
         kakaoId,
-    }: {
+      }: {
         email: string;
         nickname: string;
         kakaoId: string;
-    }): Promise<UsersModel> {
-        // 먼저, kako 필드가 kakaoId와 매칭되는 사용자가 있는지 확인
-        let user = await this.usersRepository.findOne({ where: { kakao: kakaoId } });
-        
-        // 만약 사용자가 없다면, email로도 찾을 수 있다면 두 가지를 병합할 수도 있음
-        if (!user && email) {
-            user = await this.usersRepository.findOne({ where: { email } });
-        }
-
-        //todo: 카카오 임시로 이메일 설정
-        if (!email) {
-            email = 'stack@test.com';
-        }
-    
-        // 사용자가 존재하지 않는다면 신규 생성
-        if (!user) {
-            user = await this.createUser({
-                email,
-                nickname: nickname,
-                password: '',       // 카카오 로그인은 패스워드가 필요 없으므로 빈 문자열 지정
-                kakao: kakaoId,   // 카카오 고유 식별자 저장
-            });
-        } else if (!user.kakao) {
-            // 기존에 email로 가입된 사용자의 경우, 구글 연동이 안 되어 있다면 google 필드 업데이트
-            user.kakao = kakaoId;
-            await this.usersRepository.save(user);
-        }
-    
-        return user;
+      }): Promise<UsersModel> {
+        return await this.findOrCreateUserByProvider({
+          email,
+          nickname,
+          providerId: kakaoId,
+          providerKey: AuthProvider.KAKAO,
+        });
     }
 
     async getAllUsers() {
