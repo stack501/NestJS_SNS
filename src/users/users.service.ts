@@ -235,7 +235,7 @@ export class UsersService {
     }
 
     async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
-        const { repository, existing } = await this. getExistingFollow(followerId, followeeId, qr);
+        const { repository, existing } = await this. getExistingFollow(followerId, followeeId, qr, false);
 
         if(!existing) {
             throw new BadRequestException(

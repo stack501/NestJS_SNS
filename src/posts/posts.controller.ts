@@ -17,7 +17,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { ImageModelType } from 'src/common/entity/image.entity';
-import { DataSource, QueryRunner } from 'typeorm';
+import { DataSource, Not, QueryRunner } from 'typeorm';
 import { PostsImagesService } from './image/images.service';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { QueryRunnerDecorator } from 'src/common/decorator/query-runner.decorator';
@@ -51,6 +51,31 @@ export class PostsController {
   getPosts(
     @Query() query: PaginatePostDto,
   ) { 
+    return this.postsService.paginatePosts(query);
+  }
+
+  // 내가 팔로우한 사용자들의 피드(게시글)을 모두 가져온다.
+  // 팔로우 요청을 확인한 사용자들의 피드들만을 가져온다.
+  @Get('following')
+  @ApiBearerAuth(AuthScheme.ACCESS)
+  @ApiOperation({ 
+    summary: '팔로워 게시글들 가져오기', 
+    description: '팔로우 요청이 수락된 팔로워들의 게시글들을 모두 가져옵니다.' 
+  })
+  getFollowingPosts(
+    @User('id') userId: number, 
+    @Query() query: PaginatePostDto
+  ) {
+    if (query.isOnlyFollowingPosts) {
+      return this.postsService.paginatePosts(query, {
+        author: {
+          followees: {
+            isConfirmed: true,
+          },
+          id: Not(userId),
+        },
+      });
+    }
     return this.postsService.paginatePosts(query);
   }
 

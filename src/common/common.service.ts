@@ -19,12 +19,14 @@ export class CommonService {
         repository: Repository<T>,
         overrideFindOptions: FindManyOptions<T> = {},
         path: string,
+        additionalWhere?: FindOptionsWhere<T>,
     ) {
         if(dto.page) {
             return this.pagePaginate(
                 dto,
                 repository,
                 overrideFindOptions,
+                additionalWhere,
             );
         } else {
             return this.cursorPaginate(
@@ -32,6 +34,7 @@ export class CommonService {
                 repository,
                 overrideFindOptions,
                 path,
+                additionalWhere,
             );
         }
     }
@@ -40,8 +43,9 @@ export class CommonService {
         dto: BasePaginationDto,
         repository: Repository<T>,
         overrideFindOptions: FindManyOptions<T> = {},
+        additionalWhere?: FindOptionsWhere<T>,
     ) {
-        const findOptions = this.composeFindOptions<T>(dto);
+        const findOptions = this.composeFindOptions<T>(dto, additionalWhere);
 
         const [data, count] = await repository.findAndCount({
             ...findOptions,
@@ -59,8 +63,9 @@ export class CommonService {
         repository: Repository<T>,
         overrideFindOptions: FindManyOptions<T> = {},
         path: string,
+        additionalWhere?: FindOptionsWhere<T>,
     ) {
-        const findOptions = this.composeFindOptions<T>(dto);
+        const findOptions = this.composeFindOptions<T>(dto, additionalWhere);
 
         const results = await repository.find({
             ...findOptions,
@@ -109,6 +114,7 @@ export class CommonService {
 
     private composeFindOptions<T extends BaseModel>(
         dto: BasePaginationDto,
+        additionalWhere?: FindOptionsWhere<T>,
     ) : FindManyOptions<T> {
         /**
          * where
@@ -117,7 +123,7 @@ export class CommonService {
          * skip -> page 기반일때만,
          */
 
-        let where: FindOptionsWhere<T> = {};
+        let where: FindOptionsWhere<T> = additionalWhere ? { ...additionalWhere } : {};
         let order: FindOptionsOrder<T> = {};
         
         // dto를 plain object로 변환

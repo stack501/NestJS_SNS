@@ -36,7 +36,7 @@ export class PostsService {
     }
   }
 
-  async paginatePosts(dto: PaginatePostDto) {
+  async paginatePosts(dto: PaginatePostDto, additionalWhere?: FindOptionsWhere<PostsModel>) {
     return this.commonServices.paginate(
       dto,
       this.postsRepository,
@@ -44,12 +44,8 @@ export class PostsService {
         ...DEFAULT_POST_FIND_OPTIONS,
       },
       'posts',
+      additionalWhere,
     );
-    // if(dto.page) {
-    //   return this.pagePaginatePosts(dto);
-    // } else {
-    //   return this.cursorPaginatePosts(dto);
-    // }   
   }
 
   async pagePaginatePosts(dto: PaginatePostDto) {
