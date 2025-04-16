@@ -10,6 +10,11 @@ import { ImageModel } from 'src/common/entity/image.entity';
 import { DEFAULT_POST_FIND_OPTIONS } from './const/default-post-find-options.const';
 import { ConfigType } from '@nestjs/config';
 import appConfig from 'src/configs/app.config';
+import { RedisService } from 'src/common/redis/redis.service';
+
+type PostsResult =
+  | { data: PostsModel[]; total: number }
+  | { data: PostsModel[]; cursor: { after: number | null }; count: number; next: string | null };
 
 @Injectable()
 export class PostsService {
@@ -20,7 +25,8 @@ export class PostsService {
     private readonly imageRepository: Repository<ImageModel>,
     private readonly commonServices: CommonService,
     @Inject(appConfig.KEY)
-    private readonly config: ConfigType<typeof appConfig>
+    private readonly config: ConfigType<typeof appConfig>,
+    private readonly redisService: RedisService
   ) {}
   async getAllPosts() {
     return this.postsRepository.find();
@@ -36,16 +42,28 @@ export class PostsService {
     }
   }
 
-  async paginatePosts(dto: PaginatePostDto, additionalWhere?: FindOptionsWhere<PostsModel>) {
-    return this.commonServices.paginate(
+  async paginatePosts(
+    dto: PaginatePostDto,
+    additionalWhere?: FindOptionsWhere<PostsModel>,
+  ): Promise<PostsResult> {
+    const cacheKey = `following-posts-${dto.isOnlyFollowingPosts ? 'only' : 'all'}-${JSON.stringify(dto)}`;
+    // RedisService에서 캐시 조회
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) {
+      return cached as PostsResult;
+    }
+
+    // 캐시가 없다면 비즈니스 로직 실행
+    const result = await this.commonServices.paginate<PostsModel, PostsResult>(
       dto,
       this.postsRepository,
-      {
-        ...DEFAULT_POST_FIND_OPTIONS,
-      },
+      { ...DEFAULT_POST_FIND_OPTIONS },
       'posts',
       additionalWhere,
     );
+
+    await this.redisService.set(cacheKey, result, 60000);
+    return result;
   }
 
   async pagePaginatePosts(dto: PaginatePostDto) {

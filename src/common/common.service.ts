@@ -14,102 +14,104 @@ export class CommonService {
         private readonly config: ConfigType<typeof appConfig>
     ){}
 
-    paginate<T extends BaseModel>(
+    paginate<T extends BaseModel, R>(
         dto: BasePaginationDto,
         repository: Repository<T>,
         overrideFindOptions: FindManyOptions<T> = {},
         path: string,
         additionalWhere?: FindOptionsWhere<T>,
-    ) {
+      ): Promise<R> {
         if(dto.page) {
-            return this.pagePaginate(
-                dto,
-                repository,
-                overrideFindOptions,
-                additionalWhere,
-            );
+          return this.pagePaginate<T, R>(
+            dto,
+            repository,
+            overrideFindOptions,
+            additionalWhere,
+          );
         } else {
-            return this.cursorPaginate(
-                dto,
-                repository,
-                overrideFindOptions,
-                path,
-                additionalWhere,
-            );
+          return this.cursorPaginate<T, R>(
+            dto,
+            repository,
+            overrideFindOptions,
+            path,
+            additionalWhere,
+          );
         }
     }
 
-    private async pagePaginate<T extends BaseModel>(
+    private async pagePaginate<T extends BaseModel, R>(
         dto: BasePaginationDto,
         repository: Repository<T>,
         overrideFindOptions: FindManyOptions<T> = {},
         additionalWhere?: FindOptionsWhere<T>,
-    ) {
+      ): Promise<R> {
         const findOptions = this.composeFindOptions<T>(dto, additionalWhere);
-
+      
         const [data, count] = await repository.findAndCount({
-            ...findOptions,
-            ...overrideFindOptions,
+          ...findOptions,
+          ...overrideFindOptions,
         });
-
+      
+        // 여기서 반환하는 객체의 구조가 R과 일치한다고 가정합니다.
         return {
-            data,
-            total: count,
-        }
+          data,
+          total: count,
+        } as unknown as R;
     }
     
-    private async cursorPaginate<T extends BaseModel>(
+    private async cursorPaginate<T extends BaseModel, R>(
         dto: BasePaginationDto,
         repository: Repository<T>,
         overrideFindOptions: FindManyOptions<T> = {},
         path: string,
         additionalWhere?: FindOptionsWhere<T>,
-    ) {
+      ): Promise<R> {
         const findOptions = this.composeFindOptions<T>(dto, additionalWhere);
-
+      
         const results = await repository.find({
-            ...findOptions,
-            ...overrideFindOptions,
+          ...findOptions,
+          ...overrideFindOptions,
         });
-
+      
         const whereMoreThanName = 'where__id__more_than';
         const whereLessThanName = 'where__id__less_than';
-
+      
         const lastItem = results.length > 0 && results.length === dto.take ? results[results.length - 1] : null;
-    
+      
         const protocol = this.config.http.protocol;
         const host = this.config.http.host;
-
+      
         const nextURL = lastItem && new URL(`${protocol}://${host}/${path}`);
-    
-        if(nextURL) {
-            for(const key of Object.keys(dto)) {
-                if(dto[key]) {
-                    if(key !== whereMoreThanName && key !== whereLessThanName) {
-                        nextURL.searchParams.append(key, dto[key]);
-                    } 
-                }
+      
+        if (nextURL) {
+          for (const key of Object.keys(dto)) {
+            if (dto[key]) {
+              if (key !== whereMoreThanName && key !== whereLessThanName) {
+                nextURL.searchParams.append(key, dto[key]);
+              }
             }
-    
-            let key: string | null = null;
-    
-            if(dto.order__createdAt === 'ASC') {
-                key = whereMoreThanName;
-            } else {
-                key = whereLessThanName;
-            }
-    
-            nextURL.searchParams.append(key, lastItem.id.toString());
+          }
+      
+          let key: string | null = null;
+      
+          if (dto.order__createdAt === 'ASC') {
+            key = whereMoreThanName;
+          } else {
+            key = whereLessThanName;
+          }
+      
+          nextURL.searchParams.append(key, lastItem.id.toString());
         }
-
+      
+        // 페이지 기반이 아닌 경우에는 이 구조로 반환하게 됩니다.
         return {
-            data: results,
-            cursor: {
-                after: lastItem?.id ?? null,
-            },
-            count: results.length,
-            next: nextURL?.toString() ?? null,
-        }
+          data: results,
+          cursor: {
+            after: lastItem?.id ?? null,
+          },
+          count: results.length,
+          next: nextURL?.toString() ?? null,
+        } as unknown as R;
     }
 
     private composeFindOptions<T extends BaseModel>(

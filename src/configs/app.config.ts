@@ -15,4 +15,8 @@ export default registerAs('app', () => ({
         user: process.env.SWAGGER_USER,
         password: process.env.SWAGGER_PASSWORD,
     },
+    redis: {
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+    }
 }));

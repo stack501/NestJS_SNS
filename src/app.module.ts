@@ -72,7 +72,9 @@ import dbConfig from './configs/db.config';
     CommentsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, {
+  providers: [
+    AppService, 
+  {
     provide: APP_INTERCEPTOR,
     useClass: ClassSerializerInterceptor,
   },

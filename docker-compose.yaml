@@ -5,8 +5,14 @@ services:
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+
+  redis:
+    image: redis:7.4.2
+    restart: always
+    ports:
+      - "6379:6379"
