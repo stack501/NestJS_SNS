@@ -10,7 +10,7 @@ import { ImageModel } from 'src/common/entity/image.entity';
 import { DEFAULT_POST_FIND_OPTIONS } from './const/default-post-find-options.const';
 import { ConfigType } from '@nestjs/config';
 import appConfig from 'src/configs/app.config';
-import { RedisService } from 'src/common/redis/redis.service';
+import { RedisService } from 'src/redis/redis.service';
 
 type PostsResult =
   | { data: PostsModel[]; total: number }

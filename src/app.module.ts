@@ -22,6 +22,7 @@ import { CommentsModule } from './posts/comments/comments.module';
 import { RolesGuard } from './users/guard/roles.guard';
 import { AccessTokenGuard } from './auth/guard/bearer-token.guard';
 import { UserFollowersModel } from './users/entity/user-followers.entity';
+import { RedisModule } from './redis/redis.module';
 import appConfig from './configs/app.config';
 import dbConfig from './configs/db.config';
 
@@ -70,6 +71,7 @@ import dbConfig from './configs/db.config';
     CommonModule,
     ChatsModule,
     CommentsModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [

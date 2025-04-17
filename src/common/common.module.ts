@@ -9,29 +9,14 @@ import { existsSync, mkdirSync } from 'fs';
 import { TEMP_FOLDER_PATH } from './const/path.const';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
-import { RedisService } from './redis/redis.service';
-import * as redisStore from 'cache-manager-redis-store';
-import { CacheModule } from '@nestjs/cache-manager';
-import { ConfigService } from '@nestjs/config';
 
 // 업로드 경로가 존재하지 않으면 생성 (recursive 옵션으로 상위 폴더까지 생성)
 if (!existsSync(TEMP_FOLDER_PATH)) {
   mkdirSync(TEMP_FOLDER_PATH, { recursive: true });
 }
 
-const cacheModule = CacheModule.register({
-  isGlobal: true,
-  useFactory: (configService: ConfigService) => ({
-    store: redisStore,
-    host: configService.get<string>('app.redis.host'),
-    port: configService.get<string>('app.redis.port'),
-    ttl: 60000, // 캐시 default 유지시간: ms
-  }),
-});
-
 @Module({
   imports: [
-    cacheModule,
     MulterModule.register({
       limits: {
         // 바이트 단위로 입력
@@ -70,7 +55,7 @@ const cacheModule = CacheModule.register({
     UsersModule,
   ],
   controllers: [CommonController],
-  providers: [CommonService, RedisService],
-  exports: [CommonService, RedisService],
+  providers: [CommonService],
+  exports: [CommonService],
 })
 export class CommonModule {}
