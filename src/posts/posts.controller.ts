@@ -74,7 +74,8 @@ export class PostsController {
           },
           id: Not(userId),
         },
-      });
+      }, 
+      userId);
     }
     return this.postsService.paginatePosts(query);
   }

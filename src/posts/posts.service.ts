@@ -11,6 +11,8 @@ import { DEFAULT_POST_FIND_OPTIONS } from './const/default-post-find-options.con
 import { ConfigType } from '@nestjs/config';
 import appConfig from 'src/configs/app.config';
 import { RedisService } from 'src/redis/redis.service';
+import { UsersService } from 'src/users/users.service';
+import { REDIS_KEYS_MAPPER } from 'src/redis/redis.keys-mapper';
 
 type PostsResult =
   | { data: PostsModel[]; total: number }
@@ -26,7 +28,8 @@ export class PostsService {
     private readonly commonServices: CommonService,
     @Inject(appConfig.KEY)
     private readonly config: ConfigType<typeof appConfig>,
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private readonly usersService: UsersService,
   ) {}
   async getAllPosts() {
     return this.postsRepository.find();
@@ -45,15 +48,23 @@ export class PostsService {
   async paginatePosts(
     dto: PaginatePostDto,
     additionalWhere?: FindOptionsWhere<PostsModel>,
+    userId?: number
   ): Promise<PostsResult> {
-    const cacheKey = `following-posts-${dto.isOnlyFollowingPosts ? 'only' : 'all'}-${JSON.stringify(dto)}`;
-    // RedisService에서 캐시 조회
+    if (!dto.isOnlyFollowingPosts || userId == null) {
+      return this.commonServices.paginate<PostsModel, PostsResult>(
+        dto,
+        this.postsRepository,
+        { ...DEFAULT_POST_FIND_OPTIONS },
+        'posts',
+        additionalWhere,
+      );
+    }
+
+    const cacheKey = REDIS_KEYS_MAPPER.followingPosts(userId);
     const cached = await this.redisService.get(cacheKey);
     if (cached) {
       return cached as PostsResult;
     }
-
-    // 캐시가 없다면 비즈니스 로직 실행
     const result = await this.commonServices.paginate<PostsModel, PostsResult>(
       dto,
       this.postsRepository,
@@ -61,7 +72,6 @@ export class PostsService {
       'posts',
       additionalWhere,
     );
-
     await this.redisService.set(cacheKey, result, 60000);
     return result;
   }
@@ -228,6 +238,12 @@ export class PostsService {
 
     const newPost = await repository.save(post);
 
+    const followers = await this.usersService.getFollowers(authorId, false);
+    for (const follower of followers) {
+      const cacheKey = REDIS_KEYS_MAPPER.followingPosts(follower.id);
+      await this.redisService.delByPattern(cacheKey);
+    }
+    
     return newPost;
   }
 
