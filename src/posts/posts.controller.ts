@@ -17,7 +17,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginate-post.dto';
 import { ImageModelType } from 'src/common/entity/image.entity';
-import { DataSource, Not, QueryRunner } from 'typeorm';
+import { Not, QueryRunner } from 'typeorm';
 import { PostsImagesService } from './image/images.service';
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
 import { QueryRunnerDecorator } from 'src/common/decorator/query-runner.decorator';
@@ -28,24 +28,25 @@ import { IsPublicEnum } from 'src/common/const/is-public.const';
 import { IsPostMineOrAdminGuard } from './guard/is-post-mine-or-admin.guard';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthScheme } from 'src/common/const/auth-schema.const';
+import { RateLimiter } from 'src/common/decorator/rate-limiter.decorator';
+
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
-    private readonly dataSource: DataSource,
     private readonly postsImagesService: PostsImagesService,
   ) {}
 
   // 1) GET /posts
   //  모든 posts를 가져온다
   @Get()
-  @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
     summary: '모든 게시글 가져오기', 
     description: '모든 게시글을 Paginate 하게 가져옵니다.' 
   })
   @IsPublic(IsPublicEnum.IS_PUBLIC)
+  @RateLimiter() // 비로그인 사용자 1초당 1토큰 회복, 최대 제한 횟수 10번
   // @UseInterceptors(LogInterceptor)
   // @UseFilters(HttpExceptionFilter)
   getPosts(
