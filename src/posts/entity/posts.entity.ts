@@ -26,7 +26,9 @@ export class PostsModel extends BaseModel {
   })
   content: string;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   likeCount: number;
 
   @Column({
