@@ -1,4 +1,4 @@
-import { ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
@@ -13,7 +13,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
 import { ImageModel } from './common/entity/image.entity';
-import { LogMiddleware } from './common/middleware/log.middleware';
+// import { LogMiddleware } from './common/middleware/log.middleware';
 import { ChatsModule } from './chats/chats.module';
 import { ChatsModel } from './chats/entity/chats.entity';
 import { MessagesModel } from './chats/messages/entity/messages.entity';
@@ -25,6 +25,7 @@ import { UserFollowersModel } from './users/entity/user-followers.entity';
 import { RedisModule } from './redis/redis.module';
 import appConfig from './configs/app.config';
 import dbConfig from './configs/db.config';
+import { LogInterceptor } from './common/interceptor/log.interceptor';
 
 @Module({
   imports: [
@@ -46,6 +47,8 @@ import dbConfig from './configs/db.config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
+        const isDevelopment = process.env.NODE_ENV === 'dev'; // 개발 환경인지 확인
+
         return {
           type: 'postgres',
           host: configService.get<string>('db.host'),
@@ -62,7 +65,16 @@ import dbConfig from './configs/db.config';
             CommentsModel,
             UserFollowersModel,
           ],
-          synchronize: true,
+          // synchronize: true,
+          synchronize: configService.get<boolean>('db.synchronize', true),
+
+          // --- 로깅 설정 추가 ---
+          // NODE_ENV가 'development'일 때만 상세 로깅을 활성화하거나, ConfigService를 통해 로깅 레벨을 관리할 수 있습니다.
+          logging: isDevelopment ? ['query', 'error'] : ['error'], // 개발 환경에서는 쿼리와 에러 로깅, 그 외에는 에러만 로깅
+          // logging: configService.get('db.loggingLevel', ['query', 'error']), // ConfigService에서 로깅 레벨을 가져올 수도 있습니다.
+          logger: 'advanced-console', // 또는 'simple-console'
+          maxQueryExecutionTime: 1000, // (선택 사항) 1초 이상 소요되는 쿼리 경고 (TypeORM 0.3.0 이상)
+          // --- 로깅 설정 끝 ---
         };
       },
     }),
@@ -78,6 +90,10 @@ import dbConfig from './configs/db.config';
     AppService, 
   {
     provide: APP_INTERCEPTOR,
+    useClass: LogInterceptor,
+  },
+  {
+    provide: APP_INTERCEPTOR,
     useClass: ClassSerializerInterceptor,
   },
   {
@@ -90,13 +106,15 @@ import dbConfig from './configs/db.config';
   }
 ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(
-      LogMiddleware,
-    ).forRoutes({
-      path: '*',
-      method: RequestMethod.ALL,
-    });
-  }
-}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(
+//       LogMiddleware,
+//     ).forRoutes({
+//       path: '*',
+//       method: RequestMethod.ALL,
+//     });
+//   }
+// }
+
+export class AppModule {}
