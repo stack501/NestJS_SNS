@@ -10,6 +10,10 @@ export class PaginatePostDto extends BasePaginationDto{
     @IsOptional()
     where__title__i_like?: string;
 
+    @IsString()
+    @IsOptional()
+    where__author__equal?: string;
+
     @IsBoolean()
     @IsOptional()
     isOnlyFollowingPosts?: boolean;
