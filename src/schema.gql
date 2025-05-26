@@ -1,0 +1,44 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type PostsModel {
+  author: UsersModel!
+  authorId: Float!
+  commentCount: Float!
+  content: String!
+  createdAt: DateTime!
+  id: ID!
+  likeCount: Float!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Query {
+  getPost(id: Int!): PostsModel
+}
+
+"""User roles"""
+enum RoleEnum {
+  ADMIN
+  USER
+}
+
+type UsersModel {
+  createdAt: DateTime!
+  email: String!
+  followeeCount: Float!
+  followerCount: Float!
+  google: String
+  id: ID!
+  kakao: String
+  nickname: String!
+  password: String!
+  role: RoleEnum!
+  updatedAt: DateTime!
+}

@@ -10,14 +10,22 @@ import { PostsModel } from "src/posts/entity/posts.entity";
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { CommentsModel } from "src/posts/comments/entity/comments.entity";
 import { UserFollowersModel } from "./user-followers.entity";
+import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
 
 export enum RoleEnum {
     USER = 'user',
     ADMIN = 'admin',
 }
 
+registerEnumType(RoleEnum, {
+    name: 'RoleEnum', // GraphQL 스키마에 표시될 Enum의 이름
+    description: 'User roles', // 선택적 설명
+});
+
+@ObjectType()
 @Entity()
 export class UsersModel extends BaseModel {
+    @Field({ nullable: true })
     @Column({
         unique: true,
         nullable: true,
@@ -25,6 +33,7 @@ export class UsersModel extends BaseModel {
     @IsString()
     google: string;
 
+    @Field({ nullable: true })
     @Column({
         unique: true,
         nullable: true,
@@ -32,6 +41,7 @@ export class UsersModel extends BaseModel {
     @IsString()
     kakao: string;
 
+    @Field()
     @Column({
         length: 20,
         unique: true,
@@ -44,6 +54,7 @@ export class UsersModel extends BaseModel {
     })
     nickname: string;
 
+    @Field()
     @Column({
         unique: true,
     })
@@ -55,6 +66,7 @@ export class UsersModel extends BaseModel {
     })
     email: string;
 
+    @Field()
     @Column()
     @IsString({
         message: stringValidationMessage,
@@ -81,6 +93,7 @@ export class UsersModel extends BaseModel {
     })
     password: string;
 
+    @Field(() => RoleEnum)
     @Column({
         type: 'enum',
         enum: RoleEnum,
@@ -112,11 +125,13 @@ export class UsersModel extends BaseModel {
     @OneToMany(() => UserFollowersModel, (ufm) => ufm.followee)
     followees: UserFollowersModel[];
 
+    @Field()
     @Column({
         default: 0,
     })
     followerCount: number;
 
+    @Field()
     @Column({
         default: 0,
     })

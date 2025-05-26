@@ -5,37 +5,46 @@ import { stringValidationMessage } from 'src/common/validation-message/string-va
 import { UsersModel } from 'src/users/entity/users.entity';
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, RelationId } from 'typeorm';
 import { CommentsModel } from '../comments/entity/comments.entity';
+import { Field, ObjectType } from '@nestjs/graphql';
 
+@ObjectType()
 @Entity()
 export class PostsModel extends BaseModel {
+
+  @Field(() => UsersModel)
   @ManyToOne(() => UsersModel, (user) => user.posts, {
     nullable: false,
   })
   @JoinColumn( {name: 'authorId'})
   author: UsersModel;
 
+  @Field(() => Number)
   @Column()
   @Index('idx_post_author_id')
   @RelationId((post: PostsModel) => post.author)
   authorId: number;
 
+  @Field()
   @Column()
   @IsString({
     message: stringValidationMessage,
   })
   title: string;
 
+  @Field()
   @Column()
   @IsString({
     message: stringValidationMessage,
   })
   content: string;
 
+  @Field(() => Number)
   @Column({
     default: 0,
   })
   likeCount: number;
 
+  @Field(() => Number)
   @Column({
     default: 0,
   })

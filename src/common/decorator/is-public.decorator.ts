@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
 import { IsPublicEnum } from '../const/is-public.const';
 
-export const ISPUBLIC_KEY = 'is_public';
+export const IS_PUBLIC_KEY = 'is_public';
 
-export const IsPublic = (status: IsPublicEnum) => SetMetadata(ISPUBLIC_KEY, status);
+export const IsPublic = (status: IsPublicEnum) => SetMetadata(IS_PUBLIC_KEY, status);
