@@ -29,6 +29,10 @@ import { LogInterceptor } from './common/interceptor/log.interceptor';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import depthLimit from 'graphql-depth-limit';
+import { createComplexityRule, directiveEstimator, simpleEstimator } from 'graphql-query-complexity';
+import { GraphQLError } from 'graphql';
+
 
 @Module({
   imports: [
@@ -38,6 +42,35 @@ import { join } from 'path';
       sortSchema: true, // 스키마를 알파벳 순으로 정렬 (선택 사항)
       playground: true, // 개발 환경에서 GraphQL Playground 활성화
       debug: true, // 개발 환경에서 디버그 정보 활성화
+      validationRules: [
+        // 1) 최대 깊이 제한 (optional)
+        depthLimit(5),
+
+        // 2) 쿼리 복잡도 제한
+        createComplexityRule({
+          estimators: [
+            // (1) directive-based estimation: @complexity(value) 사용 시
+            directiveEstimator(),
+            // (2) 기본 필드당 1점
+            simpleEstimator({ defaultComplexity: 1 }),
+          ],
+    
+          // 최대 허용 복잡도
+          maximumComplexity: 100,
+    
+          // 실행 후 콜백
+          onComplete: (complexity: number) => {
+            console.log('💡 GraphQL query complexity:', complexity);
+          },
+    
+          // 초과 시 던질 에러
+          createError: (max: number, actual: number) =>
+            new GraphQLError(
+              `Query is too complex: ${actual}. Maximum allowed complexity: ${max}`,
+              { extensions: { code: 'GRAPHQL_COMPLEXITY_LIMIT' } },
+            ),
+        }),
+      ],
     }),
     PostsModule,
     ServeStaticModule.forRoot({
