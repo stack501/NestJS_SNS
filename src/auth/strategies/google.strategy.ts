@@ -5,6 +5,10 @@ import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20'
 import googleConfig from 'src/configs/google.config'
 import { UsersService } from 'src/users/users.service'
 
+/**
+ * 구글 OAuth 인증을 처리하는 전략 클래스
+ * 구글 계정으로 로그인 및 회원가입을 처리합니다
+ */
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
@@ -20,7 +24,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     })
   }
 
-  // refreshToken를 얻기 위한 필수 코드
+  /**
+   * 리프레시 토큰을 얻기 위한 인증 파라미터를 설정합니다
+   * @returns 구글 OAuth 인증 파라미터
+   */
   authorizationParams(): {[key: string]: string; } {
     return ({
       access_type: 'offline',
@@ -28,6 +35,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     });
   }
 
+  /**
+   * 구글 인증 후 사용자 정보를 검증하고 처리합니다
+   * @param accessToken 구글로부터 받은 액세스 토큰
+   * @param refreshToken 구글로부터 받은 리프레시 토큰
+   * @param profile 구글로부터 받은 사용자 프로필 정보
+   * @param done 인증 완료 콜백 함수
+   */
   async validate(
     accessToken: string,
     refreshToken: string,

@@ -1,0 +1,2358 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>2_cf_sns documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">2_cf_sns documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >UsersService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/users/users.service.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>사용자 관련 비즈니스 로직을 처리하는 서비스</p>
+<p>사용자의 생성, 조회, 팔로우 관리 등의 기능을 제공합니다.</p>
+
+            </p>
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkIfUserExists" >checkIfUserExists</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#confirmFollow" >confirmFollow</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#createUser" >createUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#decrementFollowerCount" >decrementFollowerCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteFollow" >deleteFollow</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOrCreateByGoogle" >findOrCreateByGoogle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOrCreateByKakao" >findOrCreateByKakao</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOrCreateUserByProvider" >findOrCreateUserByProvider</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#followUser" >followUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAllUsers" >getAllUsers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getExistingFollow" >getExistingFollow</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getFollowers" >getFollowers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getRequestAllFollowee" >getRequestAllFollowee</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getUserByEmail" >getUserByEmail</a>
+                            </li>
+                            <li>
+                                <a href="#getUserFollowersRepository" >getUserFollowersRepository</a>
+                            </li>
+                            <li>
+                                <a href="#getUsersRepository" >getUsersRepository</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#incrementFollowerCount" >incrementFollowerCount</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(usersRepository: <a href="../classes/UsersModel.html" target="_self">Repository&lt;UsersModel&gt;</a>, userFollowersRepository: <a href="../entitys/UserFollowersModel.html" target="_self">Repository&lt;UserFollowersModel&gt;</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">src/users/users.service.ts:15</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>usersRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/UsersModel.html" target="_self" >Repository&lt;UsersModel&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userFollowersRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../entitys/UserFollowersModel.html" target="_self" >Repository&lt;UserFollowersModel&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkIfUserExists"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>checkIfUserExists</b></span>
+                        <a href="#checkIfUserExists"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkIfUserExists(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">src/users/users.service.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>사용자 존재 여부를 확인합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>확인할 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>사용자 존재 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="confirmFollow"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>confirmFollow</b></span>
+                        <a href="#confirmFollow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>confirmFollow(followerId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, followeeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="322"
+                                    class="link-to-prism">src/users/users.service.ts:322</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>팔로우 요청을 확인(수락)합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>followerId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>팔로우하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>followeeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>팔로우 당하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>성공 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createUser</b></span>
+                        <a href="#createUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createUser(user: <a href="../classes/UsersModel.html" target="_self">Partial&lt;UsersModel&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">src/users/users.service.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>새로운 사용자를 생성합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../classes/UsersModel.html" target="_self" >Partial&lt;UsersModel&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>생성할 사용자 정보</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>생성된 사용자 객체</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="decrementFollowerCount"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>decrementFollowerCount</b></span>
+                        <a href="#decrementFollowerCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>decrementFollowerCount(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, fieldName, decrementCount: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="400"
+                                    class="link-to-prism">src/users/users.service.ts:400</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>사용자의 팔로워/팔로이 카운트를 감소시킵니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>fieldName</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>감소시킬 필드명</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>decrementCount</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>감소시킬 값</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteFollow"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteFollow</b></span>
+                        <a href="#deleteFollow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteFollow(followerId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, followeeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner, isConfirmed: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="348"
+                                    class="link-to-prism">src/users/users.service.ts:348</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>팔로우를 삭제(취소)합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>followerId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <p>팔로우하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>followeeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <p>팔로우 당하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>isConfirmed</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>true</code>
+                                            </td>
+
+                                            <td>
+                                                    <p>확인된 팔로우만 삭제할지 여부</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>성공 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOrCreateByGoogle"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOrCreateByGoogle</b></span>
+                        <a href="#findOrCreateByGoogle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOrCreateByGoogle(undefined: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="147"
+                                    class="link-to-prism">src/users/users.service.ts:147</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Google 정보로 사용자를 찾거나 생성합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/UsersModel.html" target="_self" >Promise&lt;UsersModel&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>찾거나 생성된 사용자 객체</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOrCreateByKakao"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOrCreateByKakao</b></span>
+                        <a href="#findOrCreateByKakao"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOrCreateByKakao(undefined: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">src/users/users.service.ts:169</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Kakao 정보로 사용자를 찾거나 생성합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/UsersModel.html" target="_self" >Promise&lt;UsersModel&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>찾거나 생성된 사용자 객체</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findOrCreateUserByProvider"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOrCreateUserByProvider</b></span>
+                        <a href="#findOrCreateUserByProvider"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOrCreateUserByProvider(undefined: <a href="../interfaces/ProviderData.html" target="_self">ProviderData</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">src/users/users.service.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>제공자(소셜 로그인) 정보로 사용자를 찾거나 생성합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                            <code><a href="../interfaces/ProviderData.html" target="_self" >ProviderData</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/UsersModel.html" target="_self" >Promise&lt;UsersModel&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>찾거나 생성된 사용자 객체</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="followUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>followUser</b></span>
+                        <a href="#followUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>followUser(followerId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, followeeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="214"
+                                    class="link-to-prism">src/users/users.service.ts:214</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>사용자를 팔로우합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>followerId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>팔로우하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>followeeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>팔로우 당하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>성공 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllUsers"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getAllUsers</b></span>
+                        <a href="#getAllUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllUsers()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="190"
+                                    class="link-to-prism">src/users/users.service.ts:190</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>모든 사용자를 조회합니다</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>모든 사용자 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getExistingFollow"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getExistingFollow</b></span>
+                        <a href="#getExistingFollow"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getExistingFollow(followerId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, followeeId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner, isConfirmed: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="292"
+                                    class="link-to-prism">src/users/users.service.ts:292</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>기존 팔로우 관계를 조회합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>followerId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <p>팔로우하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>followeeId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <p>팔로우 당하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>isConfirmed</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>true</code>
+                                            </td>
+
+                                            <td>
+                                                    <p>확인된 팔로우만 조회할지 여부</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>리포지토리와 조회된 팔로우 관계</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getFollowers"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getFollowers</b></span>
+                        <a href="#getFollowers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getFollowers(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, includeNotConfirmed: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="235"
+                                    class="link-to-prism">src/users/users.service.ts:235</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>사용자의 팔로워 목록을 조회합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>includeNotConfirmed</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>미확인된 팔로우 요청 포함 여부</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>팔로워 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getRequestAllFollowee"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getRequestAllFollowee</b></span>
+                        <a href="#getRequestAllFollowee"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getRequestAllFollowee(followerId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="268"
+                                    class="link-to-prism">src/users/users.service.ts:268</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>사용자의 모든 팔로이 요청 목록을 조회합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>followerId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>팔로우하는 사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>팔로이 요청 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserByEmail"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getUserByEmail</b></span>
+                        <a href="#getUserByEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUserByEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">src/users/users.service.ts:199</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>이메일로 사용자를 조회합니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>조회할 이메일</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>조회된 사용자 객체 또는 undefined</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserFollowersRepository"></a>
+                    <span class="name">
+                        <span ><b>getUserFollowersRepository</b></span>
+                        <a href="#getUserFollowersRepository"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getUserFollowersRepository(qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">src/users/users.service.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>QueryRunner를 이용해 UserFollowersModel 리포지토리를 가져옵니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>UserFollowersModel의 Repository</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUsersRepository"></a>
+                    <span class="name">
+                        <span ><b>getUsersRepository</b></span>
+                        <a href="#getUsersRepository"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getUsersRepository(qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">src/users/users.service.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>QueryRunner를 이용해 UsersModel 리포지토리를 가져옵니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>UsersModel의 Repository</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="incrementFollowerCount"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>incrementFollowerCount</b></span>
+                        <a href="#incrementFollowerCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>incrementFollowerCount(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, fieldName, incrementCount: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="376"
+                                    class="link-to-prism">src/users/users.service.ts:376</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>사용자의 팔로워/팔로이 카운트를 증가시킵니다</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>사용자 ID</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>fieldName</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>증가시킬 필드명</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>incrementCount</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>증가시킬 값</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <p>선택적 QueryRunner</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { BadRequestException, Injectable } from &#x27;@nestjs/common&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { UsersModel } from &#x27;./entity/users.entity&#x27;;
+import { QueryRunner, Repository } from &#x27;typeorm&#x27;;
+import { UserFollowersModel } from &#x27;./entity/user-followers.entity&#x27;;
+import { ProviderData } from &#x27;src/common/interfaces/provider-data.interface&#x27;;
+import { AuthProvider } from &#x27;src/common/enums/auth-provider.enum&#x27;;
+
+/**
+ * 사용자 관련 비즈니스 로직을 처리하는 서비스
+ * 
+ * 사용자의 생성, 조회, 팔로우 관리 등의 기능을 제공합니다.
+ */
+@Injectable()
+export class UsersService {
+    constructor(
+        @InjectRepository(UsersModel)
+        private readonly usersRepository: Repository&lt;UsersModel&gt;,
+        @InjectRepository(UserFollowersModel)
+        private readonly userFollowersRepository: Repository&lt;UserFollowersModel&gt;,
+    ) {}
+
+    /**
+     * QueryRunner를 이용해 UsersModel 리포지토리를 가져옵니다
+     * @param qr 선택적 QueryRunner
+     * @returns UsersModel의 Repository
+     */
+    getUsersRepository(qr?: QueryRunner) {
+        return qr ? qr.manager.getRepository&lt;UsersModel&gt;(UsersModel) : this.usersRepository;
+    }
+
+    /**
+     * QueryRunner를 이용해 UserFollowersModel 리포지토리를 가져옵니다
+     * @param qr 선택적 QueryRunner
+     * @returns UserFollowersModel의 Repository
+     */
+    getUserFollowersRepository(qr?: QueryRunner) {
+        return qr ? qr.manager.getRepository&lt;UserFollowersModel&gt;(UserFollowersModel) : this.userFollowersRepository;
+    }
+
+    /**
+     * 사용자 존재 여부를 확인합니다
+     * @param id 확인할 사용자 ID
+     * @returns 사용자 존재 여부
+     */
+    async checkIfUserExists(id: number) {
+        const exists &#x3D; this.getUsersRepository().exists({
+            where: {
+                id,
+            },
+        })
+
+        return exists;
+    }
+
+    /**
+     * 새로운 사용자를 생성합니다
+     * @param user 생성할 사용자 정보
+     * @returns 생성된 사용자 객체
+     * @throws BadRequestException 닉네임이나 이메일이 중복될 경우
+     */
+    async createUser(user: Partial&lt;UsersModel&gt;) {
+        // 1) 닉네임 중복이 없는지 확인
+        // exist() -&gt; 만약 조건에 해당되는 값이 있으면 true 반환
+        if (user.nickname !&#x3D;&#x3D; null) {
+            const nicknameExists &#x3D; await this.usersRepository.exists({
+                where: {
+                    nickname: user.nickname,
+                }
+            });
+
+            if(nicknameExists) {
+                throw new BadRequestException(&#x27;이미 존재하는 nickname 입니다!&#x27;);
+            }
+        }
+
+        if (user.email !&#x3D;&#x3D; null) { // email이 존재할 때만 중복 검사를 진행
+            const emailExists &#x3D; await this.usersRepository.exists({
+                where: {
+                    email: user.email,
+                }
+            });
+            if (emailExists) {
+                throw new BadRequestException(&#x27;이미 존재하는 email 입니다!&#x27;);
+            }
+        }
+        const userObj &#x3D; this.usersRepository.create({
+            nickname: user.nickname,
+            email: user.email,
+            password: user.password,
+            google: user.google,
+            kakao: user.kakao,
+        });
+
+        const newUser &#x3D; await this.usersRepository.save(userObj);
+
+        return newUser;
+    }
+
+    /**
+     * 제공자(소셜 로그인) 정보로 사용자를 찾거나 생성합니다
+     * @param providerData 제공자 데이터
+     * @returns 찾거나 생성된 사용자 객체
+     */
+    async findOrCreateUserByProvider({
+        email,
+        nickname,
+        providerId,
+        providerKey,
+      }: ProviderData): Promise&lt;UsersModel&gt; {
+        // provider 필드에 맞는 사용자를 찾음 (예: user.google 또는 user.kakao)
+        let user &#x3D; await this.usersRepository.findOne({ where: { [providerKey]: providerId } });
+        
+        // 사용자가 없으면, 이메일로도 찾음 (이메일이 있으면)
+        if (!user &amp;&amp; email) {
+          user &#x3D; await this.usersRepository.findOne({ where: { email } });
+        }
+        
+        // 예를 들어, 카카오의 경우 임시 이메일 설정 (요구사항에 따라 다른 provider도 처리 가능)
+        if (providerKey &#x3D;&#x3D;&#x3D; AuthProvider.KAKAO &amp;&amp; !email) {
+          email &#x3D; &#x27;stack@test.com&#x27;;
+        }
+        
+        // 사용자가 없으면 신규 생성
+        if (!user) {
+          const createData: Partial&lt;UsersModel&gt; &#x3D; {
+            email,
+            nickname: nickname || email,  // 닉네임이 없으면 email 등을 기본값으로 사용
+            password: &#x27;&#x27;,                // 소셜 로그인은 패스워드 필요 없음
+            [providerKey]: providerId,
+          };
+          user &#x3D; await this.createUser(createData);
+        } else if (!user[providerKey]) {
+          // 기존에 이메일로 가입된 사용자의 경우 해당 provider 연동이 안 되어있으면, 업데이트
+          user[providerKey] &#x3D; providerId;
+          await this.usersRepository.save(user);
+        }
+        
+        return user;
+    }
+
+    /**
+     * Google 정보로 사용자를 찾거나 생성합니다
+     * @param googleData Google 사용자 정보
+     * @returns 찾거나 생성된 사용자 객체
+     */
+    async findOrCreateByGoogle({
+        email,
+        displayName,
+        googleId,
+      }: {
+        email: string;
+        displayName: string;
+        googleId: string;
+      }): Promise&lt;UsersModel&gt; {
+        return await this.findOrCreateUserByProvider({
+          email,
+          nickname: displayName,
+          providerId: googleId,
+          providerKey: AuthProvider.GOOGLE,
+        });
+    }
+      
+    /**
+     * Kakao 정보로 사용자를 찾거나 생성합니다
+     * @param kakaoData Kakao 사용자 정보
+     * @returns 찾거나 생성된 사용자 객체
+     */
+    async findOrCreateByKakao({
+        email,
+        nickname,
+        kakaoId,
+      }: {
+        email: string;
+        nickname: string;
+        kakaoId: string;
+      }): Promise&lt;UsersModel&gt; {
+        return await this.findOrCreateUserByProvider({
+          email,
+          nickname,
+          providerId: kakaoId,
+          providerKey: AuthProvider.KAKAO,
+        });
+    }
+
+    /**
+     * 모든 사용자를 조회합니다
+     * @returns 모든 사용자 목록
+     */
+    async getAllUsers() {
+        return this.usersRepository.find();
+    }
+
+    /**
+     * 이메일로 사용자를 조회합니다
+     * @param email 조회할 이메일
+     * @returns 조회된 사용자 객체 또는 undefined
+     */
+    async getUserByEmail(email: string) {
+        return this.usersRepository.findOne({
+            where: {
+                email,
+            },
+        });
+    }
+
+    /**
+     * 사용자를 팔로우합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @returns 성공 여부
+     */
+    async followUser(followerId: number, followeeId: number, qr?: QueryRunner) {
+        const repository &#x3D; this.getUserFollowersRepository(qr);
+
+        await repository.save({
+            follower: {
+                id: followerId,
+            },
+            followee: {
+                id: followeeId,
+            }
+        });
+
+        return true;
+    }
+
+    /**
+     * 사용자의 팔로워 목록을 조회합니다
+     * @param userId 사용자 ID
+     * @param includeNotConfirmed 미확인된 팔로우 요청 포함 여부
+     * @returns 팔로워 목록
+     */
+    async getFollowers(userId: number, includeNotConfirmed: boolean) {
+        const where &#x3D; {
+            followee: {
+                id: userId,
+            },
+        }
+
+        if(!includeNotConfirmed) {
+            where[&#x27;isConfirmed&#x27;] &#x3D; true;
+        }
+        
+        const result &#x3D; await this.userFollowersRepository.find({
+            where,
+            relations: {
+                follower: true,
+                followee: true,
+            }    
+        });
+
+        return result.map((x) &#x3D;&gt; ({
+            id: x.follower.id,
+            nickname: x.follower.nickname,
+            email: x.follower.email,
+            isConfirmed: x.isConfirmed,
+        }));
+    }
+
+    /**
+     * 사용자의 모든 팔로이 요청 목록을 조회합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @returns 팔로이 요청 목록
+     */
+    async getRequestAllFollowee(followerId: number, qr?: QueryRunner) {
+        const repository &#x3D; this.getUserFollowersRepository(qr);
+
+        const existing &#x3D; await repository.find({
+            where: {
+                follower: { id: followerId},
+            },
+            relations: {
+                follower: true,
+                followee: true,
+            },
+        });
+
+        return existing;
+    }
+
+    /**
+     * 기존 팔로우 관계를 조회합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @param isConfirmed 확인된 팔로우만 조회할지 여부
+     * @returns 리포지토리와 조회된 팔로우 관계
+     */
+    async getExistingFollow(followerId: number, followeeId: number, qr?: QueryRunner, isConfirmed: boolean &#x3D; true) {
+        const repository &#x3D; this.getUserFollowersRepository(qr);
+
+        const existing &#x3D; await repository.findOne({
+            where: {
+                follower: {
+                    id: followerId,
+                },
+                followee: {
+                    id: followeeId,
+                },
+                isConfirmed,
+            },
+            relations: {
+                follower: true,
+                followee: true,
+            }
+        });
+
+        return { repository, existing };
+    }
+
+    /**
+     * 팔로우 요청을 확인(수락)합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @returns 성공 여부
+     * @throws BadRequestException 존재하지 않는 팔로우 요청일 경우
+     */
+    async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
+        const { repository, existing } &#x3D; await this. getExistingFollow(followerId, followeeId, qr, false);
+
+        if(!existing) {
+            throw new BadRequestException(
+                &#x60;존재하지 않는 팔로우 요청입니다.&#x60;
+            );
+        }
+
+        await repository.save({
+            ...existing,
+            isConfirmed: true,
+        });
+
+        return true;
+    }
+
+    /**
+     * 팔로우를 삭제(취소)합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @param isConfirmed 확인된 팔로우만 삭제할지 여부
+     * @returns 성공 여부
+     * @throws BadRequestException 팔로우 관계가 존재하지 않을 경우
+     */
+    async deleteFollow(followerId: number, followeeId: number, qr?: QueryRunner, isConfirmed: boolean &#x3D; true) {
+        const { repository, existing } &#x3D; await this. getExistingFollow(followerId, followeeId, qr, isConfirmed);
+
+        if (!existing) {
+            throw new BadRequestException(
+                &#x60;팔로우 하지 않은 사용자입니다.&#x60;
+            );
+        }
+
+        await repository.delete({
+            follower: {
+                id: followerId,
+            },
+            followee: {
+                id: followeeId,
+            },
+        });
+
+        return true;
+    }
+
+    /**
+     * 사용자의 팔로워/팔로이 카운트를 증가시킵니다
+     * @param userId 사용자 ID
+     * @param fieldName 증가시킬 필드명
+     * @param incrementCount 증가시킬 값
+     * @param qr 선택적 QueryRunner
+     */
+    async incrementFollowerCount(
+        userId: number,
+        fieldName: keyof Pick&lt;UsersModel, &#x27;followerCount&#x27; | &#x27;followeeCount&#x27;&gt;,
+        incrementCount: number,
+        qr?: QueryRunner,
+      ) {
+        const usersRepository &#x3D; this.getUsersRepository(qr);
+    
+        await usersRepository.increment(
+          {
+            id: userId,
+          },
+          fieldName,
+          incrementCount,
+        );
+      }
+
+    /**
+     * 사용자의 팔로워/팔로이 카운트를 감소시킵니다
+     * @param userId 사용자 ID
+     * @param fieldName 감소시킬 필드명
+     * @param decrementCount 감소시킬 값
+     * @param qr 선택적 QueryRunner
+     */
+    async decrementFollowerCount(
+        userId: number,
+        fieldName: keyof Pick&lt;UsersModel, &#x27;followerCount&#x27; | &#x27;followeeCount&#x27;&gt;,
+        decrementCount: number,
+        qr?: QueryRunner,
+      ) {
+        const usersRepository &#x3D; this.getUsersRepository(qr);
+    
+        await usersRepository.decrement(
+          {
+            id: userId,
+          },
+          fieldName,
+          decrementCount,
+        );
+      }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'UsersService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

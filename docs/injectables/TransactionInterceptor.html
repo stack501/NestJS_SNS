@@ -1,0 +1,545 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>2_cf_sns documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">2_cf_sns documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >TransactionInterceptor</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/common/interceptor/transaction.interceptor.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>데이터베이스 트랜잭션을 자동으로 관리하는 인터셉터</p>
+<p>이 인터셉터는 HTTP 요청 처리 중에 데이터베이스 트랜잭션을 시작하고,
+요청이 성공적으로 완료되면 커밋하고, 실패하면 롤백합니다.</p>
+<p><strong>주요 기능:</strong></p>
+<ul>
+<li>요청 시작 시 자동으로 트랜잭션 시작</li>
+<li>요청 성공 시 자동 커밋</li>
+<li>요청 실패 시 자동 롤백</li>
+<li>쿼리 러너 자동 해제</li>
+</ul>
+<p><strong>사용법:</strong></p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-typescript">&#64;UseInterceptors(TransactionInterceptor)
+&#64;Controller(&#39;users&#39;)
+export class UsersController {
+  // 컨트롤러 메서드들이 자동으로 트랜잭션 내에서 실행됩니다
+}</code></pre></div><p><strong>주의사항:</strong></p>
+<ul>
+<li>트랜잭션 내에서 실행되는 모든 데이터베이스 작업은 req.queryRunner를 사용해야 합니다</li>
+<li>중첩된 트랜잭션은 지원하지 않습니다</li>
+</ul>
+
+            </p>
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#intercept" >intercept</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(dataSource: DataSource)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">src/common/interceptor/transaction.interceptor.ts:35</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div class="io-description"><p>TransactionInterceptor 생성자</p>
+</div>
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                                    <td>Description</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>dataSource</td>
+                                                  
+                                                        <td>
+                                                                    <code>DataSource</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                        <td>
+                                                                <p>TypeORM DataSource 인스턴스 - 데이터베이스 연결 및 쿼리 러너 생성을 담당</p>
+
+                                                        </td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="intercept"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>intercept</b></span>
+                        <a href="#intercept"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>intercept(context: ExecutionContext, next: CallHandler<any>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">src/common/interceptor/transaction.interceptor.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>인터셉터의 핵심 메서드 - 트랜잭션을 관리하며 요청을 처리합니다</p>
+<p><strong>처리 과정:</strong></p>
+<ol>
+<li>쿼리 러너 생성 및 연결</li>
+<li>트랜잭션 시작</li>
+<li>Request 객체에 쿼리 러너 주입</li>
+<li>요청 처리 파이프라인 실행</li>
+<li>성공 시 커밋, 실패 시 롤백</li>
+<li>쿼리 러너 해제</li>
+</ol>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-html">```typescript
+// 컨트롤러에서 쿼리 러너 사용
+async createUser(req: Request) {
+  const queryRunner = req.queryRunner;
+  return await this.userRepository.save(userData, { queryRunner });
+}</code></pre></div><b>Example :</b><div><pre class="line-numbers"><code class="language-none"></code></pre></div></div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                        <code>ExecutionContext</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>실행 컨텍스트 - HTTP 요청/응답 정보에 접근할 수 있는 NestJS 컨텍스트</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>next</td>
+                                            <td>
+                                                        <code>CallHandler&lt;any&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>다음 핸들러 - 실제 컨트롤러 메서드를 호출하는 핸들러</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Observable&lt;any&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>Promise&lt;Observable<any>&gt; 처리된 응답을 포함하는 Observable을 반환하는 Promise</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CallHandler, ExecutionContext, Injectable, InternalServerErrorException, NestInterceptor } from &quot;@nestjs/common&quot;;
+import { catchError, Observable, tap } from &quot;rxjs&quot;;
+import { DataSource } from &quot;typeorm&quot;;
+
+/**
+ * 데이터베이스 트랜잭션을 자동으로 관리하는 인터셉터
+ * 
+ * 이 인터셉터는 HTTP 요청 처리 중에 데이터베이스 트랜잭션을 시작하고,
+ * 요청이 성공적으로 완료되면 커밋하고, 실패하면 롤백합니다.
+ * 
+ * **주요 기능:**
+ * - 요청 시작 시 자동으로 트랜잭션 시작
+ * - 요청 성공 시 자동 커밋
+ * - 요청 실패 시 자동 롤백
+ * - 쿼리 러너 자동 해제
+ * 
+ * **사용법:**
+ * &#x60;&#x60;&#x60;typescript
+ * @UseInterceptors(TransactionInterceptor)
+ * @Controller(&#x27;users&#x27;)
+ * export class UsersController {
+ *   // 컨트롤러 메서드들이 자동으로 트랜잭션 내에서 실행됩니다
+ * }
+ * &#x60;&#x60;&#x60;
+ * 
+ * **주의사항:**
+ * - 트랜잭션 내에서 실행되는 모든 데이터베이스 작업은 req.queryRunner를 사용해야 합니다
+ * - 중첩된 트랜잭션은 지원하지 않습니다
+ * 
+ * @author 개발팀
+ * @since 1.0.0
+ */
+@Injectable()
+export class TransactionInterceptor implements NestInterceptor {
+    /**
+     * TransactionInterceptor 생성자
+     * 
+     * @param dataSource TypeORM DataSource 인스턴스 - 데이터베이스 연결 및 쿼리 러너 생성을 담당
+     */
+    constructor(
+        private readonly dataSource: DataSource,
+    ){}
+
+    /**
+     * 인터셉터의 핵심 메서드 - 트랜잭션을 관리하며 요청을 처리합니다
+     * 
+     * **처리 과정:**
+     * 1. 쿼리 러너 생성 및 연결
+     * 2. 트랜잭션 시작
+     * 3. Request 객체에 쿼리 러너 주입
+     * 4. 요청 처리 파이프라인 실행
+     * 5. 성공 시 커밋, 실패 시 롤백
+     * 6. 쿼리 러너 해제
+     * 
+     * @param context 실행 컨텍스트 - HTTP 요청/응답 정보에 접근할 수 있는 NestJS 컨텍스트
+     * @param next 다음 핸들러 - 실제 컨트롤러 메서드를 호출하는 핸들러
+     * 
+     * @returns Promise&lt;Observable&lt;any&gt;&gt; 처리된 응답을 포함하는 Observable을 반환하는 Promise
+     * 
+     * @throws InternalServerErrorException 트랜잭션 처리 중 오류가 발생한 경우
+     * 
+     * @example
+     * &#x60;&#x60;&#x60;typescript
+     * // 컨트롤러에서 쿼리 러너 사용
+     * async createUser(req: Request) {
+     *   const queryRunner &#x3D; req.queryRunner;
+     *   return await this.userRepository.save(userData, { queryRunner });
+     * }
+     * &#x60;&#x60;&#x60;
+     */
+    async intercept(context: ExecutionContext, next: CallHandler&lt;any&gt;): Promise&lt;Observable&lt;any&gt;&gt; {
+        const req &#x3D; context.switchToHttp().getRequest();
+        /**
+         * 트랜잭션과 관련된 모든 쿼리를 담당할
+         * 쿼리 러너를 생성한다.
+         */
+        const qr &#x3D; this.dataSource.createQueryRunner();
+
+        // 쿼리 러너에 연결한다.
+        await qr.connect();
+
+        /**
+         * 쿼리 러너에서 트랜잭션을 시작한다.
+         * 이 시점부터 같은 쿼리 러너를 사용하면, 트랜잭션 안에서 데이터베이스 액션을 실행할 수 있다.
+         */
+        await qr.startTransaction();
+
+        req.queryRunner &#x3D; qr;
+
+        return next.handle().pipe(
+            catchError(
+                async (e) &#x3D;&gt; {
+                    await qr.rollbackTransaction();
+                    await qr.release();
+
+                    throw new InternalServerErrorException(e.message);
+                }
+            ),
+            tap(async () &#x3D;&gt; {
+                await qr.commitTransaction();
+                await qr.release();
+            })
+        )
+    }
+}</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'TransactionInterceptor.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

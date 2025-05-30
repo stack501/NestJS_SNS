@@ -6,6 +6,11 @@ import { UserFollowersModel } from './entity/user-followers.entity';
 import { ProviderData } from 'src/common/interfaces/provider-data.interface';
 import { AuthProvider } from 'src/common/enums/auth-provider.enum';
 
+/**
+ * 사용자 관련 비즈니스 로직을 처리하는 서비스
+ * 
+ * 사용자의 생성, 조회, 팔로우 관리 등의 기능을 제공합니다.
+ */
 @Injectable()
 export class UsersService {
     constructor(
@@ -15,14 +20,29 @@ export class UsersService {
         private readonly userFollowersRepository: Repository<UserFollowersModel>,
     ) {}
 
+    /**
+     * QueryRunner를 이용해 UsersModel 리포지토리를 가져옵니다
+     * @param qr 선택적 QueryRunner
+     * @returns UsersModel의 Repository
+     */
     getUsersRepository(qr?: QueryRunner) {
         return qr ? qr.manager.getRepository<UsersModel>(UsersModel) : this.usersRepository;
     }
 
+    /**
+     * QueryRunner를 이용해 UserFollowersModel 리포지토리를 가져옵니다
+     * @param qr 선택적 QueryRunner
+     * @returns UserFollowersModel의 Repository
+     */
     getUserFollowersRepository(qr?: QueryRunner) {
         return qr ? qr.manager.getRepository<UserFollowersModel>(UserFollowersModel) : this.userFollowersRepository;
     }
 
+    /**
+     * 사용자 존재 여부를 확인합니다
+     * @param id 확인할 사용자 ID
+     * @returns 사용자 존재 여부
+     */
     async checkIfUserExists(id: number) {
         const exists = this.getUsersRepository().exists({
             where: {
@@ -33,6 +53,12 @@ export class UsersService {
         return exists;
     }
 
+    /**
+     * 새로운 사용자를 생성합니다
+     * @param user 생성할 사용자 정보
+     * @returns 생성된 사용자 객체
+     * @throws BadRequestException 닉네임이나 이메일이 중복될 경우
+     */
     async createUser(user: Partial<UsersModel>) {
         // 1) 닉네임 중복이 없는지 확인
         // exist() -> 만약 조건에 해당되는 값이 있으면 true 반환
@@ -71,6 +97,11 @@ export class UsersService {
         return newUser;
     }
 
+    /**
+     * 제공자(소셜 로그인) 정보로 사용자를 찾거나 생성합니다
+     * @param providerData 제공자 데이터
+     * @returns 찾거나 생성된 사용자 객체
+     */
     async findOrCreateUserByProvider({
         email,
         nickname,
@@ -108,6 +139,11 @@ export class UsersService {
         return user;
     }
 
+    /**
+     * Google 정보로 사용자를 찾거나 생성합니다
+     * @param googleData Google 사용자 정보
+     * @returns 찾거나 생성된 사용자 객체
+     */
     async findOrCreateByGoogle({
         email,
         displayName,
@@ -125,6 +161,11 @@ export class UsersService {
         });
     }
       
+    /**
+     * Kakao 정보로 사용자를 찾거나 생성합니다
+     * @param kakaoData Kakao 사용자 정보
+     * @returns 찾거나 생성된 사용자 객체
+     */
     async findOrCreateByKakao({
         email,
         nickname,
@@ -142,10 +183,19 @@ export class UsersService {
         });
     }
 
+    /**
+     * 모든 사용자를 조회합니다
+     * @returns 모든 사용자 목록
+     */
     async getAllUsers() {
         return this.usersRepository.find();
     }
 
+    /**
+     * 이메일로 사용자를 조회합니다
+     * @param email 조회할 이메일
+     * @returns 조회된 사용자 객체 또는 undefined
+     */
     async getUserByEmail(email: string) {
         return this.usersRepository.findOne({
             where: {
@@ -154,6 +204,13 @@ export class UsersService {
         });
     }
 
+    /**
+     * 사용자를 팔로우합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @returns 성공 여부
+     */
     async followUser(followerId: number, followeeId: number, qr?: QueryRunner) {
         const repository = this.getUserFollowersRepository(qr);
 
@@ -169,6 +226,12 @@ export class UsersService {
         return true;
     }
 
+    /**
+     * 사용자의 팔로워 목록을 조회합니다
+     * @param userId 사용자 ID
+     * @param includeNotConfirmed 미확인된 팔로우 요청 포함 여부
+     * @returns 팔로워 목록
+     */
     async getFollowers(userId: number, includeNotConfirmed: boolean) {
         const where = {
             followee: {
@@ -196,6 +259,12 @@ export class UsersService {
         }));
     }
 
+    /**
+     * 사용자의 모든 팔로이 요청 목록을 조회합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @returns 팔로이 요청 목록
+     */
     async getRequestAllFollowee(followerId: number, qr?: QueryRunner) {
         const repository = this.getUserFollowersRepository(qr);
 
@@ -212,6 +281,14 @@ export class UsersService {
         return existing;
     }
 
+    /**
+     * 기존 팔로우 관계를 조회합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @param isConfirmed 확인된 팔로우만 조회할지 여부
+     * @returns 리포지토리와 조회된 팔로우 관계
+     */
     async getExistingFollow(followerId: number, followeeId: number, qr?: QueryRunner, isConfirmed: boolean = true) {
         const repository = this.getUserFollowersRepository(qr);
 
@@ -234,6 +311,14 @@ export class UsersService {
         return { repository, existing };
     }
 
+    /**
+     * 팔로우 요청을 확인(수락)합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @returns 성공 여부
+     * @throws BadRequestException 존재하지 않는 팔로우 요청일 경우
+     */
     async confirmFollow(followerId: number, followeeId: number, qr?: QueryRunner) {
         const { repository, existing } = await this. getExistingFollow(followerId, followeeId, qr, false);
 
@@ -251,6 +336,15 @@ export class UsersService {
         return true;
     }
 
+    /**
+     * 팔로우를 삭제(취소)합니다
+     * @param followerId 팔로우하는 사용자 ID
+     * @param followeeId 팔로우 당하는 사용자 ID
+     * @param qr 선택적 QueryRunner
+     * @param isConfirmed 확인된 팔로우만 삭제할지 여부
+     * @returns 성공 여부
+     * @throws BadRequestException 팔로우 관계가 존재하지 않을 경우
+     */
     async deleteFollow(followerId: number, followeeId: number, qr?: QueryRunner, isConfirmed: boolean = true) {
         const { repository, existing } = await this. getExistingFollow(followerId, followeeId, qr, isConfirmed);
 
@@ -272,6 +366,13 @@ export class UsersService {
         return true;
     }
 
+    /**
+     * 사용자의 팔로워/팔로이 카운트를 증가시킵니다
+     * @param userId 사용자 ID
+     * @param fieldName 증가시킬 필드명
+     * @param incrementCount 증가시킬 값
+     * @param qr 선택적 QueryRunner
+     */
     async incrementFollowerCount(
         userId: number,
         fieldName: keyof Pick<UsersModel, 'followerCount' | 'followeeCount'>,
@@ -289,7 +390,14 @@ export class UsersService {
         );
       }
 
-      async decrementFollowerCount(
+    /**
+     * 사용자의 팔로워/팔로이 카운트를 감소시킵니다
+     * @param userId 사용자 ID
+     * @param fieldName 감소시킬 필드명
+     * @param decrementCount 감소시킬 값
+     * @param qr 선택적 QueryRunner
+     */
+    async decrementFollowerCount(
         userId: number,
         fieldName: keyof Pick<UsersModel, 'followerCount' | 'followeeCount'>,
         decrementCount: number,

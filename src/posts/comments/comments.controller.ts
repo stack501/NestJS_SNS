@@ -15,6 +15,10 @@ import { PostsService } from '../posts.service';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthScheme } from 'src/common/const/auth-schema.const';
 
+/**
+ * 댓글 관련 API 엔드포인트를 제공하는 컨트롤러
+ * 게시물에 대한 댓글 CRUD 엔드포인트를 관리합니다
+ */
 @Controller('posts/:postId/comments')
 export class CommentsController {
   constructor(
@@ -22,6 +26,12 @@ export class CommentsController {
     private readonly postService: PostsService,
   ) {}
 
+  /**
+   * 특정 게시물의 모든 댓글을 페이징하여 조회합니다
+   * @param postId 게시물 ID
+   * @param query 페이징 정보가 담긴 쿼리 파라미터
+   * @returns 페이징된 댓글 목록
+   */
   @Get()
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -36,6 +46,12 @@ export class CommentsController {
     return this.commentsService.paginateComments(query, postId);
   }
 
+  /**
+   * 특정 게시물의 특정 댓글을 조회합니다
+   * @param postId 게시물 ID
+   * @param commentId 댓글 ID
+   * @returns 댓글 정보
+   */
   @Get(':commentId')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -51,6 +67,14 @@ export class CommentsController {
     return comment;
   }
 
+  /**
+   * 특정 게시물에 새로운 댓글을 작성합니다
+   * @param postId 게시물 ID
+   * @param body 댓글 생성 정보가 담긴 DTO
+   * @param user 현재 인증된 사용자 정보
+   * @param qr 트랜잭션 처리를 위한 쿼리 러너
+   * @returns 생성된 댓글 정보
+   */
   @Post()
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -71,6 +95,14 @@ export class CommentsController {
     return resp;
   }
 
+  /**
+   * 특정 게시물의 특정 댓글을 수정합니다
+   * @param postId 게시물 ID
+   * @param commentId 댓글 ID
+   * @param body 댓글 수정 정보가 담긴 DTO
+   * @param qr 트랜잭션 처리를 위한 쿼리 러너
+   * @returns 수정된 댓글 정보
+   */
   @Patch(':commentId')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -88,6 +120,13 @@ export class CommentsController {
     return this.commentsService.updateComment(body, postId, commentId, qr);
   }
 
+  /**
+   * 특정 게시물의 특정 댓글을 삭제합니다
+   * @param postId 게시물 ID
+   * @param commentId 댓글 ID
+   * @param qr 트랜잭션 처리를 위한 쿼리 러너
+   * @returns 삭제 결과
+   */
   @Delete(':commentId')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 

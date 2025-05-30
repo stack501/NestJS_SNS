@@ -1,0 +1,2153 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>2_cf_sns documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">2_cf_sns documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >PostsService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/posts/posts.service.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>게시물 데이터 관리 서비스</p>
+<p>게시물의 생성, 조회, 수정, 삭제 기능과 관련 비즈니스 로직을 처리합니다.
+페이지네이션, 캐싱, 사용자 인증 등의 기능을 포함합니다.</p>
+
+            </p>
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkPostExistsById" >checkPostExistsById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#createPost" >createPost</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#cursorPaginatePosts" >cursorPaginatePosts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#decrementFollowerCount" >decrementFollowerCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deletePost" >deletePost</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#generatePosts" >generatePosts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAllPosts" >getAllPosts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getPostById" >getPostById</a>
+                            </li>
+                            <li>
+                                <a href="#getRepository" >getRepository</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#incrementFollowerCount" >incrementFollowerCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#isPostMine" >isPostMine</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#pagePaginatePosts" >pagePaginatePosts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#paginatePosts" >paginatePosts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updatePost" >updatePost</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(postsRepository: <a href="../classes/PostsModel.html" target="_self">Repository&lt;PostsModel&gt;</a>, imageRepository: <a href="../entitys/ImageModel.html" target="_self">Repository&lt;ImageModel&gt;</a>, commonServices: <a href="../injectables/CommonService.html" target="_self">CommonService</a>, config: ConfigType<>, redisService: <a href="../injectables/RedisService.html" target="_self">RedisService</a>, usersService: <a href="../injectables/UsersService.html" target="_self">UsersService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/posts/posts.service.ts:31</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>postsRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/PostsModel.html" target="_self" >Repository&lt;PostsModel&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>imageRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../entitys/ImageModel.html" target="_self" >Repository&lt;ImageModel&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>commonServices</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CommonService.html" target="_self" >CommonService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>config</td>
+                                                  
+                                                        <td>
+                                                                    <code>ConfigType&lt;&gt;</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>redisService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/RedisService.html" target="_self" >RedisService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>usersService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UsersService.html" target="_self" >UsersService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkPostExistsById"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>checkPostExistsById</b></span>
+                        <a href="#checkPostExistsById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkPostExistsById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="403"
+                                    class="link-to-prism">src/posts/posts.service.ts:403</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>게시물 ID로 존재 여부를 확인합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>확인할 게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>존재 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createPost"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createPost</b></span>
+                        <a href="#createPost"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createPost(authorId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, postDTO: <a href="../classes/CreatePostDto.html" target="_self">CreatePostDto</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="308"
+                                    class="link-to-prism">src/posts/posts.service.ts:308</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>새 게시물을 생성합니다.
+게시물이 생성되면 작성자의 팔로워들의 캐시를 갱신합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>authorId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>작성자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>postDTO</td>
+                                            <td>
+                                                            <code><a href="../classes/CreatePostDto.html" target="_self" >CreatePostDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물 생성 DTO</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>선택적 QueryRunner (트랜잭션 처리용)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>생성된 게시물</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cursorPaginatePosts"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>cursorPaginatePosts</b></span>
+                        <a href="#cursorPaginatePosts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>cursorPaginatePosts(dto: <a href="../classes/PaginatePostDto.html" target="_self">PaginatePostDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="142"
+                                    class="link-to-prism">src/posts/posts.service.ts:142</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>커서 기반 게시물 페이지네이션을 수행합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>dto</td>
+                                            <td>
+                                                            <code><a href="../classes/PaginatePostDto.html" target="_self" >PaginatePostDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>페이지네이션 옵션</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>커서 페이징 결과</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="decrementFollowerCount"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>decrementFollowerCount</b></span>
+                        <a href="#decrementFollowerCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>decrementFollowerCount(postId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, fieldName, decrementCount: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="282"
+                                    class="link-to-prism">src/posts/posts.service.ts:282</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>특정 게시물의 카운트 필드를 감소시킵니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>postId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>대상 게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>fieldName</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>감소시킬 필드명</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>decrementCount</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>감소시킬 값</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>선택적 QueryRunner (트랜잭션 처리용)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletePost"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deletePost</b></span>
+                        <a href="#deletePost"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deletePost(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="381"
+                                    class="link-to-prism">src/posts/posts.service.ts:381</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>게시물을 삭제합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>삭제할 게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>삭제된 게시물 ID</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generatePosts"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>generatePosts</b></span>
+                        <a href="#generatePosts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generatePosts(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">src/posts/posts.service.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>테스트용 게시물을 다량 생성합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물을 생성할 사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAllPosts"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getAllPosts</b></span>
+                        <a href="#getAllPosts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAllPosts()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/posts/posts.service.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>모든 게시물을 조회합니다.</p>
+</div>
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>모든 게시물 목록</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getPostById"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getPostById</b></span>
+                        <a href="#getPostById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPostById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="220"
+                                    class="link-to-prism">src/posts/posts.service.ts:220</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>특정 ID의 게시물을 조회합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>조회할 게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>선택적 QueryRunner (트랜잭션 처리용)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>조회된 게시물</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getRepository"></a>
+                    <span class="name">
+                        <span ><b>getRepository</b></span>
+                        <a href="#getRepository"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getRepository(qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="243"
+                                    class="link-to-prism">src/posts/posts.service.ts:243</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>QueryRunner 유무에 따라 적절한 Repository를 반환합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>선택적 QueryRunner</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>게시물 Repository</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="incrementFollowerCount"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>incrementFollowerCount</b></span>
+                        <a href="#incrementFollowerCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>incrementFollowerCount(postId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, fieldName, incrementCount: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, qr?: QueryRunner)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="256"
+                                    class="link-to-prism">src/posts/posts.service.ts:256</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>특정 게시물의 카운트 필드를 증가시킵니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>postId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>대상 게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>fieldName</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>증가시킬 필드명</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>incrementCount</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>증가시킬 값</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>qr</td>
+                                            <td>
+                                                        <code>QueryRunner</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>선택적 QueryRunner (트랜잭션 처리용)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isPostMine"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>isPostMine</b></span>
+                        <a href="#isPostMine"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isPostMine(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, postId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="418"
+                                    class="link-to-prism">src/posts/posts.service.ts:418</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>특정 게시물이 요청 사용자의 것인지 확인합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>사용자 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>postId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>소유 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pagePaginatePosts"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>pagePaginatePosts</b></span>
+                        <a href="#pagePaginatePosts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>pagePaginatePosts(dto: <a href="../classes/PaginatePostDto.html" target="_self">PaginatePostDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">src/posts/posts.service.ts:115</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>페이지 기반 게시물 페이지네이션을 수행합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>dto</td>
+                                            <td>
+                                                            <code><a href="../classes/PaginatePostDto.html" target="_self" >PaginatePostDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>페이지네이션 옵션</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>페이징된 게시물과 총 개수</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="paginatePosts"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>paginatePosts</b></span>
+                        <a href="#paginatePosts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>paginatePosts(dto: <a href="../classes/PaginatePostDto.html" target="_self">PaginatePostDto</a>, additionalWhere?: <a href="../classes/PostsModel.html" target="_self">FindOptionsWhere&lt;PostsModel&gt;</a>, userId?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">src/posts/posts.service.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>DTO 기반으로 게시물을 페이지네이션하여 조회합니다.
+팔로우 중인 사용자 게시물만 조회하는 기능을 지원합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>dto</td>
+                                            <td>
+                                                            <code><a href="../classes/PaginatePostDto.html" target="_self" >PaginatePostDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>페이지네이션 옵션</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>additionalWhere</td>
+                                            <td>
+                                                            <code><a href="../classes/PostsModel.html" target="_self" >FindOptionsWhere&lt;PostsModel&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>추가 필터 조건</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>요청 사용자 ID (팔로우 필터링용)</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#PostsResult" target="_self" >Promise&lt;PostsResult&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>페이지네이션된 게시물 결과</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updatePost"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>updatePost</b></span>
+                        <a href="#updatePost"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updatePost(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, postDto: <a href="../classes/UpdatePostDto.html" target="_self">UpdatePostDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="342"
+                                    class="link-to-prism">src/posts/posts.service.ts:342</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>기존 게시물을 업데이트합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>업데이트할 게시물 ID</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>postDto</td>
+                                            <td>
+                                                            <code><a href="../classes/UpdatePostDto.html" target="_self" >UpdatePostDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>게시물 업데이트 DTO</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>업데이트된 게시물</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { FindOptionsWhere, LessThan, MoreThan, QueryRunner, Repository } from &#x27;typeorm&#x27;;
+import { PostsModel } from &#x27;./entity/posts.entity&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { CreatePostDto } from &#x27;./dto/create-post.dto&#x27;;
+import { UpdatePostDto } from &#x27;./dto/update-post.dto&#x27;;
+import { PaginatePostDto } from &#x27;./dto/paginate-post.dto&#x27;;
+import { CommonService } from &#x27;src/common/common.service&#x27;;
+import { ImageModel } from &#x27;src/common/entity/image.entity&#x27;;
+import { DEFAULT_POST_FIND_OPTIONS } from &#x27;./const/default-post-find-options.const&#x27;;
+import { ConfigType } from &#x27;@nestjs/config&#x27;;
+import appConfig from &#x27;src/configs/app.config&#x27;;
+import { RedisService } from &#x27;src/redis/redis.service&#x27;;
+import { UsersService } from &#x27;src/users/users.service&#x27;;
+import { REDIS_KEYS_MAPPER } from &#x27;src/redis/redis.keys-mapper&#x27;;
+
+/**
+ * 게시물 데이터 응답 타입
+ */
+type PostsResult &#x3D;
+  | { data: PostsModel[]; total: number }
+  | { data: PostsModel[]; cursor: { after: number | null }; count: number; next: string | null };
+
+/**
+ * 게시물 데이터 관리 서비스
+ * 
+ * 게시물의 생성, 조회, 수정, 삭제 기능과 관련 비즈니스 로직을 처리합니다.
+ * 페이지네이션, 캐싱, 사용자 인증 등의 기능을 포함합니다.
+ */
+@Injectable()
+export class PostsService {
+  constructor(
+    @InjectRepository(PostsModel)
+    private readonly postsRepository: Repository&lt;PostsModel&gt;,
+    @InjectRepository(ImageModel)
+    private readonly imageRepository: Repository&lt;ImageModel&gt;,
+    private readonly commonServices: CommonService,
+    @Inject(appConfig.KEY)
+    private readonly config: ConfigType&lt;typeof appConfig&gt;,
+    private readonly redisService: RedisService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  /**
+   * 모든 게시물을 조회합니다.
+   * 
+   * @returns {Promise&lt;PostsModel[]&gt;} 모든 게시물 목록
+   */
+  async getAllPosts() {
+    return this.postsRepository.find();
+  }
+
+  /**
+   * 테스트용 게시물을 다량 생성합니다.
+   * 
+   * @param {number} userId - 게시물을 생성할 사용자 ID
+   * @returns {Promise&lt;void&gt;}
+   */
+  async generatePosts(userId: number) {
+    for(let i &#x3D; 0; i &lt; 100; i++) {
+      await this.createPost(userId, {
+        title: &#x60;임의로 생성된 포스트 제목 ${i}&#x60;,
+        content: &#x60;임의로 생성된 포스트 내용 ${i}&#x60;,
+        images: [],
+      });
+    }
+  }
+
+  /**
+   * DTO 기반으로 게시물을 페이지네이션하여 조회합니다.
+   * 팔로우 중인 사용자 게시물만 조회하는 기능을 지원합니다.
+   * 
+   * @param {PaginatePostDto} dto - 페이지네이션 옵션
+   * @param {FindOptionsWhere&lt;PostsModel&gt;} additionalWhere - 추가 필터 조건
+   * @param {number} userId - 요청 사용자 ID (팔로우 필터링용)
+   * @returns {Promise&lt;PostsResult&gt;} 페이지네이션된 게시물 결과
+   */
+  async paginatePosts(
+    dto: PaginatePostDto,
+    additionalWhere?: FindOptionsWhere&lt;PostsModel&gt;,
+    userId?: number
+  ): Promise&lt;PostsResult&gt; {
+    if (!dto.isOnlyFollowingPosts || userId &#x3D;&#x3D; null) {
+      return this.commonServices.paginate&lt;PostsModel, PostsResult&gt;(
+        dto,
+        this.postsRepository,
+        { ...DEFAULT_POST_FIND_OPTIONS },
+        &#x27;posts&#x27;,
+        additionalWhere,
+      );
+    }
+
+    const cacheKey &#x3D; REDIS_KEYS_MAPPER.followingPosts(userId);
+    const cached &#x3D; await this.redisService.get(cacheKey);
+    if (cached) {
+      return cached as PostsResult;
+    }
+    const result &#x3D; await this.commonServices.paginate&lt;PostsModel, PostsResult&gt;(
+      dto,
+      this.postsRepository,
+      { ...DEFAULT_POST_FIND_OPTIONS },
+      &#x27;posts&#x27;,
+      additionalWhere,
+    );
+    await this.redisService.set(cacheKey, result, 60000);
+    return result;
+  }
+
+  /**
+   * 페이지 기반 게시물 페이지네이션을 수행합니다.
+   * 
+   * @param {PaginatePostDto} dto - 페이지네이션 옵션
+   * @returns {Promise&lt;{data: PostsModel[], total: number}&gt;} 페이징된 게시물과 총 개수
+   */
+  async pagePaginatePosts(dto: PaginatePostDto) {
+    /**
+     * data: Data[],
+     * total: number,
+     * 
+     * [1] [2] [3] [4]
+    */
+    const [posts, count] &#x3D; await this.postsRepository.findAndCount({
+      skip: dto.take * ((dto.page ?? 1) - 1),
+      take: dto.take,
+      order: {
+        createdAt: dto.order__createdAt,
+      }
+    });
+
+    return {
+      data: posts,
+      total: count,
+    }
+  }
+
+  /**
+   * 커서 기반 게시물 페이지네이션을 수행합니다.
+   * 
+   * @param {PaginatePostDto} dto - 페이지네이션 옵션
+   * @returns {Promise&lt;{data: PostsModel[], cursor: {after: number | null}, count: number, next: string | null}&gt;} 커서 페이징 결과
+   */
+  async cursorPaginatePosts(dto: PaginatePostDto) {
+    const where: FindOptionsWhere&lt;PostsModel&gt; &#x3D; {}
+
+    if(dto.where__id__less_than) {
+      where.id &#x3D; LessThan(dto.where__id__less_than);
+    } else if(dto.where__id__more_than) {
+      where.id &#x3D; MoreThan(dto.where__id__more_than);
+    }
+
+    const posts &#x3D; await this.postsRepository.find({
+      where,
+      order:{
+        createdAt: dto.order__createdAt,
+      },
+      take: dto.take,
+    });
+
+    /**
+     * 해당되는 포스트가 0개 이상이면
+     * 마지막 포스트를 가져오고
+     * 아니면 null을 반환한다.
+     */
+    const lastItem &#x3D; posts.length &gt; 0 &amp;&amp; posts.length &#x3D;&#x3D;&#x3D; dto.take ? posts[posts.length - 1] : null;
+
+    const protocol &#x3D; this.config.http.protocol
+    const host &#x3D; this.config.http.host;
+
+    const nextURL &#x3D; lastItem &amp;&amp; new URL(&#x60;${protocol}://${host}/posts&#x60;);
+
+    if(nextURL) {
+      for(const key of Object.keys(dto)) {
+         if(dto[key]) {
+          if(key !&#x3D;&#x3D; &#x27;where__id__more_than&#x27; &amp;&amp; key !&#x3D;&#x3D; &#x27;where__id__less_than&#x27;) {
+            nextURL.searchParams.append(key, dto[key]);
+          } 
+         }
+      }
+
+      let key: string | null &#x3D; null;
+
+      if(dto.order__createdAt &#x3D;&#x3D;&#x3D; &#x27;ASC&#x27;) {
+        key &#x3D; &#x27;where__id__more_than&#x27;;
+      } else {
+        key &#x3D; &#x27;where__id__less_than&#x27;;
+      }
+
+      nextURL.searchParams.append(key, lastItem.id.toString());
+    }
+
+    /**
+     * Response
+     * 
+     * data: Data[],
+     * cursor: {
+     *  after: 마지막 Data의 ID
+     * },
+     * count: 응답한 데이터의 개수,
+     * next: 다음 요청에 사용할 URL
+     */
+
+    return {
+      data: posts,
+      cursor: {
+        after: lastItem?.id ?? null,
+      },
+      count: posts.length,
+      next: nextURL?.toString() ?? null,
+    }
+  }
+
+  /**
+   * 특정 ID의 게시물을 조회합니다.
+   * 
+   * @param {number} id - 조회할 게시물 ID
+   * @param {QueryRunner} qr - 선택적 QueryRunner (트랜잭션 처리용)
+   * @returns {Promise&lt;PostsModel&gt;} 조회된 게시물
+   * @throws {NotFoundException} 게시물이 존재하지 않을 경우
+   */
+  async getPostById(id: number, qr?: QueryRunner) {
+    const repository &#x3D; this.getRepository(qr);
+    
+    const post &#x3D; await repository.findOne({
+      where: {
+        id,
+      },
+      relations: [&#x27;author&#x27;],
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    return post;
+  }
+
+  /**
+   * QueryRunner 유무에 따라 적절한 Repository를 반환합니다.
+   * 
+   * @param {QueryRunner} qr - 선택적 QueryRunner
+   * @returns {Repository&lt;PostsModel&gt;} 게시물 Repository
+   */
+  getRepository(qr?: QueryRunner) {
+    return qr ? qr.manager.getRepository&lt;PostsModel&gt;(PostsModel) : this.postsRepository;
+  }
+
+  /**
+   * 특정 게시물의 카운트 필드를 증가시킵니다.
+   * 
+   * @param {number} postId - 대상 게시물 ID
+   * @param {keyof Pick&lt;PostsModel, &#x27;commentCount&#x27;&gt;} fieldName - 증가시킬 필드명
+   * @param {number} incrementCount - 증가시킬 값
+   * @param {QueryRunner} qr - 선택적 QueryRunner (트랜잭션 처리용)
+   * @returns {Promise&lt;void&gt;}
+   */
+  async incrementFollowerCount(
+    postId: number,
+    fieldName: keyof Pick&lt;PostsModel, &#x27;commentCount&#x27;&gt;,
+    incrementCount: number,
+    qr?: QueryRunner,
+  ) {
+    const repository &#x3D; this.getRepository(qr);
+
+    await repository.increment(
+      {
+        id: postId,
+      },
+      fieldName,
+      incrementCount,
+    );
+  }
+
+  /**
+   * 특정 게시물의 카운트 필드를 감소시킵니다.
+   * 
+   * @param {number} postId - 대상 게시물 ID
+   * @param {keyof Pick&lt;PostsModel, &#x27;commentCount&#x27;&gt;} fieldName - 감소시킬 필드명
+   * @param {number} decrementCount - 감소시킬 값
+   * @param {QueryRunner} qr - 선택적 QueryRunner (트랜잭션 처리용)
+   * @returns {Promise&lt;void&gt;}
+   */
+  async decrementFollowerCount(
+    postId: number,
+    fieldName: keyof Pick&lt;PostsModel, &#x27;commentCount&#x27;&gt;,
+    decrementCount: number,
+    qr?: QueryRunner,
+  ) {
+    const repository &#x3D; this.getRepository(qr);
+
+    await repository.decrement(
+      {
+        id: postId,
+      },
+      fieldName,
+      decrementCount,
+    );
+  }
+
+  /**
+   * 새 게시물을 생성합니다.
+   * 게시물이 생성되면 작성자의 팔로워들의 캐시를 갱신합니다.
+   * 
+   * @param {number} authorId - 작성자 ID
+   * @param {CreatePostDto} postDTO - 게시물 생성 DTO
+   * @param {QueryRunner} qr - 선택적 QueryRunner (트랜잭션 처리용)
+   * @returns {Promise&lt;PostsModel&gt;} 생성된 게시물
+   */
+  async createPost(authorId: number, postDTO: CreatePostDto, qr?: QueryRunner) {
+    // 1) create -&gt; 저장할 객체를 생성한다.
+    // 2) save -&gt; 객체를 저장한다 (create 메서드로 생성한 객체로)
+    const repository &#x3D; this.getRepository(qr);
+
+    const post &#x3D; repository.create({
+      author: {
+        id: authorId,
+      },
+      ...postDTO,
+      images: [],
+      likeCount: 0,
+      commentCount: 0,
+    });
+
+    const newPost &#x3D; await repository.save(post);
+
+    const followers &#x3D; await this.usersService.getFollowers(authorId, false);
+    for (const follower of followers) {
+      const cacheKey &#x3D; REDIS_KEYS_MAPPER.followingPosts(follower.id);
+      await this.redisService.delByPattern(cacheKey);
+    }
+    
+    return newPost;
+  }
+
+  /**
+   * 기존 게시물을 업데이트합니다.
+   * 
+   * @param {number} id - 업데이트할 게시물 ID
+   * @param {UpdatePostDto} postDto - 게시물 업데이트 DTO
+   * @returns {Promise&lt;PostsModel&gt;} 업데이트된 게시물
+   * @throws {NotFoundException} 게시물이 존재하지 않을 경우
+   */
+  async updatePost(
+    id: number,
+    postDto: UpdatePostDto,
+  ) {
+    const { title, content } &#x3D; postDto;
+    // save의 기능
+    // 1) 만약에 데이터가 존재하지 않는다면 (id 기준으로) 새로 생성한다.
+    // 2) 만약에 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트한다/
+
+    const post &#x3D; await this.postsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    if (title) {
+      post.title &#x3D; title;
+    }
+
+    if (content) {
+      post.content &#x3D; content;
+    }
+
+    const newPost &#x3D; await this.postsRepository.save(post);
+
+    return newPost;
+  }
+
+  /**
+   * 게시물을 삭제합니다.
+   * 
+   * @param {number} id - 삭제할 게시물 ID
+   * @returns {Promise&lt;number&gt;} 삭제된 게시물 ID
+   * @throws {NotFoundException} 게시물이 존재하지 않을 경우
+   */
+  async deletePost(id: number) {
+    const post &#x3D; await this.postsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    await this.postsRepository.delete(id);
+
+    return id;
+  }
+
+  /**
+   * 게시물 ID로 존재 여부를 확인합니다.
+   * 
+   * @param {number} id - 확인할 게시물 ID
+   * @returns {Promise&lt;boolean&gt;} 존재 여부
+   */
+  async checkPostExistsById(id: number) {
+    return await this.postsRepository.exists({
+      where: {
+        id,
+      },
+    });
+  }
+
+  /**
+   * 특정 게시물이 요청 사용자의 것인지 확인합니다.
+   * 
+   * @param {number} userId - 사용자 ID
+   * @param {number} postId - 게시물 ID
+   * @returns {Promise&lt;boolean&gt;} 소유 여부
+   */
+  async isPostMine(userId: number, postId: number) {
+    return await this.postsRepository.exists({
+      where: {
+        id: postId,
+        author: {
+          id: userId,
+        }
+      },
+      relations: {
+        author: true,
+      }
+    });
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'PostsService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

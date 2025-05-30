@@ -6,6 +6,12 @@ import { IS_PUBLIC_KEY } from "src/common/decorator/is-public.decorator";
 import { IsPublicEnum } from "src/common/const/is-public.const";
 import { GqlExecutionContext } from "@nestjs/graphql";
 
+/**
+ * Bearer 토큰 기본 가드
+ * 
+ * @description JWT Bearer 토큰을 검증하고 사용자 정보를 요청 객체에 주입합니다.
+ * HTTP와 GraphQL 요청을 모두 지원하며, @IsPublic 데코레이터로 표시된 경로는 인증을 건너뜁니다.
+ */
 @Injectable()
 export class BearerTokenGuard implements CanActivate {
     constructor(
@@ -14,6 +20,13 @@ export class BearerTokenGuard implements CanActivate {
         protected readonly reflector: Reflector,
     ) {}
 
+    /**
+     * 가드 활성화 여부를 확인하는 메서드
+     * 
+     * @param context - 실행 컨텍스트 (HTTP 또는 GraphQL)
+     * @returns 인증 성공 여부
+     * @throws {UnauthorizedException} 토큰이 없거나 유효하지 않을 때
+     */
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const isPublic = this.reflector.getAllAndOverride(IS_PUBLIC_KEY, [
             context.getHandler(),
@@ -58,8 +71,21 @@ export class BearerTokenGuard implements CanActivate {
     }
 }
 
+/**
+ * Access 토큰 전용 가드
+ * 
+ * @description Bearer 토큰 중 Access 토큰만을 허용하는 가드입니다.
+ * BearerTokenGuard를 상속받아 토큰 유형을 추가로 검증합니다.
+ */
 @Injectable()
 export class AccessTokenGuard extends BearerTokenGuard {
+    /**
+     * Access 토큰 검증 메서드
+     * 
+     * @param context - 실행 컨텍스트
+     * @returns 인증 및 토큰 유형 검증 성공 여부
+     * @throws {UnauthorizedException} Access 토큰이 아닐 때
+     */
     async canActivate(context: ExecutionContext): Promise<boolean> {
         // 1. 현재 경로가 @IsPublic으로 지정되었는지 확인 (BearerTokenGuard와 동일한 방식)
         const isPublic = this.reflector.getAllAndOverride<IsPublicEnum>(IS_PUBLIC_KEY, [
@@ -98,8 +124,21 @@ export class AccessTokenGuard extends BearerTokenGuard {
     }
 }
 
+/**
+ * Refresh 토큰 전용 가드
+ * 
+ * @description Bearer 토큰 중 Refresh 토큰만을 허용하는 가드입니다.
+ * BearerTokenGuard를 상속받아 토큰 유형을 추가로 검증합니다.
+ */
 @Injectable()
 export class RefreshTokenGuard extends BearerTokenGuard {
+    /**
+     * Refresh 토큰 검증 메서드
+     * 
+     * @param context - 실행 컨텍스트
+     * @returns 인증 및 토큰 유형 검증 성공 여부
+     * @throws {UnauthorizedException} Refresh 토큰이 아닐 때
+     */
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const isPublic = this.reflector.getAllAndOverride<IsPublicEnum>(IS_PUBLIC_KEY, [
             context.getHandler(),

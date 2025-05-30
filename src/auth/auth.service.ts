@@ -8,6 +8,10 @@ import { ConfigType } from '@nestjs/config';
 import appConfig from 'src/configs/app.config';
 import { LoginDto } from './dto/login.dto';
 
+/**
+ * 인증 관련 비즈니스 로직을 처리하는 서비스
+ * 사용자 인증, 토큰 생성 및 검증 기능을 제공합니다
+ */
 @Injectable()
 export class AuthService {
     constructor(
@@ -45,10 +49,11 @@ export class AuthService {
      */
 
     /**
-     * Header로 부터 토큰을 받을 때
-     * 
-     * {authorization: 'Basic {token}'}
-     * {authorization: 'Bearer {token}'}
+     * HTTP 헤더에서 토큰을 추출합니다
+     * @param header Authorization 헤더 값
+     * @param isBearer Bearer 토큰 여부 (true: Bearer, false: Basic)
+     * @returns 추출된 토큰
+     * @throws UnauthorizedException 토큰 형식이 잘못된 경우
      */
     extractTokenFromHeader(header: string, isBearer: boolean) {
         const splitToken = header.split(' ');
@@ -65,11 +70,10 @@ export class AuthService {
     }
 
     /**
-     * Basic asdlkfjadlfkjadflkjasdf
-     * 
-     * 1) asdlkfjadlfkjadflkjasdf -> email:password (디코딩)
-     * 2) email:password -> [email, password]
-     * 3) {email: email, password: password}
+     * Basic 인증 토큰을 디코딩합니다
+     * @param base64String Base64로 인코딩된 토큰 문자열
+     * @returns 디코딩된 이메일과 비밀번호 객체
+     * @throws UnauthorizedException 토큰 형식이 잘못된 경우
      */
     decodeBasicToken(base64String: string) {
         const decoded = Buffer.from(base64String, 'base64').toString('utf8');
@@ -90,7 +94,10 @@ export class AuthService {
     }
 
     /**
-     * 토큰 검증
+     * JWT 토큰을 검증합니다
+     * @param token 검증할 JWT 토큰
+     * @returns 디코딩된 토큰 정보
+     * @throws UnauthorizedException 토큰이 유효하지 않거나 만료된 경우
      */
     verifyToken(token: string) {
         try {
@@ -103,6 +110,13 @@ export class AuthService {
         }
     }
 
+    /**
+     * 기존 토큰을 기반으로 새 토큰을 발급합니다
+     * @param token 기존 리프레시 토큰
+     * @param isRefreshToken 발급할 토큰 타입 (true: 리프레시 토큰, false: 액세스 토큰)
+     * @returns 새로 발급된 토큰
+     * @throws UnauthorizedException 리프레시 토큰이 아닌 경우
+     */
     rotateToken(token: string, isRefreshToken: boolean) {
         const decoded = this.verifyToken(token);
 
@@ -148,11 +162,10 @@ export class AuthService {
      */
 
     /**
-     * Payload에 들어갈 정보
-     * 
-     * 1) email
-     * 2) sub -> id
-     * 3) type : 'access' | 'refresh'
+     * JWT 토큰을 생성합니다
+     * @param user 토큰에 포함할 사용자 정보
+     * @param isRefreshToken 발급할 토큰 타입 (true: 리프레시 토큰, false: 액세스 토큰)
+     * @returns 서명된 JWT 토큰
      */
     signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
         const payload = {
@@ -168,6 +181,11 @@ export class AuthService {
         })
     }
 
+    /**
+     * 사용자 로그인에 필요한 액세스 토큰과 리프레시 토큰을 생성합니다
+     * @param user 토큰을 발급받을 사용자 정보
+     * @returns 액세스 토큰과 리프레시 토큰 객체
+     */
     loginUser(user: Pick<UsersModel, 'email' | 'id'>) {
         return {
             accessToken: this.signToken(user, false),
@@ -175,6 +193,12 @@ export class AuthService {
         }
     }
 
+    /**
+     * 이메일과 비밀번호로 사용자를 인증합니다
+     * @param loginDto 로그인 정보가 담긴 DTO
+     * @returns 인증된 사용자 정보
+     * @throws UnauthorizedException 사용자가 존재하지 않거나 비밀번호가 일치하지 않는 경우
+     */
     async authenticateWithEmailAndPassword(loginDto: LoginDto) {
         const existingUser = await this.usersService.getUserByEmail(loginDto.email);
 
@@ -197,12 +221,22 @@ export class AuthService {
         return existingUser;
     }
 
+    /**
+     * 이메일과 비밀번호로 로그인합니다
+     * @param loginDto 로그인 정보가 담긴 DTO
+     * @returns 액세스 토큰과 리프레시 토큰 객체
+     */
     async loginWithEmail(loginDto: LoginDto) {
         const existingUser = await this.authenticateWithEmailAndPassword(loginDto);
 
         return this.loginUser(existingUser);
     }
 
+    /**
+     * 이메일로 회원가입 후 로그인합니다
+     * @param user 회원가입 정보가 담긴 DTO
+     * @returns 액세스 토큰과 리프레시 토큰 객체
+     */
     async registerWithEmail(user: RegisterUserDto) {
         const hash = await bcrypt.hash(
             user.password,

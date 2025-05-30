@@ -1,0 +1,18 @@
+{
+    "includes": "./src",
+    "includesName": "프로젝트 문서",
+    "name": "프로젝트명 API 문서",
+    "output": "docs",
+    "theme": "material",
+    "hideGenerator": true,
+    "disableSourceCode": false,
+    "disableCoverage": false,
+    "disablePrivate": false,
+    "disableProtected": false,
+    "disableInternal": false,
+    "disableLifeCycleHooks": false,
+    "language": "ko-KR",
+    "additionalEntryPoints": [
+      "src/additional-documentation/*.ts"
+    ]
+  }

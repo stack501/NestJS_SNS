@@ -20,7 +20,10 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "redis:cli": "docker exec -it 2_cf_sns-redis-1 redis-cli",
-    "db:seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs seed:run --dataSource data-source.ts"
+    "db:seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs seed:run --dataSource data-source.ts",
+    "docs:generate-readmes": "node scripts/generate-module-readmes.mjs",
+    "docs:generate": "npm run docs:generate-readmes && compodoc -p tsconfig.json -d docs -s",
+    "docs:serve": "compodoc -s -d ./docs"
   },
   "dependencies": {
     "@apollo/server": "^4.12.1",
@@ -66,6 +69,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@compodoc/compodoc": "^1.1.26",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@faker-js/faker": "^9.7.0",

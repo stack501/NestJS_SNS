@@ -7,6 +7,11 @@ import { FILTER_MAPPER } from './const/filter-mapper.const';
 import { ConfigType } from '@nestjs/config';
 import appConfig from 'src/configs/app.config';
 
+/**
+ * 공통 기능을 제공하는 서비스
+ * 
+ * 페이지네이션, 필터링 등의 공통 기능을 처리합니다.
+ */
 @Injectable()
 export class CommonService {
     constructor(
@@ -14,6 +19,15 @@ export class CommonService {
         private readonly config: ConfigType<typeof appConfig>
     ){}
 
+    /**
+     * 페이지네이션 결과를 반환합니다
+     * @param dto 페이지네이션 옵션
+     * @param repository 대상 리포지토리
+     * @param overrideFindOptions 추가 조회 옵션
+     * @param path API 경로
+     * @param additionalWhere 추가 조건
+     * @returns 페이지 또는 커서 기반 페이지네이션 결과
+     */
     paginate<T extends BaseModel, R>(
         dto: BasePaginationDto,
         repository: Repository<T>,
@@ -39,6 +53,14 @@ export class CommonService {
         }
     }
 
+    /**
+     * 페이지 번호 기반 페이지네이션 결과를 반환합니다
+     * @param dto 페이지네이션 옵션
+     * @param repository 대상 리포지토리
+     * @param overrideFindOptions 추가 조회 옵션
+     * @param additionalWhere 추가 조건
+     * @returns 페이지 기반 페이지네이션 결과
+     */
     private async pagePaginate<T extends BaseModel, R>(
         dto: BasePaginationDto,
         repository: Repository<T>,
@@ -59,6 +81,15 @@ export class CommonService {
         } as unknown as R;
     }
     
+    /**
+     * 커서 기반 페이지네이션 결과를 반환합니다
+     * @param dto 페이지네이션 옵션
+     * @param repository 대상 리포지토리
+     * @param overrideFindOptions 추가 조회 옵션
+     * @param path API 경로
+     * @param additionalWhere 추가 조건
+     * @returns 커서 기반 페이지네이션 결과
+     */
     private async cursorPaginate<T extends BaseModel, R>(
         dto: BasePaginationDto,
         repository: Repository<T>,
@@ -114,6 +145,12 @@ export class CommonService {
         } as unknown as R;
     }
 
+    /**
+     * 페이지네이션을 위한 조회 옵션을 구성합니다
+     * @param dto 페이지네이션 옵션
+     * @param additionalWhere 추가 조건
+     * @returns 구성된 조회 옵션
+     */
     private composeFindOptions<T extends BaseModel>(
         dto: BasePaginationDto,
         additionalWhere?: FindOptionsWhere<T>,
@@ -152,6 +189,13 @@ export class CommonService {
         }
     }
 
+    /**
+     * 필터 키와 값을 파싱하여 TypeORM 조건으로 변환합니다
+     * @param key 필터 키
+     * @param value 필터 값
+     * @returns TypeORM 조건 객체
+     * @throws BadRequestException 필터 형식이 잘못된 경우
+     */
     private parseWhereFilter<T extends BaseModel>(key: string, value: any) : FindOptionsWhere<T> | FindOptionsOrder<T> {
         const options: FindOptionsWhere<T> = {};
 

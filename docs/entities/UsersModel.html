@@ -1,0 +1,1292 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>2_cf_sns documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">2_cf_sns documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content entity">
+                   <div class="content-data">
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >UsersModel</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/users/entity/users.entity.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>사용자 엔티티 모델</p>
+<p>시스템의 사용자 정보를 저장하고 관리하는 메인 엔티티입니다.
+BaseModel을 상속받아 기본 필드들(id, createdAt, updatedAt)을 포함합니다.
+GraphQL의 ObjectType으로도 사용되며, TypeORM Entity로 데이터베이스 테이블과 매핑됩니다.</p>
+
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#chats" >chats</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#comments" >comments</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#email" >email</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#followeeCount" >followeeCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#followees" >followees</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#followerCount" >followerCount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#followers" >followers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#google" >google</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#kakao" >kakao</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#messages" >messages</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#nickname" >nickname</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#password" >password</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#posts" >posts</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#role" >role</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#whisperMessages" >whisperMessages</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="chats"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>chats</b></span>
+                        <a href="#chats"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/ChatsModel.html" target="_self" >ChatsModel[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ManyToMany(undefined, chat &#x3D;&gt; chat.users)<br />@JoinTable()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="188" class="link-to-prism">src/users/entity/users.entity.ts:188</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자가 참여 중인 채팅방 목록</p>
+<p>ChatsModel과의 다대다 관계입니다.
+한 사용자는 여러 채팅방에 참여할 수 있고, 한 채팅방에는 여러 사용자가 참여할 수 있습니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="comments"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>comments</b></span>
+                        <a href="#comments"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/CommentsModel.html" target="_self" >CommentsModel[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @OneToMany(undefined, comment &#x3D;&gt; comment.author)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="224" class="link-to-prism">src/users/entity/users.entity.ts:224</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자가 작성한 댓글 목록</p>
+<p>CommentsModel과의 일대다 관계입니다.
+한 사용자는 여러 개의 댓글을 작성할 수 있습니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="email"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>email</b></span>
+                        <a href="#email"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field()<br />@Column({unique: true})<br />@IsString({message: stringValidationMessage})<br />@IsEmail({}, {message: emailValidationMessage})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="122" class="link-to-prism">src/users/entity/users.entity.ts:122</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자 이메일 주소</p>
+<p>사용자의 이메일 주소로, 로그인 및 인증에 사용됩니다.
+시스템 내에서 고유해야 하며, 유효한 이메일 형식이어야 합니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="followeeCount"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>followeeCount</b></span>
+                        <a href="#followeeCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field()<br />@Column({default: 0})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="280" class="link-to-prism">src/users/entity/users.entity.ts:280</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>팔로잉 수</p>
+<p>이 사용자가 팔로우하는 사람들의 총 개수입니다.
+기본값은 0이며, 팔로우 관계가 생성/삭제될 때 업데이트됩니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="followees"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>followees</b></span>
+                        <a href="#followees"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/UserFollowersModel.html" target="_self" >UserFollowersModel[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @OneToMany(undefined, ufm &#x3D;&gt; ufm.followee)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="250" class="link-to-prism">src/users/entity/users.entity.ts:250</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>이 사용자가 팔로우하는 사용자들의 관계 정보</p>
+<p>UserFollowersModel과의 일대다 관계입니다.
+이 사용자가 팔로우하는 다른 사용자들과의 관계를 나타냅니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="followerCount"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>followerCount</b></span>
+                        <a href="#followerCount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field()<br />@Column({default: 0})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="265" class="link-to-prism">src/users/entity/users.entity.ts:265</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>팔로워 수</p>
+<p>이 사용자를 팔로우하는 사람들의 총 개수입니다.
+기본값은 0이며, 팔로우 관계가 생성/삭제될 때 업데이트됩니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="followers"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>followers</b></span>
+                        <a href="#followers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/UserFollowersModel.html" target="_self" >UserFollowersModel[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @OneToMany(undefined, ufm &#x3D;&gt; ufm.follower)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="237" class="link-to-prism">src/users/entity/users.entity.ts:237</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>이 사용자를 팔로우하는 사용자들의 관계 정보</p>
+<p>UserFollowersModel과의 일대다 관계입니다.
+이 사용자를 팔로우하는 다른 사용자들과의 관계를 나타냅니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="google"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>google</b></span>
+                        <a href="#google"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field({nullable: true})<br />@Column({unique: true, nullable: true})<br />@IsString()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/users/entity/users.entity.ts:62</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Google OAuth 식별자</p>
+<p>Google 소셜 로그인을 통해 가입한 사용자의 고유 식별자입니다.
+null 값을 허용하며, 시스템 내에서 고유해야 합니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="kakao"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>kakao</b></span>
+                        <a href="#kakao"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field({nullable: true})<br />@Column({unique: true, nullable: true})<br />@IsString()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/users/entity/users.entity.ts:79</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Kakao OAuth 식별자</p>
+<p>Kakao 소셜 로그인을 통해 가입한 사용자의 고유 식별자입니다.
+null 값을 허용하며, 시스템 내에서 고유해야 합니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="messages"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>messages</b></span>
+                        <a href="#messages"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/MessagesModel.html" target="_self" >MessagesModel[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @OneToMany(undefined, message &#x3D;&gt; message.author)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="200" class="link-to-prism">src/users/entity/users.entity.ts:200</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자가 전송한 메시지 목록</p>
+<p>MessagesModel과의 일대다 관계입니다.
+한 사용자는 여러 개의 메시지를 보낼 수 있습니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="nickname"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>nickname</b></span>
+                        <a href="#nickname"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field()<br />@Column({length: 20, unique: true})<br />@IsString({message: stringValidationMessage})<br />@Length(1, 20, {message: lengthValidationMessage})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="101" class="link-to-prism">src/users/entity/users.entity.ts:101</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자 닉네임</p>
+<p>사용자가 설정한 별명으로, 시스템 내에서 고유해야 합니다.
+최소 1자에서 최대 20자까지 허용됩니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="password"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>password</b></span>
+                        <a href="#password"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field()<br />@Column()<br />@IsString({message: stringValidationMessage})<br />@Length(3, 8, {message: lengthValidationMessage})<br />@Exclude({toPlainOnly: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="146" class="link-to-prism">src/users/entity/users.entity.ts:146</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자 비밀번호</p>
+<p>사용자 계정의 비밀번호입니다.
+요청 시에는 받지만 응답 시에는 보안상 제외됩니다.
+최소 3자에서 최대 8자까지 허용됩니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="posts"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>posts</b></span>
+                        <a href="#posts"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/PostsModel.html" target="_self" >PostsModel[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @OneToMany(undefined, post &#x3D;&gt; post.author)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="175" class="link-to-prism">src/users/entity/users.entity.ts:175</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자가 작성한 게시물 목록</p>
+<p>PostsModel과의 일대다 관계입니다.
+한 사용자는 여러 개의 게시물을 작성할 수 있습니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="role"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>role</b></span>
+                        <a href="#role"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#RoleEnum" target="_self" >RoleEnum</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Field(undefined)<br />@Column({type: &#x27;enum&#x27;, enum: RoleEnum, default: undefined})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="163" class="link-to-prism">src/users/entity/users.entity.ts:163</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자 역할</p>
+<p>사용자의 시스템 내 권한 수준을 나타냅니다.
+RoleEnum 타입을 사용하며, 기본값은 일반 사용자(USER)입니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="whisperMessages"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>whisperMessages</b></span>
+                        <a href="#whisperMessages"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/MessagesModel.html" target="_self" >MessagesModel[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @OneToMany(undefined, message &#x3D;&gt; message.whisperTargetUser)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="212" class="link-to-prism">src/users/entity/users.entity.ts:212</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>사용자가 받은 귓속말 메시지 목록</p>
+<p>MessagesModel과의 일대다 관계입니다.
+특정 사용자를 대상으로 하는 개인 메시지들을 나타냅니다.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+</section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Exclude } from &quot;class-transformer&quot;;
+import { IsEmail, IsString, Length } from &quot;class-validator&quot;;
+import { MessagesModel } from &quot;src/chats/messages/entity/messages.entity&quot;;
+import { ChatsModel } from &quot;src/chats/entity/chats.entity&quot;;
+import { BaseModel } from &quot;src/common/entity/base.entity&quot;;
+import { emailValidationMessage } from &quot;src/common/validation-message/email-validation.message&quot;;
+import { lengthValidationMessage } from &quot;src/common/validation-message/length-validation.message&quot;;
+import { stringValidationMessage } from &quot;src/common/validation-message/string-validation.message&quot;;
+import { PostsModel } from &quot;src/posts/entity/posts.entity&quot;;
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from &quot;typeorm&quot;;
+import { CommentsModel } from &quot;src/posts/comments/entity/comments.entity&quot;;
+import { UserFollowersModel } from &quot;./user-followers.entity&quot;;
+import { Field, ObjectType, registerEnumType } from &quot;@nestjs/graphql&quot;;
+
+/**
+ * 사용자 역할 열거형
+ * 
+ * 시스템 내에서 사용자가 가질 수 있는 역할을 정의합니다.
+ * 
+ * @enum {string}
+ */
+export enum RoleEnum {
+    /** 일반 사용자 */
+    USER &#x3D; &#x27;user&#x27;,
+    /** 관리자 */
+    ADMIN &#x3D; &#x27;admin&#x27;,
+}
+
+registerEnumType(RoleEnum, {
+    name: &#x27;RoleEnum&#x27;, // GraphQL 스키마에 표시될 Enum의 이름
+    description: &#x27;User roles&#x27;, // 선택적 설명
+});
+
+/**
+ * 사용자 엔티티 모델
+ * 
+ * 시스템의 사용자 정보를 저장하고 관리하는 메인 엔티티입니다.
+ * BaseModel을 상속받아 기본 필드들(id, createdAt, updatedAt)을 포함합니다.
+ * GraphQL의 ObjectType으로도 사용되며, TypeORM Entity로 데이터베이스 테이블과 매핑됩니다.
+ * 
+ * @class UsersModel
+ * @extends BaseModel
+ */
+@ObjectType()
+@Entity()
+export class UsersModel extends BaseModel {
+    /**
+     * Google OAuth 식별자
+     * 
+     * Google 소셜 로그인을 통해 가입한 사용자의 고유 식별자입니다.
+     * null 값을 허용하며, 시스템 내에서 고유해야 합니다.
+     * 
+     * @type {string}
+     * @memberof UsersModel
+     */
+    @Field({ nullable: true })
+    @Column({
+        unique: true,
+        nullable: true,
+    })
+    @IsString()
+    google: string;
+
+    /**
+     * Kakao OAuth 식별자
+     * 
+     * Kakao 소셜 로그인을 통해 가입한 사용자의 고유 식별자입니다.
+     * null 값을 허용하며, 시스템 내에서 고유해야 합니다.
+     * 
+     * @type {string}
+     * @memberof UsersModel
+     */
+    @Field({ nullable: true })
+    @Column({
+        unique: true,
+        nullable: true,
+    })
+    @IsString()
+    kakao: string;
+
+    /**
+     * 사용자 닉네임
+     * 
+     * 사용자가 설정한 별명으로, 시스템 내에서 고유해야 합니다.
+     * 최소 1자에서 최대 20자까지 허용됩니다.
+     * 
+     * @type {string}
+     * @memberof UsersModel
+     */
+    @Field()
+    @Column({
+        length: 20,
+        unique: true,
+    })
+    @IsString({
+        message: stringValidationMessage,
+    })
+    @Length(1, 20, {
+        message: lengthValidationMessage,
+    })
+    nickname: string;
+
+    /**
+     * 사용자 이메일 주소
+     * 
+     * 사용자의 이메일 주소로, 로그인 및 인증에 사용됩니다.
+     * 시스템 내에서 고유해야 하며, 유효한 이메일 형식이어야 합니다.
+     * 
+     * @type {string}
+     * @memberof UsersModel
+     */
+    @Field()
+    @Column({
+        unique: true,
+    })
+    @IsString({
+        message: stringValidationMessage,
+    })
+    @IsEmail({}, {
+        message: emailValidationMessage,
+    })
+    email: string;
+
+    /**
+     * 사용자 비밀번호
+     * 
+     * 사용자 계정의 비밀번호입니다.
+     * 요청 시에는 받지만 응답 시에는 보안상 제외됩니다.
+     * 최소 3자에서 최대 8자까지 허용됩니다.
+     * 
+     * @type {string}
+     * @memberof UsersModel
+     */
+    @Field()
+    @Column()
+    @IsString({
+        message: stringValidationMessage,
+    })
+    @Length(3, 8, {
+        message: lengthValidationMessage,
+    })
+    
+    @Exclude({
+        toPlainOnly: true,
+    })
+    password: string;
+
+    /**
+     * 사용자 역할
+     * 
+     * 사용자의 시스템 내 권한 수준을 나타냅니다.
+     * RoleEnum 타입을 사용하며, 기본값은 일반 사용자(USER)입니다.
+     * 
+     * @type {RoleEnum}
+     * @memberof UsersModel
+     */
+    @Field(() &#x3D;&gt; RoleEnum)
+    @Column({
+        type: &#x27;enum&#x27;,
+        enum: RoleEnum,
+        default: RoleEnum.USER,
+    })
+    role: RoleEnum;
+
+    /**
+     * 사용자가 작성한 게시물 목록
+     * 
+     * PostsModel과의 일대다 관계입니다.
+     * 한 사용자는 여러 개의 게시물을 작성할 수 있습니다.
+     * 
+     * @type {PostsModel[]}
+     * @memberof UsersModel
+     */
+    @OneToMany(() &#x3D;&gt; PostsModel, (post) &#x3D;&gt; post.author)
+    posts: PostsModel[]
+
+    /**
+     * 사용자가 참여 중인 채팅방 목록
+     * 
+     * ChatsModel과의 다대다 관계입니다.
+     * 한 사용자는 여러 채팅방에 참여할 수 있고, 한 채팅방에는 여러 사용자가 참여할 수 있습니다.
+     * 
+     * @type {ChatsModel[]}
+     * @memberof UsersModel
+     */
+    @ManyToMany(() &#x3D;&gt; ChatsModel, (chat) &#x3D;&gt; chat.users)
+    @JoinTable()
+    chats: ChatsModel[];
+
+    /**
+     * 사용자가 전송한 메시지 목록
+     * 
+     * MessagesModel과의 일대다 관계입니다.
+     * 한 사용자는 여러 개의 메시지를 보낼 수 있습니다.
+     * 
+     * @type {MessagesModel[]}
+     * @memberof UsersModel
+     */
+    @OneToMany(() &#x3D;&gt; MessagesModel, (message) &#x3D;&gt; message.author)
+    messages: MessagesModel[];
+
+    /**
+     * 사용자가 받은 귓속말 메시지 목록
+     * 
+     * MessagesModel과의 일대다 관계입니다.
+     * 특정 사용자를 대상으로 하는 개인 메시지들을 나타냅니다.
+     * 
+     * @type {MessagesModel[]}
+     * @memberof UsersModel
+     */
+    @OneToMany(() &#x3D;&gt; MessagesModel, (message) &#x3D;&gt; message.whisperTargetUser)
+    whisperMessages : MessagesModel[];
+
+    /**
+     * 사용자가 작성한 댓글 목록
+     * 
+     * CommentsModel과의 일대다 관계입니다.
+     * 한 사용자는 여러 개의 댓글을 작성할 수 있습니다.
+     * 
+     * @type {CommentsModel[]}
+     * @memberof UsersModel
+     */
+    @OneToMany(() &#x3D;&gt; CommentsModel, (comment) &#x3D;&gt; comment.author)
+    comments: CommentsModel[];
+
+    /**
+     * 이 사용자를 팔로우하는 사용자들의 관계 정보
+     * 
+     * UserFollowersModel과의 일대다 관계입니다.
+     * 이 사용자를 팔로우하는 다른 사용자들과의 관계를 나타냅니다.
+     * 
+     * @type {UserFollowersModel[]}
+     * @memberof UsersModel
+     */
+    // 나를 팔로우하고 있는 사람들
+    @OneToMany(() &#x3D;&gt; UserFollowersModel, (ufm) &#x3D;&gt; ufm.follower)
+    followers: UserFollowersModel[];
+
+    /**
+     * 이 사용자가 팔로우하는 사용자들의 관계 정보
+     * 
+     * UserFollowersModel과의 일대다 관계입니다.
+     * 이 사용자가 팔로우하는 다른 사용자들과의 관계를 나타냅니다.
+     * 
+     * @type {UserFollowersModel[]}
+     * @memberof UsersModel
+     */
+    // 내가 팔로우하고 있는 사람들
+    @OneToMany(() &#x3D;&gt; UserFollowersModel, (ufm) &#x3D;&gt; ufm.followee)
+    followees: UserFollowersModel[];
+
+    /**
+     * 팔로워 수
+     * 
+     * 이 사용자를 팔로우하는 사람들의 총 개수입니다.
+     * 기본값은 0이며, 팔로우 관계가 생성/삭제될 때 업데이트됩니다.
+     * 
+     * @type {number}
+     * @memberof UsersModel
+     */
+    @Field()
+    @Column({
+        default: 0,
+    })
+    followerCount: number;
+
+    /**
+     * 팔로잉 수
+     * 
+     * 이 사용자가 팔로우하는 사람들의 총 개수입니다.
+     * 기본값은 0이며, 팔로우 관계가 생성/삭제될 때 업데이트됩니다.
+     * 
+     * @type {number}
+     * @memberof UsersModel
+     */
+    @Field()
+    @Column({
+        default: 0,
+    })
+    followeeCount: number;
+}</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'entity';
+            var COMPODOC_CURRENT_PAGE_URL = 'UsersModel.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -15,6 +15,10 @@ import kakaoConfig from 'src/configs/kakao.config';
 import { ConfigType } from '@nestjs/config';
 import { Response } from 'express';
 
+/**
+ * 인증 관련 API 엔드포인트를 제공하는 컨트롤러
+ * 로그인, 회원가입, 토큰 갱신, OAuth 인증 등의 기능을 제공합니다
+ */
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -23,6 +27,11 @@ export class AuthController {
     private readonly config: ConfigType<typeof kakaoConfig>
   ) {}
 
+  /**
+   * 액세스 토큰을 재발급합니다
+   * @param req HTTP 요청 객체
+   * @returns 새로운 액세스 토큰
+   */
   @Post('token/access')
   @ApiBearerAuth(AuthScheme.REFRESH)
   @ApiOperation({ 
@@ -47,6 +56,11 @@ export class AuthController {
     }
   }
 
+  /**
+   * 리프레시 토큰을 재발급합니다
+   * @param req HTTP 요청 객체
+   * @returns 새로운 리프레시 토큰
+   */
   @Post('token/refresh')
   @ApiBearerAuth(AuthScheme.REFRESH)
   @ApiOperation({ 
@@ -71,7 +85,11 @@ export class AuthController {
     }
   }
 
-  
+  /**
+   * 이메일과 비밀번호로 로그인합니다
+   * @param loginDto 로그인 정보가 담긴 DTO
+   * @returns 액세스 토큰과 리프레시 토큰 객체
+   */
   @Post('login/email')
   @ApiConsumes('application/x-www-form-urlencoded')
   @ApiBody({ type: LoginDto })
@@ -84,6 +102,11 @@ export class AuthController {
     return this.authService.loginWithEmail(loginDto);
   }
 
+  /**
+   * 이메일, 비밀번호, 닉네임으로 회원가입합니다
+   * @param body 회원가입 정보가 담긴 DTO
+   * @returns 액세스 토큰과 리프레시 토큰 객체
+   */
   @Post('register/email')
   @ApiConsumes('application/x-www-form-urlencoded')
   @ApiBody({ type: RegisterUserDto })
@@ -98,6 +121,9 @@ export class AuthController {
     return this.authService.registerWithEmail(body);
   }
 
+  /**
+   * 구글 OAuth 로그인을 시작합니다
+   */
   @Get("login/google")
   @UseGuards(GoogleAuthGuard)
   @IsPublic(IsPublicEnum.IS_PUBLIC)
@@ -105,6 +131,11 @@ export class AuthController {
     console.log('GET google/login')
   }
 
+  /**
+   * 구글 OAuth 인증 후 리디렉션되는 콜백 엔드포인트입니다
+   * @param user 인증된 사용자 정보
+   * @returns 액세스 토큰과 리프레시 토큰 객체
+   */
   @Get("google/callback")
   @UseGuards(GoogleAuthGuard)
   @IsPublic(IsPublicEnum.IS_PUBLIC)
@@ -112,6 +143,9 @@ export class AuthController {
     return this.authService.loginUser(user);
   }
 
+  /**
+   * 카카오 OAuth 로그인을 시작합니다
+   */
   @Get('login/kakao')
   @IsPublic(IsPublicEnum.IS_PUBLIC)
   @UseGuards(KakaoAuthGuard)
@@ -120,6 +154,11 @@ export class AuthController {
     console.log('GET kakao/login');
   }
 
+  /**
+   * 카카오 OAuth 인증 후 리디렉션되는 콜백 엔드포인트입니다
+   * @param user 인증된 사용자 정보
+   * @returns 액세스 토큰과 리프레시 토큰 객체
+   */
   @Get('kakao/callback')
   @IsPublic(IsPublicEnum.IS_PUBLIC)
   @UseGuards(KakaoAuthGuard)
@@ -127,6 +166,11 @@ export class AuthController {
     return this.authService.loginUser(user);
   }
 
+  /**
+   * 카카오 계정에서 로그아웃합니다
+   * @param res HTTP 응답 객체
+   * @returns 카카오 로그아웃 페이지로 리디렉션
+   */
   @Get('logout/kakao')
   @IsPublic(IsPublicEnum.IS_PUBLIC)
   kakaoAuthLogout(@Res() res: Response) {
@@ -137,6 +181,11 @@ export class AuthController {
     return res.redirect(logoutUrl);
   }
 
+  /**
+   * 카카오 로그아웃 후 리디렉션되는 콜백 엔드포인트입니다
+   * @param res HTTP 응답 객체
+   * @returns 로그아웃 완료 메시지가 포함된 HTML
+   */
   @Get('kakao/logout/callback')
   @IsPublic(IsPublicEnum.IS_PUBLIC)
   kakaoAuthLogoutRedirect(@Res() res: Response) {

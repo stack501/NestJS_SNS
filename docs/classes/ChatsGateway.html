@@ -1,0 +1,1220 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>2_cf_sns documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">2_cf_sns documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >ChatsGateway</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/chats/chats.gateway.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>채팅 웹소켓 게이트웨이</p>
+<p>실시간 채팅 기능을 제공하는 WebSocket 게이트웨이입니다.
+채팅방 생성, 입장, 메시지 전송 및 귓속말 기능을 지원합니다.</p>
+
+            </p>
+
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                        <code>OnGatewayConnection</code>
+                        <code>OnGatewayInit</code>
+                        <code>OnGatewayDisconnect</code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#server" >server</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#afterInit" >afterInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createChat" >createChat</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#enterChat" >enterChat</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleConnection" >handleConnection</a>
+                            </li>
+                            <li>
+                                <a href="#handleDisconnect" >handleDisconnect</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#sendMessage" >sendMessage</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(chatsService: <a href="../injectables/ChatsService.html" target="_self">ChatsService</a>, messagesService: <a href="../injectables/ChatsMessagesService.html" target="_self">ChatsMessagesService</a>, authService: <a href="../injectables/AuthService.html" target="_self">AuthService</a>, usersService: <a href="../injectables/UsersService.html" target="_self">UsersService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">src/chats/chats.gateway.ts:38</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div class="io-description"><p>채팅 게이트웨이 생성자</p>
+</div>
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                                    <td>Description</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>chatsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ChatsService.html" target="_self" >ChatsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                        <td>
+                                                                <p>채팅 서비스</p>
+
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <td>messagesService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ChatsMessagesService.html" target="_self" >ChatsMessagesService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                        <td>
+                                                                <p>메시지 서비스</p>
+
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <td>authService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthService.html" target="_self" >AuthService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                        <td>
+                                                                <p>인증 서비스</p>
+
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <td>usersService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UsersService.html" target="_self" >UsersService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                        <td>
+                                                                <p>사용자 서비스</p>
+
+                                                        </td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="server"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>server</b></span>
+                        <a href="#server"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Server</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @WebSocketServer()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/chats/chats.gateway.ts:58</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>WebSocket 서버 인스턴스</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="afterInit"></a>
+                    <span class="name">
+                        <span ><b>afterInit</b></span>
+                        <a href="#afterInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>afterInit(server: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">src/chats/chats.gateway.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>게이트웨이 초기화 후 실행되는 메서드</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>server</td>
+                                            <td>
+                                                            <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>WebSocket 서버 인스턴스</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createChat"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createChat</b></span>
+                        <a href="#createChat"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createChat(data: <a href="../classes/CreateChatDto.html" target="_self">CreateChatDto</a>, socket)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;create_chat&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="128"
+                                    class="link-to-prism">src/chats/chats.gateway.ts:128</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>새 채팅방 생성</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateChatDto.html" target="_self" >CreateChatDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>채팅방 생성 데이터</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>요청한 클라이언트 소켓</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>생성된 채팅방 정보</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="enterChat"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>enterChat</b></span>
+                        <a href="#enterChat"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>enterChat(data: <a href="../classes/EnterChatDto.html" target="_self">EnterChatDto</a>, socket)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;enter_chat&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="148"
+                                    class="link-to-prism">src/chats/chats.gateway.ts:148</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>채팅방 입장</p>
+<p>지정된 채팅방 ID 목록의 유효성을 검사하고,
+유효한 채팅방들에 소켓을 참여시킵니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/EnterChatDto.html" target="_self" >EnterChatDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>입장할 채팅방 ID 목록</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>요청한 클라이언트 소켓</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleConnection"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>handleConnection</b></span>
+                        <a href="#handleConnection"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleConnection(socket)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">src/chats/chats.gateway.ts:87</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>클라이언트 연결 시 실행되는 메서드</p>
+<p>JWT 토큰을 검증하고 사용자 정보를 소켓에 저장합니다.
+각 사용자를 고유한 룸에 참여시켜 개별 메시지 전송을 가능하게 합니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>연결된 소켓 (사용자 정보 포함)</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>연결 성공 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleDisconnect"></a>
+                    <span class="name">
+                        <span ><b>handleDisconnect</b></span>
+                        <a href="#handleDisconnect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>handleDisconnect(socket: Socket)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">src/chats/chats.gateway.ts:74</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>클라이언트 연결 해제 시 실행되는 메서드</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                                        <code>Socket</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>연결 해제된 소켓</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sendMessage"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>sendMessage</b></span>
+                        <a href="#sendMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sendMessage(dto: <a href="../classes/CreateMessagesDto.html" target="_self">CreateMessagesDto</a>, socket)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@SubscribeMessage(&#x27;send_message&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">src/chats/chats.gateway.ts:180</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>메시지 전송</p>
+<p>채팅방 메시지 또는 귓속말을 전송합니다.
+채팅방 메시지는 해당 채팅방의 모든 참여자에게 브로드캐스트되고,
+귓속말은 지정된 사용자에게만 전송됩니다.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>dto</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateMessagesDto.html" target="_self" >CreateMessagesDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>메시지 생성 데이터 (채팅방 ID 또는 귓속말 대상 ID 포함)</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>socket</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>메시지를 전송하는 클라이언트 소켓</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>생성된 메시지 정보</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from &quot;@nestjs/websockets&quot;;
+import { Server, Socket } from &quot;socket.io&quot;;
+import { CreateChatDto } from &quot;./dto/create-chat.dto&quot;;
+import { ChatsService } from &quot;./chats.service&quot;;
+import { EnterChatDto } from &quot;./dto/enter-chat.dto&quot;;
+import { UseFilters, UsePipes, ValidationPipe } from &quot;@nestjs/common&quot;;
+import { WsErrorFilter } from &quot;src/common/exception-filter/ws.exception-filter&quot;;
+import { CreateMessagesDto } from &quot;./messages/dto/create-messages.dto&quot;;
+import { ChatsMessagesService } from &quot;./messages/messages.service&quot;;
+import { MessagesModel } from &quot;./messages/entity/messages.entity&quot;;
+import { UsersModel } from &quot;src/users/entity/users.entity&quot;;
+import { AuthService } from &quot;src/auth/auth.service&quot;;
+import { UsersService } from &quot;src/users/users.service&quot;;
+
+/**
+ * 채팅 웹소켓 게이트웨이
+ * 
+ * 실시간 채팅 기능을 제공하는 WebSocket 게이트웨이입니다.
+ * 채팅방 생성, 입장, 메시지 전송 및 귓속말 기능을 지원합니다.
+ * 
+ * @namespace chats
+ */
+@UsePipes(
+    new ValidationPipe({
+      transform: true, 
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      whitelist: true, 
+      forbidNonWhitelisted: true,
+    }),
+  )
+@WebSocketGateway({
+    // ws://localhost:3000/chats
+    namespace: &#x27;chats&#x27;
+})
+@UseFilters(WsErrorFilter)
+export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect {
+    /**
+     * 채팅 게이트웨이 생성자
+     * 
+     * @param chatsService 채팅 서비스
+     * @param messagesService 메시지 서비스
+     * @param authService 인증 서비스
+     * @param usersService 사용자 서비스
+     */
+    constructor(
+        private readonly chatsService: ChatsService,
+        private readonly messagesService: ChatsMessagesService,
+        private readonly authService: AuthService,
+        private readonly usersService: UsersService,
+    ) {}
+
+    /**
+     * WebSocket 서버 인스턴스
+     */
+    @WebSocketServer()
+    server: Server;
+
+    /**
+     * 게이트웨이 초기화 후 실행되는 메서드
+     * 
+     * @param server WebSocket 서버 인스턴스
+     */
+    afterInit(server: any) {
+        console.log(&#x60;${server} after gateway init&#x60;);
+    }
+
+    /**
+     * 클라이언트 연결 해제 시 실행되는 메서드
+     * 
+     * @param socket 연결 해제된 소켓
+     */
+    handleDisconnect(socket: Socket) {
+        console.log(&#x60;on disconnect called : ${socket.id}&#x60;);
+    }
+
+    /**
+     * 클라이언트 연결 시 실행되는 메서드
+     * 
+     * JWT 토큰을 검증하고 사용자 정보를 소켓에 저장합니다.
+     * 각 사용자를 고유한 룸에 참여시켜 개별 메시지 전송을 가능하게 합니다.
+     * 
+     * @param socket 연결된 소켓 (사용자 정보 포함)
+     * @returns 연결 성공 여부
+     */
+    async handleConnection(socket: Socket &amp; {user: UsersModel}) {
+        console.log(&#x60;on connect called : ${socket.id}&#x60;);
+
+        const headers &#x3D; socket.handshake.headers;
+
+        // Bearer xxxxxx
+        const rawToken &#x3D; headers[&#x27;authorization&#x27;] as string;
+
+        if (!rawToken) {
+            socket.disconnect();
+        }
+
+        try {
+            const token &#x3D; this.authService.extractTokenFromHeader(
+                rawToken,
+                true,
+            );
+
+            const payload &#x3D; this.authService.verifyToken(token);
+            const user &#x3D; await this.usersService.getUserByEmail(payload.email) as UsersModel;
+
+            socket.user &#x3D; user;
+
+            // 각 사용자에게 고유한 룸(예: user id)을 할당하여 join 시킵니다.
+            await socket.join(user.id.toString());
+
+            return true;
+        } catch (e) {
+            console.log(e);
+            socket.disconnect();
+        }
+    }
+
+    /**
+     * 새 채팅방 생성
+     * 
+     * @param data 채팅방 생성 데이터
+     * @param socket 요청한 클라이언트 소켓
+     * @returns 생성된 채팅방 정보
+     */
+    @SubscribeMessage(&#x27;create_chat&#x27;)
+    async createChat(
+        @MessageBody() data: CreateChatDto,
+        @ConnectedSocket() socket: Socket &amp; {user: UsersModel},
+    ) {
+        const chat &#x3D; await this.chatsService.createChat(
+            data,
+        );
+    }
+
+    /**
+     * 채팅방 입장
+     * 
+     * 지정된 채팅방 ID 목록의 유효성을 검사하고,
+     * 유효한 채팅방들에 소켓을 참여시킵니다.
+     * 
+     * @param data 입장할 채팅방 ID 목록
+     * @param socket 요청한 클라이언트 소켓
+     * @throws WsException 존재하지 않는 채팅방 ID가 있을 경우
+     */
+    @SubscribeMessage(&#x27;enter_chat&#x27;)
+    async enterChat(
+        // 방의 chat ID들을 리스트로 받는다.
+        @MessageBody() data: EnterChatDto,
+        @ConnectedSocket() socket: Socket &amp; {user: UsersModel},
+    ) {
+        for(const chatId of data.chatIds) {
+            const exists &#x3D; await this.chatsService.checkIfChatExists(chatId);
+
+            if(!exists) {
+                throw new WsException({
+                    code: 100,
+                    message: &#x60;존재하지 않는 chat 입니다. chatId: ${chatId}&#x60;,
+                });
+            }
+        }
+
+        await socket.join(data.chatIds.map((x) &#x3D;&gt; x.toString()));
+    }
+
+    /**
+     * 메시지 전송
+     * 
+     * 채팅방 메시지 또는 귓속말을 전송합니다.
+     * 채팅방 메시지는 해당 채팅방의 모든 참여자에게 브로드캐스트되고,
+     * 귓속말은 지정된 사용자에게만 전송됩니다.
+     * 
+     * @param dto 메시지 생성 데이터 (채팅방 ID 또는 귓속말 대상 ID 포함)
+     * @param socket 메시지를 전송하는 클라이언트 소켓
+     * @throws WsException 존재하지 않는 채팅방 또는 사용자일 경우
+     * @returns 생성된 메시지 정보
+     */
+    @SubscribeMessage(&#x27;send_message&#x27;)
+    async sendMessage(
+        @MessageBody() dto: CreateMessagesDto,
+        @ConnectedSocket() socket: Socket &amp; {user: UsersModel},
+    ) {
+        if(dto.chatId !&#x3D;&#x3D; undefined &amp;&amp; dto.chatId !&#x3D;&#x3D; null) {
+            const chatExists &#x3D; await this.chatsService.checkIfChatExists(dto.chatId);
+
+            if(!chatExists) {
+                throw new WsException({
+                    code: 100,
+                    message: &#x60;존재하지 않는 chat 입니다. chatId: ${dto.chatId}&#x60;,
+                });
+            }
+        }
+
+        if(dto.whisperTargetId !&#x3D;&#x3D; undefined &amp;&amp; dto.whisperTargetId !&#x3D;&#x3D; null) {
+            const userExists &#x3D; await this.usersService.checkIfUserExists(dto.whisperTargetId);
+
+            if(!userExists) {
+                throw new WsException({
+                    code: 100,
+                    message: &#x60;존재하지 않는 user 입니다. whisperTargetId: ${dto.whisperTargetId}&#x60;,
+                });
+            }
+        }
+
+        const message &#x3D; await this.messagesService.createMessage(dto, socket.user.id) as MessagesModel;
+
+        // broadcast
+        if (message.chat &amp;&amp; message.chat.id) {
+            // 해당 채팅방에 join된 모든 사용자에게 메시지 전달.
+            socket.to(message.chat.id.toString()).emit(&#x27;receive_message&#x27;, message.message);
+        }
+
+        // 귓속말인 경우 (whisperTargetId가 있을 때)
+        if (dto.whisperTargetId) {
+            // 대상 사용자는 연결 시 자신을 user id로 join 했으므로, 해당 룸으로 emit 하면 귓속말이 전달됩니다.
+            this.server.to(dto.whisperTargetId.toString()).emit(&#x27;receive_whisper&#x27;, {
+                message: message.message,
+                from: socket.user.id,
+            });
+    
+            // 발신자에게도 귓속말 전송(본인도 귓속말 내역을 확인하도록)
+            socket.emit(&#x27;receive_whisper&#x27;, {
+                message: message.message,
+                from: socket.user.id,
+            });
+        }
+
+        // room 통신 (특정 room에 속해있는 소켓들에게 브로드캐스트)
+        // this.server.in(message.chatId.toString()).emit(&#x27;receive_message&#x27;, message.message);
+    }
+}</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'ChatsGateway.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

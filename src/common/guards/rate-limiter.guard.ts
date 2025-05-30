@@ -5,8 +5,29 @@ import Redis from 'ioredis';
 import { IORedisToken } from 'src/redis/redis.constants';
 import { RATE_LIMITER_KEY } from '../decorator/rate-limiter.decorator';
 
+/**
+ * 토큰 버켓 알고리즘을 사용한 속도 제한 가드
+ * 
+ * Redis Lua 스크립트를 활용하여 분산 환경에서도 안전한 속도 제한을 제공합니다.
+ * HTTP 요청과 GraphQL 요청 모두를 지원하며, 인증된 사용자와 비인증 사용자를 
+ * 각각 다른 키로 관리합니다.
+ * 
+ * @example
+ * ```typescript
+ * @RateLimiter({ capacity: 100, refillRate: 10 })
+ * async sensitiveOperation() { ... }
+ * ```
+ */
 @Injectable()
 export class RateLimiterGuard implements CanActivate {
+  /**
+   * Redis Lua 스크립트 - 토큰 버켓 알고리즘 구현
+   * 
+   * 원자적 연산을 보장하며 다음 기능을 수행합니다:
+   * - 토큰 버켓 상태 조회 및 생성
+   * - 시간에 따른 토큰 리필
+   * - 요청에 필요한 토큰 소모 및 검증
+   */
   private readonly script = `
     -- 속도 제한 구현 Lua 스크립트
     -- 토큰 버켓 알고리즘을 사용합니다
@@ -56,12 +77,32 @@ export class RateLimiterGuard implements CanActivate {
     end
   `;
 
+  /**
+   * RateLimiterGuard 생성자
+   * 
+   * @param reflector - 메타데이터 리플렉터, 데코레이터에서 설정된 속도 제한 옵션을 추출하는 데 사용
+   * @param redis - Redis 클라이언트, 토큰 버켓 상태 저장 및 Lua 스크립트 실행에 사용
+   */
   constructor(
     private readonly reflector: Reflector,
     @Inject(IORedisToken) 
     private readonly redis: Redis,
   ) {}
 
+  /**
+   * 요청에 대한 속도 제한을 검증합니다.
+   * 
+   * 처리 과정:
+   * 1. HTTP/GraphQL 요청에서 컨텍스트 추출
+   * 2. 사용자 또는 IP 기반 식별자 생성
+   * 3. 작업별 키 생성 (REST: method:path, GraphQL: type:field)
+   * 4. Redis Lua 스크립트로 토큰 버켓 알고리즘 적용
+   * 5. 결과에 따른 허용/거부 결정
+   * 
+   * @param context - 실행 컨텍스트 (HTTP 또는 GraphQL)
+   * @returns 요청 허용 여부를 나타내는 Promise<boolean>
+   * @throws BadRequestException - 속도 제한을 초과한 경우
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // HTTP 요청과 GraphQL 요청 모두 지원하기 위해 요청 객체 가져오기
     let req;

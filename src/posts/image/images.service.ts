@@ -7,6 +7,11 @@ import { basename, join } from 'path';
 import { promises } from 'fs';
 import { CreatePostImageDto } from "./dto/create-image.dto";
 
+/**
+ * 게시물 이미지 관리 서비스
+ * 
+ * 게시물 이미지의 생성, 임시 저장, 영구 저장 등의 기능을 처리합니다.
+ */
 @Injectable()
 export class PostsImagesService {
     constructor(
@@ -14,10 +19,22 @@ export class PostsImagesService {
         private readonly imageRepository: Repository<ImageModel>
     ) {}
 
+    /**
+     * QueryRunner를 이용해 이미지 리포지토리를 가져옵니다
+     * @param qr 선택적 QueryRunner
+     * @returns ImageModel의 Repository
+     */
     getRepository(qr?: QueryRunner) {
         return qr ? qr.manager.getRepository<ImageModel>(ImageModel) : this.imageRepository;
     }
 
+    /**
+     * 게시물 이미지를 생성하고 임시 폴더에서 영구 폴더로 이동합니다
+     * @param dto 이미지 생성 정보
+     * @param qr 선택적 QueryRunner
+     * @returns 생성된 이미지 모델
+     * @throws BadRequestException 파일이 존재하지 않을 경우
+     */
     async createPostImage(dto: CreatePostImageDto, qr?: QueryRunner) {
         const repository = this.getRepository(qr);
 

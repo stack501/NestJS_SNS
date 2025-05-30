@@ -5,6 +5,10 @@ import { ConfigType } from '@nestjs/config';
 import kakaoConfig from 'src/configs/kakao.config';
 import { UsersService } from 'src/users/users.service';
 
+/**
+ * 카카오 OAuth 인증을 처리하는 전략 클래스
+ * 카카오 계정으로 로그인 및 회원가입을 처리합니다
+ */
 @Injectable()
 export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   constructor(
@@ -18,6 +22,14 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     });
   }
 
+  /**
+   * 카카오 인증 후 사용자 정보를 검증하고 처리합니다
+   * @param accessToken 카카오로부터 받은 액세스 토큰
+   * @param refreshToken 카카오로부터 받은 리프레시 토큰
+   * @param profile 카카오로부터 받은 사용자 프로필 정보
+   * @param done 인증 완료 콜백 함수
+   * @returns 인증된 사용자 정보
+   */
   async validate(
     accessToken: string,
     refreshToken: string,

@@ -12,6 +12,14 @@ import { UsersModel } from "src/users/entity/users.entity";
 import { AuthService } from "src/auth/auth.service";
 import { UsersService } from "src/users/users.service";
 
+/**
+ * 채팅 웹소켓 게이트웨이
+ * 
+ * 실시간 채팅 기능을 제공하는 WebSocket 게이트웨이입니다.
+ * 채팅방 생성, 입장, 메시지 전송 및 귓속말 기능을 지원합니다.
+ * 
+ * @namespace chats
+ */
 @UsePipes(
     new ValidationPipe({
       transform: true, 
@@ -28,6 +36,14 @@ import { UsersService } from "src/users/users.service";
 })
 @UseFilters(WsErrorFilter)
 export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect {
+    /**
+     * 채팅 게이트웨이 생성자
+     * 
+     * @param chatsService 채팅 서비스
+     * @param messagesService 메시지 서비스
+     * @param authService 인증 서비스
+     * @param usersService 사용자 서비스
+     */
     constructor(
         private readonly chatsService: ChatsService,
         private readonly messagesService: ChatsMessagesService,
@@ -35,17 +51,39 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatew
         private readonly usersService: UsersService,
     ) {}
 
+    /**
+     * WebSocket 서버 인스턴스
+     */
     @WebSocketServer()
     server: Server;
 
+    /**
+     * 게이트웨이 초기화 후 실행되는 메서드
+     * 
+     * @param server WebSocket 서버 인스턴스
+     */
     afterInit(server: any) {
         console.log(`${server} after gateway init`);
     }
 
+    /**
+     * 클라이언트 연결 해제 시 실행되는 메서드
+     * 
+     * @param socket 연결 해제된 소켓
+     */
     handleDisconnect(socket: Socket) {
         console.log(`on disconnect called : ${socket.id}`);
     }
 
+    /**
+     * 클라이언트 연결 시 실행되는 메서드
+     * 
+     * JWT 토큰을 검증하고 사용자 정보를 소켓에 저장합니다.
+     * 각 사용자를 고유한 룸에 참여시켜 개별 메시지 전송을 가능하게 합니다.
+     * 
+     * @param socket 연결된 소켓 (사용자 정보 포함)
+     * @returns 연결 성공 여부
+     */
     async handleConnection(socket: Socket & {user: UsersModel}) {
         console.log(`on connect called : ${socket.id}`);
 
@@ -79,6 +117,13 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatew
         }
     }
 
+    /**
+     * 새 채팅방 생성
+     * 
+     * @param data 채팅방 생성 데이터
+     * @param socket 요청한 클라이언트 소켓
+     * @returns 생성된 채팅방 정보
+     */
     @SubscribeMessage('create_chat')
     async createChat(
         @MessageBody() data: CreateChatDto,
@@ -89,6 +134,16 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatew
         );
     }
 
+    /**
+     * 채팅방 입장
+     * 
+     * 지정된 채팅방 ID 목록의 유효성을 검사하고,
+     * 유효한 채팅방들에 소켓을 참여시킵니다.
+     * 
+     * @param data 입장할 채팅방 ID 목록
+     * @param socket 요청한 클라이언트 소켓
+     * @throws WsException 존재하지 않는 채팅방 ID가 있을 경우
+     */
     @SubscribeMessage('enter_chat')
     async enterChat(
         // 방의 chat ID들을 리스트로 받는다.
@@ -109,7 +164,18 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatew
         await socket.join(data.chatIds.map((x) => x.toString()));
     }
 
-    // socket.on('send_message', (message) => { console.log(message) });
+    /**
+     * 메시지 전송
+     * 
+     * 채팅방 메시지 또는 귓속말을 전송합니다.
+     * 채팅방 메시지는 해당 채팅방의 모든 참여자에게 브로드캐스트되고,
+     * 귓속말은 지정된 사용자에게만 전송됩니다.
+     * 
+     * @param dto 메시지 생성 데이터 (채팅방 ID 또는 귓속말 대상 ID 포함)
+     * @param socket 메시지를 전송하는 클라이언트 소켓
+     * @throws WsException 존재하지 않는 채팅방 또는 사용자일 경우
+     * @returns 생성된 메시지 정보
+     */
     @SubscribeMessage('send_message')
     async sendMessage(
         @MessageBody() dto: CreateMessagesDto,

@@ -1,0 +1,517 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>2_cf_sns documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-md-none p-0">
+               <div class="d-flex">
+                    <a href="../" class="navbar-brand">2_cf_sns documentation</a>
+                    <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+               </div>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="d-none d-md-block menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >RefreshTokenGuard</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/auth/guard/bearer-token.guard.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Refresh 토큰 전용 가드</p>
+<p>BearerTokenGuard를 상속받아 토큰 유형을 추가로 검증합니다.</p>
+
+            </p>
+
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../guards/BearerTokenGuard.html" target="_self" >BearerTokenGuard</a></code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#canActivate" >canActivate</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="canActivate"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>canActivate</b></span>
+                        <a href="#canActivate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>canActivate(context: ExecutionContext)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="142"
+                                    class="link-to-prism">src/auth/guard/bearer-token.guard.ts:142</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Refresh 토큰 검증 메서드</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                        <code>ExecutionContext</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <ul>
+<li>실행 컨텍스트</li>
+</ul>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>인증 및 토큰 유형 검증 성공 여부</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from &quot;@nestjs/common&quot;;
+import { AuthService } from &quot;../auth.service&quot;;
+import { UsersService } from &quot;src/users/users.service&quot;;
+import { Reflector } from &quot;@nestjs/core&quot;;
+import { IS_PUBLIC_KEY } from &quot;src/common/decorator/is-public.decorator&quot;;
+import { IsPublicEnum } from &quot;src/common/const/is-public.const&quot;;
+import { GqlExecutionContext } from &quot;@nestjs/graphql&quot;;
+
+/**
+ * Bearer 토큰 기본 가드
+ * 
+ * @description JWT Bearer 토큰을 검증하고 사용자 정보를 요청 객체에 주입합니다.
+ * HTTP와 GraphQL 요청을 모두 지원하며, @IsPublic 데코레이터로 표시된 경로는 인증을 건너뜁니다.
+ */
+@Injectable()
+export class BearerTokenGuard implements CanActivate {
+    constructor(
+        protected readonly authService: AuthService,
+        protected readonly usersService: UsersService,
+        protected readonly reflector: Reflector,
+    ) {}
+
+    /**
+     * 가드 활성화 여부를 확인하는 메서드
+     * 
+     * @param context - 실행 컨텍스트 (HTTP 또는 GraphQL)
+     * @returns 인증 성공 여부
+     * @throws {UnauthorizedException} 토큰이 없거나 유효하지 않을 때
+     */
+    async canActivate(context: ExecutionContext): Promise&lt;boolean&gt; {
+        const isPublic &#x3D; this.reflector.getAllAndOverride(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+          ]);
+      
+          if (isPublic) {
+            return true;
+          }
+
+        // GraphQL 요청인지 확인하고, 맞다면 GqlExecutionContext 사용
+        const gqlContext &#x3D; GqlExecutionContext.create(context);
+        const req &#x3D; gqlContext.getContext().req || context.switchToHttp().getRequest(); // GraphQL 컨텍스트에서 req 가져오기, 없으면 HTTP 컨텍스트 시도
+
+        if (!req) {
+            // 요청 객체를 가져올 수 없는 경우 (예상치 못한 상황)
+            throw new UnauthorizedException(&#x27;Request object not found in context.&#x27;);
+        }
+
+        const rawToken &#x3D; req.headers[&#x27;authorization&#x27;]; // 여기서 req.headers 접근
+
+        if (!rawToken) {
+            throw new UnauthorizedException(&#x27;토큰이 없습니다!&#x27;);
+        }
+
+        const token &#x3D; this.authService.extractTokenFromHeader(rawToken, true);
+        const result &#x3D; await this.authService.verifyToken(token);
+        const user &#x3D; await this.usersService.getUserByEmail(result.email);
+
+        // req에 user 정보 주입 (GraphQL 컨텍스트와 HTTP 컨텍스트 모두에)
+        if (gqlContext.getContext().req) {
+            gqlContext.getContext().req.user &#x3D; user;
+            gqlContext.getContext().req.token &#x3D; token;
+            gqlContext.getContext().req.tokenType &#x3D; result.type;
+        } else {
+            req.user &#x3D; user;
+            req.token &#x3D; token;
+            req.tokenType &#x3D; result.type;
+        }
+
+        return true;
+    }
+}
+
+/**
+ * Access 토큰 전용 가드
+ * 
+ * @description Bearer 토큰 중 Access 토큰만을 허용하는 가드입니다.
+ * BearerTokenGuard를 상속받아 토큰 유형을 추가로 검증합니다.
+ */
+@Injectable()
+export class AccessTokenGuard extends BearerTokenGuard {
+    /**
+     * Access 토큰 검증 메서드
+     * 
+     * @param context - 실행 컨텍스트
+     * @returns 인증 및 토큰 유형 검증 성공 여부
+     * @throws {UnauthorizedException} Access 토큰이 아닐 때
+     */
+    async canActivate(context: ExecutionContext): Promise&lt;boolean&gt; {
+        // 1. 현재 경로가 @IsPublic으로 지정되었는지 확인 (BearerTokenGuard와 동일한 방식)
+        const isPublic &#x3D; this.reflector.getAllAndOverride&lt;IsPublicEnum&gt;(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+
+        if (isPublic &#x3D;&#x3D;&#x3D; IsPublicEnum.IS_PUBLIC) {
+            // 공개 경로이면 AccessTokenGuard도 즉시 통과
+            return true;
+        }
+
+        // 2. 공개 경로가 아니라면, BearerTokenGuard의 로직 실행
+        // (토큰 추출, 기본 검증. 실패 시 BearerTokenGuard에서 예외 발생)
+        await super.canActivate(context);
+
+        // 3. BearerTokenGuard가 성공적으로 완료되었다면, req 객체를 올바르게 가져옴
+        const gqlContext &#x3D; GqlExecutionContext.create(context);
+        const req &#x3D; gqlContext.getContext().req || context.switchToHttp().getRequest();
+
+        if (!req) {
+            // 이 경우는 super.canActivate()가 req를 설정하지 않았거나, 컨텍스트에서 req를 찾을 수 없는 예외적 상황
+            throw new UnauthorizedException(&#x27;Request object not found in AccessTokenGuard.&#x27;);
+        }
+
+        if (!req.tokenType) {
+            // BearerTokenGuard에서 tokenType을 설정해야 함
+            throw new UnauthorizedException(&#x27;Token type not found on request.&#x27;);
+        }
+
+        if (req.tokenType !&#x3D;&#x3D; &#x27;access&#x27;) {
+            throw new UnauthorizedException(&#x27;Access Token이 아닙니다.&#x27;);
+        }
+
+        return true;
+    }
+}
+
+/**
+ * Refresh 토큰 전용 가드
+ * 
+ * @description Bearer 토큰 중 Refresh 토큰만을 허용하는 가드입니다.
+ * BearerTokenGuard를 상속받아 토큰 유형을 추가로 검증합니다.
+ */
+@Injectable()
+export class RefreshTokenGuard extends BearerTokenGuard {
+    /**
+     * Refresh 토큰 검증 메서드
+     * 
+     * @param context - 실행 컨텍스트
+     * @returns 인증 및 토큰 유형 검증 성공 여부
+     * @throws {UnauthorizedException} Refresh 토큰이 아닐 때
+     */
+    async canActivate(context: ExecutionContext): Promise&lt;boolean&gt; {
+        const isPublic &#x3D; this.reflector.getAllAndOverride&lt;IsPublicEnum&gt;(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
+
+        // Refresh 토큰 경로는 일반적으로 공개되지 않으므로, 이 조건은 거의 해당되지 않을 수 있습니다.
+        if (isPublic &#x3D;&#x3D;&#x3D; IsPublicEnum.IS_PUBLIC) {
+            return true;
+        }
+
+        await super.canActivate(context);
+
+        const gqlContext &#x3D; GqlExecutionContext.create(context);
+        const req &#x3D; gqlContext.getContext().req || context.switchToHttp().getRequest();
+
+        if (!req) {
+            throw new UnauthorizedException(&#x27;Request object not found in RefreshTokenGuard.&#x27;);
+        }
+
+        if (!req.tokenType) {
+            throw new UnauthorizedException(&#x27;Token type not found on request.&#x27;);
+        }
+
+        if (req.tokenType !&#x3D;&#x3D; &#x27;refresh&#x27;) {
+            throw new UnauthorizedException(&#x27;Refresh Token이 아닙니다.&#x27;);
+        }
+
+        return true;
+    }
+}</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'RefreshTokenGuard.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script>
+               $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               checkToggle(darkModeState);
+               if ($darkModeToggleSwitchers.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -18,6 +18,12 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
-    "moduleResolution": "node"
-  }
+    "moduleResolution": "node",
+    "allowJs": true,
+  },
+  "include": [
+    "src/**/*",
+    "scripts/**/*.js",
+    "scripts/**/*.mjs"
+  ]
 }

@@ -9,23 +9,19 @@ import { QueryRunner } from 'typeorm';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthScheme } from 'src/common/const/auth-schema.const';
 
+/**
+ * 사용자 관련 API 엔드포인트를 제공하는 컨트롤러
+ * 
+ * 사용자 조회, 팔로우 관리 등의 엔드포인트를 처리합니다.
+ */
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Post()
-  // postUser(
-  //   @Body('nickname') nickname: string,
-  //   @Body('email') email: string,
-  //   @Body('password') password: string,
-  // ) {
-  //   return this.usersService.createUser({
-  //     nickname,
-  //     email,
-  //     password,
-  //   });
-  // }
-  
+  /**
+   * 모든 사용자 목록을 조회합니다
+   * @returns 모든 사용자 목록
+   */
   @Get()
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -37,6 +33,12 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
+  /**
+   * 사용자의 팔로워 목록을 조회합니다
+   * @param userId 로그인된 사용자 ID
+   * @param includeNotConfirmed 미확인 팔로우 포함 여부
+   * @returns 팔로워 목록
+   */
   @Get('follow/me')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -50,6 +52,12 @@ export class UsersController {
     return this.usersService.getFollowers(userId, includeNotConfirmed);
   }
 
+  /**
+   * 특정 사용자를 팔로우합니다
+   * @param userId 로그인된 사용자 ID
+   * @param followeeId 팔로우할 사용자 ID
+   * @returns 성공 여부
+   */
   @Post('follow/:id')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -65,6 +73,13 @@ export class UsersController {
     return true;
   }
 
+  /**
+   * 팔로우 요청을 취소합니다
+   * @param userId 로그인된 사용자 ID
+   * @param followeeId 팔로우 요청을 취소할 사용자 ID
+   * @param qr QueryRunner 인스턴스
+   * @returns 성공 여부
+   */
   @Delete('follow/:id/cancel')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -82,6 +97,11 @@ export class UsersController {
     return true;
   }
 
+  /**
+   * 사용자가 요청한 팔로우 목록을 조회합니다
+   * @param userId 로그인된 사용자 ID
+   * @returns 팔로우 요청 목록
+   */
   @Get('follow/me/requests')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -96,6 +116,13 @@ export class UsersController {
     return existing;
   }
 
+  /**
+   * 팔로우 요청을 수락합니다
+   * @param userId 로그인된 사용자 ID
+   * @param followerId 팔로우를 요청한 사용자 ID
+   * @param qr QueryRunner 인스턴스
+   * @returns 성공 여부
+   */
   @Patch('follow/:id/confirm')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
@@ -127,6 +154,13 @@ export class UsersController {
     return true;
   }
 
+  /**
+   * 팔로우 관계를 삭제합니다 (언팔로우)
+   * @param userId 로그인된 사용자 ID
+   * @param followeeId 언팔로우할 사용자 ID
+   * @param qr QueryRunner 인스턴스
+   * @returns 성공 여부
+   */
   @Delete('follow/:id')
   @ApiBearerAuth(AuthScheme.ACCESS)
   @ApiOperation({ 
