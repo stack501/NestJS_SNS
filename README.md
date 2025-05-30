@@ -170,34 +170,6 @@ npm run db:migrate
 npm run start:dev
 ```
 
-### 환경 변수
-```env
-# 데이터베이스
-DATABASE_HOST=localhost
-DATABASE_PORT=5432
-DATABASE_NAME=sns_db
-DATABASE_USERNAME=your_user
-DATABASE_PASSWORD=your_password
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# JWT
-JWT_SECRET_KEY=your_jwt_secret
-HASH_ROUNDS=10
-
-# OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-KAKAO_CLIENT_ID=your_kakao_client_id
-KAKAO_CLIENT_SECRET=your_kakao_client_secret
-
-# 서버
-HTTP_PROTOCOL=http
-HTTP_HOST=localhost:3000
-```
-
 ## 📚 API 문서
 
 ### 인증 엔드포인트
