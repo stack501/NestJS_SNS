@@ -153,7 +153,7 @@ Auth Module
 ### 설치
 ```bash
 # 저장소 클론
-git clone https://github.com/yourusername/nestjs-sns.git
+git clone https://github.com/stack501/NestJS_SNS.git
 cd nestjs-sns
 
 # 의존성 설치
@@ -282,23 +282,32 @@ Redis를 통한 성능 최적화 시스템
 
 ### 스크립트
 ```bash
-npm run start:dev      # 개발 서버
+# 개발 및 실행
+npm run start:local    # 로컬 환경에서 개발 서버 (watch 모드)
+npm run start:dev      # 개발 환경에서 개발 서버 (watch 모드)
+npm run start:debug    # 디버그 모드로 개발 서버
+npm run start:prod     # 프로덕션 서버 실행
 npm run build          # 프로덕션 빌드
-npm run test           # 테스트 실행
-npm run test:e2e       # End-to-end 테스트
-npm run db:migrate     # 데이터베이스 마이그레이션
-```
 
-### 코드 구조
-```
-src/
-├── auth/              # 인증 모듈
-├── users/             # 사용자 관리
-├── posts/             # 게시물 관리
-├── chats/             # 실시간 메시징
-├── common/            # 공유 유틸리티
-├── redis/             # 캐싱 모듈
-└── main.ts           # 애플리케이션 진입점
+# 테스트
+npm run test           # 단위 테스트 실행
+npm run test:watch     # 테스트 watch 모드
+npm run test:cov       # 테스트 커버리지
+npm run test:debug     # 테스트 디버그 모드
+npm run test:e2e       # End-to-end 테스트
+
+# 코드 품질
+npm run lint           # ESLint 실행 및 자동 수정
+npm run format         # Prettier 포맷팅
+
+# 데이터베이스 및 Redis
+npm run db:seed        # 데이터베이스 시드 데이터 생성
+npm run redis:cli      # Redis CLI 접속 (Docker 컨테이너)
+
+# 문서화
+npm run docs:generate-readmes  # 모듈별 README 파일 생성
+npm run docs:generate  # API 문서 생성 (Compodoc)
+npm run docs:serve     # 문서 서버 실행
 ```
 
 ## 🚦 성능 특징
