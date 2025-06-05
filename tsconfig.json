@@ -24,6 +24,7 @@
   "include": [
     "src/**/*",
     "scripts/**/*.js",
-    "scripts/**/*.mjs"
+    "scripts/**/*.mjs",
+    "jest.config.ts"
   ]
 }
