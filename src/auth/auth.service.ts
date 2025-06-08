@@ -7,6 +7,8 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { ConfigType } from '@nestjs/config';
 import appConfig from 'src/configs/app.config';
 import { LoginDto } from './dto/login.dto';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 /**
  * 인증 관련 비즈니스 로직을 처리하는 서비스
@@ -18,7 +20,9 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly usersService: UsersService,
         @Inject(appConfig.KEY)
-        private readonly config: ConfigType<typeof appConfig>
+        private readonly config: ConfigType<typeof appConfig>,
+        @Inject(WINSTON_MODULE_PROVIDER) 
+        private readonly logger: Logger,
     ) {}
 
     /**
@@ -56,15 +60,31 @@ export class AuthService {
      * @throws UnauthorizedException 토큰 형식이 잘못된 경우
      */
     extractTokenFromHeader(header: string, isBearer: boolean) {
-        const splitToken = header.split(' ');
+        this.logger.debug('Auth: Extracting token from header', { 
+            isBearer,
+            hasHeader: !!header,
+            headerPrefix: header?.split(' ')[0] || 'none'
+        });
 
+        const splitToken = header.split(' ');
         const prefix = isBearer ? 'Bearer' : 'Basic';
 
         if(splitToken.length !== 2 || splitToken[0] !== prefix) {
+            this.logger.warn('Auth: Invalid token format', { 
+                expectedPrefix: prefix,
+                actualPrefix: splitToken[0],
+                tokenParts: splitToken.length
+            });
             throw new UnauthorizedException('잘못된 토큰입니다.');
         }
 
         const token = splitToken[1];
+        
+        this.logger.debug('Auth: Token extracted successfully', { 
+            tokenType: prefix,
+            tokenLength: token.length,
+            tokenPrefix: token.substring(0, 10) + '...' // 보안: 일부만 로깅
+        });
 
         return token;
     }
@@ -76,20 +96,39 @@ export class AuthService {
      * @throws UnauthorizedException 토큰 형식이 잘못된 경우
      */
     decodeBasicToken(base64String: string) {
-        const decoded = Buffer.from(base64String, 'base64').toString('utf8');
+        this.logger.debug('Auth: Decoding basic token', { 
+            tokenLength: base64String.length 
+        });
 
-        const split = decoded.split(':');
+        try {
+            const decoded = Buffer.from(base64String, 'base64').toString('utf8');
+            const split = decoded.split(':');
 
-        if(split.length !== 2) {
+            if(split.length !== 2) {
+                this.logger.warn('Auth: Invalid basic token format', { 
+                    expectedParts: 2, 
+                    actualParts: split.length 
+                });
+                throw new UnauthorizedException('잘못된 유형의 토큰입니다.');
+            }
+
+            const email = split[0];
+            const emailDomain = email.split('@')[1] || 'unknown';
+
+            this.logger.debug('Auth: Basic token decoded successfully', { 
+                emailDomain, // 보안: 도메인만 로깅
+                hasPassword: !!split[1]
+            });
+
+            return {
+                email,
+                password: split[1],
+            };
+        } catch (error) {
+            this.logger.error('Auth: Failed to decode basic token', { 
+                error: error.message 
+            });
             throw new UnauthorizedException('잘못된 유형의 토큰입니다.');
-        }
-
-        const email = split[0];
-        const password = split[1];
-
-        return {
-            email,
-            password,
         }
     }
 
@@ -100,12 +139,30 @@ export class AuthService {
      * @throws UnauthorizedException 토큰이 유효하지 않거나 만료된 경우
      */
     verifyToken(token: string) {
+        this.logger.debug('Auth: Verifying JWT token', { 
+            tokenLength: token.length,
+            tokenPrefix: token.substring(0, 20) + '...'
+        });
+
         try {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-            return this.jwtService.verify(token, {
+            const decoded = this.jwtService.verify(token, {
                 secret: this.config.jwt.secretKey,
             });
+
+            this.logger.info('Auth: Token verified successfully', {
+                userId: decoded.sub,
+                tokenType: decoded.type,
+                email: this.maskEmail(decoded.email)
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            return decoded;
         } catch (error) {
+            this.logger.warn('Auth: Token verification failed', {
+                error: error.message,
+                tokenLength: token.length,
+                errorType: error.constructor.name
+            });
             throw new UnauthorizedException(`${error} : 토큰이 만료되었거나 잘못된 토큰입니다.`);
         }
     }
@@ -118,20 +175,34 @@ export class AuthService {
      * @throws UnauthorizedException 리프레시 토큰이 아닌 경우
      */
     rotateToken(token: string, isRefreshToken: boolean) {
+        this.logger.info('Auth: Starting token rotation', { 
+            isRefreshToken,
+            tokenLength: token.length 
+        });
+
         const decoded = this.verifyToken(token);
 
-        /**
-         * sub: id
-         * email: email,
-         * type: 'access' | 'refresh'
-         */
         if(decoded.type !== 'refresh') {
+            this.logger.warn('Auth: Invalid token type for rotation', {
+                actualType: decoded.type,
+                requiredType: 'refresh',
+                userId: decoded.sub
+            });
             throw new UnauthorizedException('토큰 재발급은 Refresh 토큰으로만 가능합니다!');
         }
 
-        return this.signToken({
+        const newToken = this.signToken({
             ...decoded
         }, isRefreshToken);
+
+        this.logger.info('Auth: Token rotated successfully', {
+            userId: decoded.sub,
+            oldTokenType: decoded.type,
+            newTokenType: isRefreshToken ? 'refresh' : 'access',
+            email: this.maskEmail(decoded.email)
+        });
+
+        return newToken;
     }
 
     /**
@@ -168,17 +239,31 @@ export class AuthService {
      * @returns 서명된 JWT 토큰
      */
     signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
+        this.logger.debug('Auth: Signing new token', {
+            userId: user.id,
+            email: this.maskEmail(user.email),
+            tokenType: isRefreshToken ? 'refresh' : 'access',
+            expiresIn: isRefreshToken ? '30 days' : '1 hour'
+        });
+
         const payload = {
             email: user.email,
             sub: user.id,
             type: isRefreshToken ? 'refresh' : 'access',
         };
 
-        return this.jwtService.sign(payload, {
+        const token = this.jwtService.sign(payload, {
             secret: this.config.jwt.secretKey,
-            //seconds
             expiresIn: isRefreshToken ? 2592000 : 3600,
-        })
+        });
+
+        this.logger.info('Auth: Token signed successfully', {
+            userId: user.id,
+            tokenType: isRefreshToken ? 'refresh' : 'access',
+            tokenLength: token.length
+        });
+
+        return token;
     }
 
     /**
@@ -187,10 +272,23 @@ export class AuthService {
      * @returns 액세스 토큰과 리프레시 토큰 객체
      */
     loginUser(user: Pick<UsersModel, 'email' | 'id'>) {
-        return {
+        this.logger.info('Auth: Generating login tokens', {
+            userId: user.id,
+            email: this.maskEmail(user.email)
+        });
+
+        const tokens = {
             accessToken: this.signToken(user, false),
             refreshToken: this.signToken(user, true),
-        }
+        };
+
+        this.logger.info('Auth: Login tokens generated successfully', {
+            userId: user.id,
+            hasAccessToken: !!tokens.accessToken,
+            hasRefreshToken: !!tokens.refreshToken
+        });
+
+        return tokens;
     }
 
     /**
@@ -200,25 +298,53 @@ export class AuthService {
      * @throws UnauthorizedException 사용자가 존재하지 않거나 비밀번호가 일치하지 않는 경우
      */
     async authenticateWithEmailAndPassword(loginDto: LoginDto) {
-        const existingUser = await this.usersService.getUserByEmail(loginDto.email);
+        this.logger.info('Auth: Starting email/password authentication', {
+            email: this.maskEmail(loginDto.email),
+            hasPassword: !!loginDto.password
+        });
 
-        if (!existingUser) {
-            throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+        try {
+            const existingUser = await this.usersService.getUserByEmail(loginDto.email);
+
+            if (!existingUser) {
+                this.logger.warn('Auth: User not found during authentication', {
+                    email: this.maskEmail(loginDto.email),
+                    attemptTime: new Date().toISOString()
+                });
+                throw new UnauthorizedException('존재하지 않는 사용자입니다.');
+            }
+
+            this.logger.debug('Auth: User found, checking password', {
+                userId: existingUser.id,
+                email: this.maskEmail(existingUser.email)
+            });
+
+            const passOk = await bcrypt.compare(loginDto.password, existingUser.password);
+
+            if (!passOk) {
+                this.logger.warn('Auth: Password verification failed', {
+                    userId: existingUser.id,
+                    email: this.maskEmail(existingUser.email),
+                    attemptTime: new Date().toISOString()
+                });
+                throw new UnauthorizedException('비밀번호가 틀렸습니다.');
+            }
+
+            this.logger.info('Auth: Authentication successful', {
+                userId: existingUser.id,
+                email: this.maskEmail(existingUser.email),
+                loginTime: new Date().toISOString()
+            });
+
+            return existingUser;
+        } catch (error) {
+            this.logger.error('Auth: Authentication process failed', {
+                email: this.maskEmail(loginDto.email),
+                error: error.message,
+                errorType: error.constructor.name
+            });
+            throw error;
         }
-
-        /**
-         * 파라미터
-         * 
-         * 1) 입력된 비밀번호
-         * 2) 기존 해시(hash) -> 사용자 정보에 저장되어있는 hash
-         */
-        const passOk = await bcrypt.compare(loginDto.password, existingUser.password);
-
-        if (!passOk) {
-            throw new UnauthorizedException('비밀번호가 틀렸습니다.');
-        }
-
-        return existingUser;
     }
 
     /**
@@ -227,9 +353,28 @@ export class AuthService {
      * @returns 액세스 토큰과 리프레시 토큰 객체
      */
     async loginWithEmail(loginDto: LoginDto) {
-        const existingUser = await this.authenticateWithEmailAndPassword(loginDto);
+        this.logger.info('Auth: Email login attempt', {
+            email: this.maskEmail(loginDto.email),
+            timestamp: new Date().toISOString()
+        });
 
-        return this.loginUser(existingUser);
+        try {
+            const existingUser = await this.authenticateWithEmailAndPassword(loginDto);
+            const tokens = this.loginUser(existingUser);
+
+            this.logger.info('Auth: Email login completed successfully', {
+                userId: existingUser.id,
+                email: this.maskEmail(existingUser.email)
+            });
+
+            return tokens;
+        } catch (error) {
+            this.logger.error('Auth: Email login failed', {
+                email: this.maskEmail(loginDto.email),
+                error: error.message
+            });
+            throw error;
+        }
     }
 
     /**
@@ -238,16 +383,71 @@ export class AuthService {
      * @returns 액세스 토큰과 리프레시 토큰 객체
      */
     async registerWithEmail(user: RegisterUserDto) {
-        const hash = await bcrypt.hash(
-            user.password,
-            parseInt(this.config.encrypt.hash_Rounds!),
-        );
-
-        const newUser = await this.usersService.createUser({
-            ...user,
-            password: hash,
+        this.logger.info('Auth: User registration attempt', {
+            email: this.maskEmail(user.email),
+            nickname: user.nickname,
+            timestamp: new Date().toISOString()
         });
 
-        return this.loginUser(newUser);
+        try {
+            // 비밀번호 해싱
+            this.logger.debug('Auth: Hashing password', {
+                email: this.maskEmail(user.email),
+                hashRounds: this.config.encrypt.hash_Rounds
+            });
+
+            const hash = await bcrypt.hash(
+                user.password,
+                parseInt(this.config.encrypt.hash_Rounds!),
+            );
+
+            // 사용자 생성
+            this.logger.debug('Auth: Creating new user', {
+                email: this.maskEmail(user.email),
+                nickname: user.nickname
+            });
+
+            const newUser = await this.usersService.createUser({
+                ...user,
+                password: hash,
+            });
+
+            this.logger.info('Auth: User created successfully', {
+                userId: newUser.id,
+                email: this.maskEmail(newUser.email),
+                nickname: newUser.nickname
+            });
+
+            // 토큰 생성
+            const tokens = this.loginUser(newUser);
+
+            this.logger.info('Auth: Registration completed with auto-login', {
+                userId: newUser.id,
+                email: this.maskEmail(newUser.email)
+            });
+
+            return tokens;
+        } catch (error) {
+            this.logger.error('Auth: Registration failed', {
+                email: this.maskEmail(user.email),
+                error: error.message,
+                errorType: error.constructor.name
+            });
+            throw error;
+        }
+    }
+
+    /**
+     * 보안을 위해 이메일을 마스킹합니다
+     * 예: john.doe@example.com -> j***@example.com
+     */
+    private maskEmail(email: string): string {
+        if (!email || !email.includes('@')) {
+            return 'invalid-email';
+        }
+
+        const [local, domain] = email.split('@');
+        const maskedLocal = local.charAt(0) + '*'.repeat(Math.max(0, local.length - 1));
+        return `${maskedLocal}@${domain}`;
     }
 }

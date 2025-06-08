@@ -1,22 +1,23 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
-/**
- * HTTP 예외 필터
- * 
- * HTTP 요청 처리 중 발생하는 예외를 전역적으로 처리합니다.
- * 예외 정보를 일관된 형태로 클라이언트에게 응답합니다.
- */
+// 요청 본문 타입 정의
+interface RequestBody {
+  [key: string]: unknown;
+}
+
+// 민감한 정보가 제거된 본문 타입
+interface SanitizedBody {
+  [key: string]: unknown;
+}
+
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-    /**
-     * 예외 처리 메서드
-     * 
-     * HTTP 예외를 캐치하여 구조화된 에러 응답을 생성합니다.
-     * 상태 코드, 에러 메시지, 타임스탬프, 요청 경로 등을 포함합니다.
-     * 
-     * @param exception 발생한 HTTP 예외
-     * @param host 실행 컨텍스트 호스트
-     */
+    constructor(
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    ) {}
+
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
@@ -24,15 +25,63 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const status = exception.getStatus();
 
         const res = exception.getResponse();
-        const error = typeof res === 'object' && (res as any).error ? (res as any).error : exception.message;
-        const message = typeof res === 'object' && (res as any).message ? (res as any).message : exception.message;
+        const error = typeof res === 'object' && res !== null && 'error' in res 
+            ? (res as { error: string }).error 
+            : exception.message;
+        const message = typeof res === 'object' && res !== null && 'message' in res 
+            ? (res as { message: string | string[] }).message 
+            : exception.message;
 
+        // 상세 로그 정보
+        const logData = {
+            statusCode: status,
+            error,
+            message,
+            timestamp: new Date().toISOString(),
+            path: request.url,
+            method: request.method,
+            userId: request.user?.id || 'anonymous',
+            ip: request.ip,
+            userAgent: request.headers?.['user-agent'] || '',
+            body: this.sanitizeRequestBody(request.body as RequestBody),
+        };
+
+        // 로그 레벨 분리
+        if (status >= 500) {
+            this.logger.error('HTTP Server Error', logData);
+        } else if (status >= 400) {
+            this.logger.warn('HTTP Client Error', logData);
+        }
+
+        // 클라이언트 응답
         response.status(status).json({
             statusCode: status,
-            error,        // 예: "Bad Request"
-            message,      // 예: "테스트"
+            error,
+            message,
             timeStamp: new Date().toLocaleString('kr'),
             path: request.url,
         });
+    }
+
+    /**
+     * 요청 본문에서 민감한 정보를 제거합니다
+     * @param body 요청 본문
+     * @returns 민감한 정보가 제거된 본문
+     */
+    private sanitizeRequestBody(body: RequestBody | null | undefined): SanitizedBody | null {
+        if (!body || typeof body !== 'object') {
+            return body as null;
+        }
+        
+        const sensitiveFields = ['password', 'token', 'secret', 'accessToken', 'refreshToken'];
+        const sanitized: SanitizedBody = { ...body };
+        
+        sensitiveFields.forEach(field => {
+            if (field in sanitized) {
+                sanitized[field] = '[REDACTED]';
+            }
+        });
+        
+        return sanitized;
     }
 }

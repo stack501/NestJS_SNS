@@ -32,10 +32,13 @@ import { join } from 'path';
 import depthLimit from 'graphql-depth-limit';
 import { createComplexityRule, directiveEstimator, simpleEstimator } from 'graphql-query-complexity';
 import { GraphQLError } from 'graphql';
+import { WinstonModule } from 'nest-winston';
+import { winstonConfig } from './common/logger/winston.config';
 
 
 @Module({
   imports: [
+    WinstonModule.forRoot(winstonConfig),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // 스키마 파일 생성 경로

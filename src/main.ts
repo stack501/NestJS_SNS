@@ -5,10 +5,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import expressBasicAuth from 'express-basic-auth';
 import { ConfigService } from '@nestjs/config';
 import { AuthScheme } from './common/const/auth-schema.const';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { HttpExceptionFilter } from './common/exception-filter/http.exception-filter';
+import { Logger } from 'winston';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const logger: Logger = app.get(WINSTON_MODULE_PROVIDER);
   const configService = app.get(ConfigService);
   const swaggerUser = configService.get<string>('app.swagger.user');
   const swaggerPassword = configService.get<string>('app.swagger.password');
@@ -25,6 +29,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalFilters(new HttpExceptionFilter(logger));
 
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
