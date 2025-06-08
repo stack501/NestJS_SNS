@@ -2,6 +2,18 @@
 
 실시간 채팅, 소셜 인증, 파일 업로드, 포괄적인 캐싱 기능을 갖춘 NestJS 기반 완전한 소셜 미디어 플랫폼입니다.
 
+## 🏗️ 기술 스택
+
+- Backend Framework: **NestJS (TypeScript)**
+- Database: **PostgreSQL + TypeORM**
+- Caching: **Redis + Keyv**
+- Real-time Communication: **Socket.IO (WebSocket)**
+- Authentication: **JWT + Passport (Google/Kakao OAuth)**
+- API: **GraphQL + REST API**
+- Logging: **Winston**
+- Testing: **Jest**
+- Documentation: **Swagger + Compodoc**
+
 ## 🚀 주요 기능
 
 ### 핵심 기능
