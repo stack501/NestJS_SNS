@@ -34,6 +34,7 @@ import { createComplexityRule, directiveEstimator, simpleEstimator } from 'graph
 import { GraphQLError } from 'graphql';
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './common/logger/winston.config';
+import { HealthModule } from './health/health.module';
 
 
 @Module({
@@ -130,6 +131,7 @@ import { winstonConfig } from './common/logger/winston.config';
     ChatsModule,
     CommentsModule,
     RedisModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
