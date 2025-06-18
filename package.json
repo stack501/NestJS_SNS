@@ -23,7 +23,9 @@
     "db:seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/bin/cli.cjs seed:run --dataSource data-source.ts",
     "docs:generate-readmes": "node scripts/generate-module-readmes.mjs",
     "docs:generate": "npm run docs:generate-readmes && compodoc -p tsconfig.json -d docs -s",
-    "docs:serve": "compodoc -s -d ./docs"
+    "docs:serve": "compodoc -s -d ./docs",
+    "docs:watch": "compodoc -p tsconfig.json -d docs -s -w --port 8080",
+    "start:dev:with-docs": "concurrently --names \"API,DOCS\" --prefix-colors \"blue,green\" \"npm run start:dev\" \"npm run docs:watch\""
   },
   "dependencies": {
     "@apollo/server": "^4.12.1",
@@ -87,6 +89,7 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/supertest": "^6.0.2",
     "@types/winston": "^2.4.4",
+    "concurrently": "^9.1.2",
     "dotenv": "^16.5.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
