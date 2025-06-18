@@ -42,7 +42,7 @@ import { HealthModule } from './health/health.module';
     WinstonModule.forRoot(winstonConfig),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // 스키마 파일 생성 경로
+      autoSchemaFile: join(process.cwd(), 'dist/schema.gql'), // 스키마 파일 생성 경로
       sortSchema: true, // 스키마를 알파벳 순으로 정렬 (선택 사항)
       playground: true, // 개발 환경에서 GraphQL Playground 활성화
       debug: true, // 개발 환경에서 디버그 정보 활성화
