@@ -1,7 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
+import { IsPublicEnum } from 'src/common/const/is-public.const';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('health')
 export class HealthController {
+    @IsPublic(IsPublicEnum.IS_PUBLIC)
     @Get()
     check() {
         return { 
@@ -12,6 +15,7 @@ export class HealthController {
         };
     }
 
+    @IsPublic(IsPublicEnum.IS_PUBLIC)
     @Get('db')
     checkDatabase() {
     return { 
