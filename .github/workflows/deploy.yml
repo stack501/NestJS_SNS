@@ -36,7 +36,19 @@ jobs:
           ${{ runner.os }}-pnpm-
         
     - name: 📦 의존성 설치
-      run: pnpm install --frozen-lockfile
+      run: |
+        if [ -f pnpm-lock.yaml ]; then
+          echo "📦 pnpm-lock.yaml 발견 - frozen-lockfile 모드 사용"
+          pnpm install --frozen-lockfile
+        else
+          echo "⚠️ pnpm-lock.yaml 없음 - 일반 모드 사용"
+          pnpm install
+          echo "📝 pnpm-lock.yaml 생성됨"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore: pnpm-lock.yaml 자동 생성" || echo "변경사항 없음"
+        fi
       
     - name: 🔍 린트 검사
       run: pnpm run lint
