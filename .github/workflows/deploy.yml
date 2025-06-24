@@ -94,8 +94,39 @@ jobs:
     steps:
     - name: 🔐 SSH Known Hosts 설정
       run: |
+        echo "====== 디버깅 정보 ======"
+        echo "NAS_HOST: '${{ secrets.NAS_HOST }}'"
+        echo "NAS_PORT: '${{ secrets.NAS_PORT }}'"
+        echo "현재 시간: $(date)"
+        echo "네트워크 인터페이스:"
+        ip route show
+        echo "========================"
+        
         mkdir -p ~/.ssh
-        ssh-keyscan -H ${{ secrets.NAS_HOST }} >> ~/.ssh/known_hosts
+        
+        # 1. 기본 연결 테스트
+        echo "1. 기본 연결 테스트"
+        if ping -c 3 ${{ secrets.NAS_HOST }}; then
+          echo "✅ 핑 성공"
+        else
+          echo "❌ 핑 실패"
+        fi
+        
+        # 2. 포트 접근 테스트
+        echo "2. SSH 포트 접근 테스트"
+        if nc -zv ${{ secrets.NAS_HOST }} ${{ secrets.NAS_PORT }}; then
+          echo "✅ SSH 포트 접근 가능"
+        else
+          echo "❌ SSH 포트 접근 불가"
+          exit 1
+        fi
+        
+        # 3. SSH 키 스캔
+        echo "3. SSH 키 스캔"
+        ssh-keyscan -v -H -T 10 ${{ secrets.NAS_HOST }} >> ~/.ssh/known_hosts
+        
+        echo "4. 결과 확인"
+        cat ~/.ssh/known_hosts
         
     - name: 🚀 NAS 서버 배포
       uses: appleboy/ssh-action@v1.0.3
