@@ -127,9 +127,8 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayInit, OnGatew
     @SubscribeMessage('create_chat')
     async createChat(
         @MessageBody() data: CreateChatDto,
-        @ConnectedSocket() socket: Socket & {user: UsersModel},
     ) {
-        const chat = await this.chatsService.createChat(
+        await this.chatsService.createChat(
             data,
         );
     }
