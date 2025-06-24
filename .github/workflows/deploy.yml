@@ -95,7 +95,7 @@ jobs:
     - name: 🔐 SSH Known Hosts 설정
       run: |
         mkdir -p ~/.ssh
-        ssh-keyscan -H ${{ secrets.NAS_IP }} >> ~/.ssh/known_hosts
+        ssh-keyscan -H ${{ secrets.NAS_HOST }} >> ~/.ssh/known_hosts
         
     - name: 🚀 NAS 서버 배포
       uses: appleboy/ssh-action@v1.0.3
@@ -104,13 +104,13 @@ jobs:
         GITHUB_REF: ${{ github.ref }}
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_REPOSITORY: ${{ github.repository }}
-        NAS_IP: ${{ secrets.NAS_IP }}  # ← Secrets에서 가져옴
+        NAS_HOST: ${{ secrets.NAS_HOST }}  # ← Secrets에서 가져옴
       with:
         host: ${{ secrets.NAS_HOST }}
         username: ${{ secrets.NAS_USERNAME }}
         key: ${{ secrets.NAS_SSH_KEY }}
         port: ${{ secrets.NAS_PORT }}
-        envs: GITHUB_SHA,GITHUB_REF,GITHUB_ACTOR,GITHUB_REPOSITORY,NAS_IP
+        envs: GITHUB_SHA,GITHUB_REF,GITHUB_ACTOR,GITHUB_REPOSITORY,NAS_HOST
         command_timeout: 15m
         script: |
           echo "======================================"
@@ -121,7 +121,7 @@ jobs:
           echo "  - Branch: ${GITHUB_REF#refs/heads/}"
           echo "  - Commit: ${GITHUB_SHA:0:8}"
           echo "  - Actor: $GITHUB_ACTOR"
-          echo "  - NAS IP: $NAS_IP"
+          echo "  - NAS Host: $NAS_HOST"
           echo "  - Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
           echo "======================================"
           
@@ -133,8 +133,8 @@ jobs:
           
           echo "======================================"
           echo "✅ GitHub Actions 배포 완료"
-          echo "🌐 서비스 접근: http://$NAS_IP:3000"
-          echo "📚 문서 접근: http://$NAS_IP:8080"
+          echo "🌐 서비스 접근: http://$NAS_HOST:3000"
+          echo "📚 문서 접근: http://$NAS_HOST:8080"
           echo "======================================"
 
   verify-deployment:
@@ -148,7 +148,7 @@ jobs:
         echo "🔍 배포된 서비스 검증 중..."
         
         for i in {1..10}; do
-          if curl -f -m 10 http://${{ secrets.NAS_IP }}:3000/health; then
+          if curl -f -m 10 http://${{ secrets.NAS_HOST }}:3000/health; then
             echo "✅ API 서비스 정상 동작 확인"
             break
           else
@@ -157,7 +157,7 @@ jobs:
           fi
         done
         
-        if curl -f -m 10 http://${{ secrets.NAS_IP }}:8080/; then
+        if curl -f -m 10 http://${{ secrets.NAS_HOST }}:8080/; then
           echo "✅ 문서 서비스 정상 동작 확인"
         else
           echo "❌ 문서 서비스 접근 실패"
@@ -191,11 +191,11 @@ jobs:
         if [ "${{ needs.deploy.result }}" = "success" ]; then
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🌐 서비스 접근 링크" >> $GITHUB_STEP_SUMMARY
-          echo "- 📡 **API 서버**: [http://${{ secrets.NAS_IP }}:3000](http://${{ secrets.NAS_IP }}:3000)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📚 **API 문서**: [http://${{ secrets.NAS_IP }}:8080](http://${{ secrets.NAS_IP }}:8080)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔍 **헬스체크**: [http://${{ secrets.NAS_IP }}:3000/health](http://${{ secrets.NAS_IP }}:3000/health)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📋 **Swagger**: [http://${{ secrets.NAS_IP }}:3000/api-docs](http://${{ secrets.NAS_IP }}:3000/api-docs)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🚀 **GraphQL**: [http://${{ secrets.NAS_IP }}:3000/graphql](http://${{ secrets.NAS_IP }}:3000/graphql)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📡 **API 서버**: [http://${{ secrets.NAS_HOST }}:3000](http://${{ secrets.NAS_HOST }}:3000)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📚 **API 문서**: [http://${{ secrets.NAS_HOST }}:8080](http://${{ secrets.NAS_HOST }}:8080)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 **헬스체크**: [http://${{ secrets.NAS_HOST }}:3000/health](http://${{ secrets.NAS_HOST }}:3000/health)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📋 **Swagger**: [http://${{ secrets.NAS_HOST }}:3000/api-docs](http://${{ secrets.NAS_HOST }}:3000/api-docs)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 **GraphQL**: [http://${{ secrets.NAS_HOST }}:3000/graphql](http://${{ secrets.NAS_HOST }}:3000/graphql)" >> $GITHUB_STEP_SUMMARY
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🌍 DDNS 접근 (포트포워딩 설정 시)" >> $GITHUB_STEP_SUMMARY
@@ -210,7 +210,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**롤백 명령어**:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "ssh master@[NAS_IP]" >> $GITHUB_STEP_SUMMARY
+          echo "ssh master@[NAS_HOST]" >> $GITHUB_STEP_SUMMARY
           echo "cd /volume1/docker/NestJS_SNS" >> $GITHUB_STEP_SUMMARY
           echo "./rollback.sh" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
