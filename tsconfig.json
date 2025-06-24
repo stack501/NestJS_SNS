@@ -21,10 +21,14 @@
     "moduleResolution": "node",
     "allowJs": true,
   },
-  "include": [
+    "include": [
     "src/**/*",
-    "scripts/**/*.js",
-    "scripts/**/*.mjs",
-    "jest.config.ts"
+    "test/**/*",
+    "**/*.spec.ts",
+    "**/*.e2e-spec.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }
