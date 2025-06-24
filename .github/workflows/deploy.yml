@@ -104,15 +104,7 @@ jobs:
         
         mkdir -p ~/.ssh
         
-        # 1. 기본 연결 테스트
-        echo "1. 기본 연결 테스트"
-        if ping -c 3 ${{ secrets.NAS_HOST }}; then
-          echo "✅ 핑 성공"
-        else
-          echo "❌ 핑 실패"
-        fi
-        
-        # 2. 포트 접근 테스트
+        # 1. 포트 접근 테스트
         echo "2. SSH 포트 접근 테스트"
         if nc -zv ${{ secrets.NAS_HOST }} ${{ secrets.NAS_PORT }}; then
           echo "✅ SSH 포트 접근 가능"
@@ -121,11 +113,11 @@ jobs:
           exit 1
         fi
         
-        # 3. SSH 키 스캔
+        # 2. SSH 키 스캔
         echo "3. SSH 키 스캔"
         ssh-keyscan -v -H -T 10 ${{ secrets.NAS_HOST }} >> ~/.ssh/known_hosts
         
-        echo "4. 결과 확인"
+        echo "3. 결과 확인"
         cat ~/.ssh/known_hosts
         
     - name: 🚀 NAS 서버 배포
