@@ -22,10 +22,10 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         
-    - name: 📦 pnpm 설치
+    - name: 📦 pnpm 설치 (버전 통일)
       uses: pnpm/action-setup@v2
       with:
-        version: 8
+        version: latest
         
     - name: 📦 의존성 캐시
       uses: actions/cache@v3
@@ -35,19 +35,46 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pnpm-
         
+    - name: 🔍 pnpm 및 lock 파일 정보 확인
+      run: |
+        echo "=== 환경 정보 ==="
+        echo "Node.js 버전: $(node --version)"
+        echo "pnpm 버전: $(pnpm --version)"
+        echo "현재 디렉토리: $(pwd)"
+        echo "=== lock 파일 상태 ==="
+        if [ -f pnpm-lock.yaml ]; then
+          echo "✅ pnpm-lock.yaml 존재"
+          echo "파일 크기: $(wc -c < pnpm-lock.yaml) bytes"
+          echo "첫 5줄:"
+          head -5 pnpm-lock.yaml
+        else
+          echo "❌ pnpm-lock.yaml 없음"
+        fi
+        echo "=== package.json 확인 ==="
+        if [ -f package.json ]; then
+          echo "✅ package.json 존재"
+        else
+          echo "❌ package.json 없음"
+        fi
+        
     - name: 📦 의존성 설치
       run: |
+        echo "=== 의존성 설치 시작 ==="
         if [ -f pnpm-lock.yaml ]; then
-          echo "📦 pnpm-lock.yaml 발견 - frozen-lockfile 모드 사용"
-          pnpm install --frozen-lockfile
+          echo "📦 pnpm-lock.yaml 발견 - lock 파일 검증 중..."
+          # lock 파일 호환성 확인
+          if pnpm install --frozen-lockfile --dry-run; then
+            echo "✅ lock 파일 호환됨 - frozen-lockfile 모드 사용"
+            pnpm install --frozen-lockfile
+          else
+            echo "⚠️ lock 파일 비호환 - lock 파일 재생성"
+            rm pnpm-lock.yaml
+            pnpm install
+            echo "📝 새로운 pnpm-lock.yaml 생성됨"
+          fi
         else
-          echo "⚠️ pnpm-lock.yaml 없음 - 일반 모드 사용"
+          echo "⚠️ pnpm-lock.yaml 없음 - 새로 생성"
           pnpm install
-          echo "📝 pnpm-lock.yaml 생성됨"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml
-          git commit -m "chore: pnpm-lock.yaml 자동 생성" || echo "변경사항 없음"
         fi
       
     - name: 🔍 린트 검사
