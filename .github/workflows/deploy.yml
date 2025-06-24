@@ -105,7 +105,7 @@ jobs:
         mkdir -p ~/.ssh
         
         # 1. 포트 접근 테스트
-        echo "2. SSH 포트 접근 테스트"
+        echo "SSH 포트 접근 테스트"
         if nc -zv ${{ secrets.NAS_HOST }} ${{ secrets.NAS_PORT }}; then
           echo "✅ SSH 포트 접근 가능"
         else
@@ -114,51 +114,47 @@ jobs:
         fi
         
         # 2. SSH 키 스캔
-        echo "3. SSH 키 스캔"
-        ssh-keyscan -v -H -T 10 ${{ secrets.NAS_HOST }} >> ~/.ssh/known_hosts
-        
-        echo "3. 결과 확인"
-        cat ~/.ssh/known_hosts
+        echo "SSH 키 스캔"
+        ssh-keyscan -H -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_HOST }} >> ~/.ssh/known_hosts
+        echo "✅ Known Hosts 설정 완료"
         
     - name: 🚀 NAS 서버 배포
-      uses: appleboy/ssh-action@v1.0.3
-      env:
-        GITHUB_SHA: ${{ github.sha }}
-        GITHUB_REF: ${{ github.ref }}
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_REPOSITORY: ${{ github.repository }}
-        NAS_HOST: ${{ secrets.NAS_HOST }}  # ← Secrets에서 가져옴
-      with:
-        host: ${{ secrets.NAS_HOST }}
-        username: ${{ secrets.NAS_USERNAME }}
-        key: ${{ secrets.NAS_SSH_KEY }}
-        port: ${{ secrets.NAS_PORT }}
-        envs: GITHUB_SHA,GITHUB_REF,GITHUB_ACTOR,GITHUB_REPOSITORY,NAS_HOST
-        command_timeout: 15m
-        script: |
-          echo "======================================"
-          echo "🚀 GitHub Actions 배포 시작"
-          echo "======================================"
-          echo "📊 배포 정보:"
-          echo "  - Repository: $GITHUB_REPOSITORY"
-          echo "  - Branch: ${GITHUB_REF#refs/heads/}"
-          echo "  - Commit: ${GITHUB_SHA:0:8}"
-          echo "  - Actor: $GITHUB_ACTOR"
-          echo "  - NAS Host: $NAS_HOST"
-          echo "  - Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
-          echo "======================================"
-          
-          cd ${{ secrets.NAS_PROJECT_PATH }}
-          git log --oneline -3
-          echo ""
-          
-          ./deploy.sh
-          
-          echo "======================================"
-          echo "✅ GitHub Actions 배포 완료"
-          echo "🌐 서비스 접근: http://$NAS_HOST:3000"
-          echo "📚 문서 접근: http://$NAS_HOST:8080"
-          echo "======================================"
+      run: |
+        echo "====== SSH 키 설정 ======"
+        # SSH 키 파일 생성
+        echo "${{ secrets.NAS_SSH_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        echo "✅ SSH 키 설정 완료"
+        
+        echo "====== 배포 시작 ======"
+        # SSH로 NAS에 접속하여 배포 스크립트 실행
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} << 'EOF'
+        echo "======================================"
+        echo "🚀 GitHub Actions 배포 시작"
+        echo "======================================"
+        echo "📊 배포 정보:"
+        echo "  - Repository: ${{ github.repository }}"
+        echo "  - Branch: ${{ github.ref_name }}"
+        echo "  - Commit: ${{ github.sha }}"
+        echo "  - Actor: ${{ github.actor }}"
+        echo "  - NAS Host: ${{ secrets.NAS_HOST }}"
+        echo "  - Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
+        echo "======================================"
+        
+        cd ${{ secrets.NAS_PROJECT_PATH }}
+        git log --oneline -3
+        echo ""
+        
+        ./deploy.sh
+        
+        echo "======================================"
+        echo "✅ GitHub Actions 배포 완료"
+        echo "🌐 서비스 접근: http://${{ secrets.NAS_HOST }}:3000"
+        echo "📚 문서 접근: http://${{ secrets.NAS_HOST }}:8080"
+        echo "======================================"
+        EOF
+        
+        echo "✅ 배포 완료"
 
   verify-deployment:
     needs: deploy
