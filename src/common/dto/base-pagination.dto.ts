@@ -37,7 +37,7 @@ export class BasePaginationDto {
      */
     @IsIn(['ASC', 'DESC'])
     @IsOptional()
-    // eslint-disable-next-line @typescript-eslint/prefer-as-const
+     
     order__createdAt: 'ASC' | 'DESC' = 'ASC';
 
     /**
