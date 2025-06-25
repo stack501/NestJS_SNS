@@ -121,49 +121,18 @@ jobs:
     - name: 🚀 NAS 서버 배포
       run: |
         echo "====== SSH 키 설정 ======"
-        # SSH 키 파일 생성
         echo "${{ secrets.NAS_SSH_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
-        echo "✅ SSH 키 설정 완료"
         
-        echo "====== 배포 스크립트 생성 ======"
-        # 배포 스크립트를 별도 파일로 생성
-        cat > ~/deploy_script.sh << 'SCRIPT_EOF'
-        #!/bin/bash
-        echo "======================================"
-        echo "🚀 GitHub Actions 배포 시작"
-        echo "======================================"
-        echo "📊 배포 정보:"
-        echo "  - Repository: ${{ github.repository }}"
-        echo "  - Branch: ${{ github.ref_name }}"
-        echo "  - Commit: ${{ github.sha }}"
-        echo "  - Actor: ${{ github.actor }}"
-        echo "  - Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
-        echo "======================================"
-        
-        cd ${{ secrets.NAS_PROJECT_PATH }}
-        git log --oneline -3
-        echo ""
-        
-        ./deploy.sh
-        
-        echo "======================================"
-        echo "✅ GitHub Actions 배포 완료"
-        echo "🌐 서비스 접근: http://${{ secrets.NAS_HOST }}:3000"
-        echo "📚 문서 접근: http://${{ secrets.NAS_HOST }}:8080"
-        echo "======================================"
-        SCRIPT_EOF
-        
-        chmod +x ~/deploy_script.sh
-        
-        echo "====== 스크립트 NAS로 전송 및 실행 ======"
-        # 스크립트를 NAS로 전송
-        scp -i ~/.ssh/deploy_key -P ${{ secrets.NAS_PORT }} ~/deploy_script.sh ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }}:/tmp/github_deploy.sh
-        
-        # NAS에서 스크립트 실행
-        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'chmod +x /tmp/github_deploy.sh && /tmp/github_deploy.sh && rm /tmp/github_deploy.sh'
-        
-        echo "✅ 배포 완료"
+        echo "====== 배포 실행 ======"
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'echo "🚀 GitHub Actions 배포 시작"'
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'echo "Repository: ${{ github.repository }}"'
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'echo "Branch: ${{ github.ref_name }}"'
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'echo "Commit: ${{ github.sha }}"'
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'cd ${{ secrets.NAS_PROJECT_PATH }} && pwd'
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'cd ${{ secrets.NAS_PROJECT_PATH }} && git log --oneline -3'
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'cd ${{ secrets.NAS_PROJECT_PATH }} && ./deploy.sh'
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'echo "✅ 배포 완료"'
 
   verify-deployment:
     needs: deploy
