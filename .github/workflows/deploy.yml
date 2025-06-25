@@ -141,7 +141,8 @@ jobs:
           git log --oneline -3
           echo ""
           
-          ./deploy.sh
+          # 비밀번호를 인수로 전달하여 deploy.sh 실행
+          ./deploy.sh "${{ secrets.NAS_PASSWORD }}"
           
           echo "======================================"
           echo "✅ GitHub Actions 배포 완료"
