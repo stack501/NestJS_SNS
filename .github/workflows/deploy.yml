@@ -119,7 +119,7 @@ jobs:
         echo "✅ Known Hosts 설정 완료"
         
     - name: 🚀 NAS 서버 배포
-      uses: appleboy/ssh-action@v1.1.0
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.NAS_HOST }}
         username: ${{ secrets.NAS_USERNAME }}
