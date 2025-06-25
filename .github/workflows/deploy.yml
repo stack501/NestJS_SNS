@@ -150,7 +150,7 @@ jobs:
           echo "======================================"
 
   deploy-summary:
-    needs: [lint-and-test, deploy, verify-deployment]
+    needs: [lint-and-test, deploy]
     runs-on: ubuntu-latest
     if: always()
     
