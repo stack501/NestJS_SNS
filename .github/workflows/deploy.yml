@@ -149,36 +149,6 @@ jobs:
           echo "📚 문서 접근: http://${{ secrets.NAS_HOST }}:8080"
           echo "======================================"
 
-  verify-deployment:
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: 🔍 배포 검증
-      run: |
-        echo "🔍 배포된 서비스 검증 중..."
-        
-        # NAS 내부에서 헬스체크 실행
-        for i in {1..10}; do
-          if curl -f -m 10 http://localhost:3000/health; then
-            echo "✅ API 서비스 정상 동작 확인"
-            break
-          else
-            echo "⏳ API 서비스 시작 대기 중... ($i/10)"
-            sleep 30
-          fi
-        done
-        
-        if curl -f -m 10 http://localhost:8080; then
-          echo "✅ 문서 서비스 정상 동작 확인"
-        else
-          echo "❌ 문서 서비스 접근 실패"
-          exit 1
-        fi
-        
-        echo "🎉 배포 검증 완료!"
-
   deploy-summary:
     needs: [lint-and-test, deploy, verify-deployment]
     runs-on: ubuntu-latest
