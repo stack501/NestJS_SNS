@@ -125,6 +125,7 @@ jobs:
         username: ${{ secrets.NAS_USERNAME }}
         password: ${{ secrets.NAS_PASSWORD }}  # 비밀번호 인증 계속 사용
         port: ${{ secrets.NAS_PORT }}
+        command_timeout: 30m
         script: |
           echo "======================================"
           echo "🚀 GitHub Actions 배포 시작"
