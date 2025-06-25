@@ -159,8 +159,9 @@ jobs:
       run: |
         echo "🔍 배포된 서비스 검증 중..."
         
+        # NAS 내부에서 헬스체크 실행
         for i in {1..10}; do
-          if curl -f -m 10 http://${{ secrets.NAS_HOST }}:3000/health; then
+          if curl -f -m 10 http://localhost:3000/health; then
             echo "✅ API 서비스 정상 동작 확인"
             break
           else
@@ -169,7 +170,7 @@ jobs:
           fi
         done
         
-        if curl -f -m 10 http://${{ secrets.NAS_HOST }}:8080/; then
+        if curl -f -m 10 http://localhost:8080; then
           echo "✅ 문서 서비스 정상 동작 확인"
         else
           echo "❌ 문서 서비스 접근 실패"
@@ -208,11 +209,6 @@ jobs:
           echo "- 🔍 **헬스체크**: [http://${{ secrets.NAS_HOST }}:3000/health](http://${{ secrets.NAS_HOST }}:3000/health)" >> $GITHUB_STEP_SUMMARY
           echo "- 📋 **Swagger**: [http://${{ secrets.NAS_HOST }}:3000/api-docs](http://${{ secrets.NAS_HOST }}:3000/api-docs)" >> $GITHUB_STEP_SUMMARY
           echo "- 🚀 **GraphQL**: [http://${{ secrets.NAS_HOST }}:3000/graphql](http://${{ secrets.NAS_HOST }}:3000/graphql)" >> $GITHUB_STEP_SUMMARY
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🌍 DDNS 접근 (포트포워딩 설정 시)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📡 **API 서버**: [http://ark1105.synology.me:3000](http://ark1105.synology.me:3000)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📚 **API 문서**: [http://ark1105.synology.me:8080](http://ark1105.synology.me:8080)" >> $GITHUB_STEP_SUMMARY
         fi
         
         if [ "${{ needs.deploy.result }}" = "failure" ]; then
