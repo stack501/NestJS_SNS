@@ -118,36 +118,20 @@ jobs:
         ssh-keyscan -H -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_HOST }} >> ~/.ssh/known_hosts
         echo "✅ Known Hosts 설정 완료"
         
-    - name: 🚀 NAS 서버 배포
-      uses: appleboy/ssh-action@master
+    - name: 🚀 NAS 서버 배포 (비밀번호 인증 테스트)
+      uses: appleboy/ssh-action@v1.1.0
       with:
         host: ${{ secrets.NAS_HOST }}
         username: ${{ secrets.NAS_USERNAME }}
-        key: ${{ secrets.NAS_SSH_KEY }}
+        password: ${{ secrets.NAS_PASSWORD }}  # key 대신 password 사용
         port: ${{ secrets.NAS_PORT }}
         script: |
           echo "======================================"
-          echo "🚀 GitHub Actions 배포 시작"
+          echo "🔍 비밀번호 인증 테스트 성공!"
           echo "======================================"
-          echo "📊 배포 정보:"
-          echo "  - Repository: ${{ github.repository }}"
-          echo "  - Branch: ${{ github.ref_name }}"
-          echo "  - Commit: ${{ github.sha }}"
-          echo "  - Actor: ${{ github.actor }}"
-          echo "  - Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
-          echo "======================================"
-          
-          cd ${{ secrets.NAS_PROJECT_PATH }}
-          git log --oneline -3
-          echo ""
-          
-          ./deploy.sh
-          
-          echo "======================================"
-          echo "✅ GitHub Actions 배포 완료"
-          echo "🌐 서비스 접근: http://${{ secrets.NAS_HOST }}:3000"
-          echo "📚 문서 접근: http://${{ secrets.NAS_HOST }}:8080"
-          echo "======================================"
+          whoami
+          pwd
+          echo "현재 시간: $(date)"
 
   verify-deployment:
     needs: deploy
