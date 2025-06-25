@@ -120,45 +120,16 @@ jobs:
         
     - name: 🚀 NAS 서버 배포
       run: |
-        echo "====== SSH 디버깅 시작 ======"
-    
+        echo "====== SSH 키 설정 ======"
         # SSH 키 파일 생성
         echo "${{ secrets.NAS_SSH_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
+        echo "✅ SSH 키 설정 완료"
         
-        # 키 파일 상세 정보 확인
-        echo "=== 키 파일 정보 ==="
-        echo "파일 크기: $(wc -c < ~/.ssh/deploy_key) bytes"
-        echo "파일 권한: $(ls -l ~/.ssh/deploy_key)"
-        echo "키 타입 확인:"
-        file ~/.ssh/deploy_key
-        echo "키 첫 줄:"
-        head -1 ~/.ssh/deploy_key
-        echo "키 마지막 줄:"  
-        tail -1 ~/.ssh/deploy_key
-        
-        # SSH 클라이언트 버전 확인
-        echo "=== SSH 클라이언트 정보 ==="
-        ssh -V
-        
-        # Known hosts 확인
-        echo "=== Known Hosts 확인 ==="
-        if [ -f ~/.ssh/known_hosts ]; then
-          echo "Known hosts 파일 존재"
-          grep "${{ secrets.NAS_HOST }}" ~/.ssh/known_hosts || echo "NAS 호스트 없음"
-        else
-          echo "Known hosts 파일 없음"
-        fi
-        
-        # SSH 상세 디버깅 (-vvv 옵션)
-        echo "=== SSH 상세 연결 디버깅 ==="
-        ssh -vvv -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'echo "SSH 연결 성공 테스트"' || echo "SSH 연결 실패"
-        
-        echo "====== 디버깅 완료 ======"
-        
-        echo "====== 배포 시작 ======"
-        # SSH로 NAS에 접속하여 배포 스크립트 실행
-        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} << 'EOF'
+        echo "====== 배포 스크립트 생성 ======"
+        # 배포 스크립트를 별도 파일로 생성
+        cat > ~/deploy_script.sh << 'SCRIPT_EOF'
+        #!/bin/bash
         echo "======================================"
         echo "🚀 GitHub Actions 배포 시작"
         echo "======================================"
@@ -167,7 +138,6 @@ jobs:
         echo "  - Branch: ${{ github.ref_name }}"
         echo "  - Commit: ${{ github.sha }}"
         echo "  - Actor: ${{ github.actor }}"
-        echo "  - NAS Host: ${{ secrets.NAS_HOST }}"
         echo "  - Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
         echo "======================================"
         
@@ -182,7 +152,16 @@ jobs:
         echo "🌐 서비스 접근: http://${{ secrets.NAS_HOST }}:3000"
         echo "📚 문서 접근: http://${{ secrets.NAS_HOST }}:8080"
         echo "======================================"
-        EOF
+        SCRIPT_EOF
+        
+        chmod +x ~/deploy_script.sh
+        
+        echo "====== 스크립트 NAS로 전송 및 실행 ======"
+        # 스크립트를 NAS로 전송
+        scp -i ~/.ssh/deploy_key -P ${{ secrets.NAS_PORT }} ~/deploy_script.sh ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }}:/tmp/github_deploy.sh
+        
+        # NAS에서 스크립트 실행
+        ssh -i ~/.ssh/deploy_key -p ${{ secrets.NAS_PORT }} ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_HOST }} 'chmod +x /tmp/github_deploy.sh && /tmp/github_deploy.sh && rm /tmp/github_deploy.sh'
         
         echo "✅ 배포 완료"
 
