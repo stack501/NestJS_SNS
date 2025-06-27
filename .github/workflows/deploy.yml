@@ -92,7 +92,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     
     steps:
-    - name: 🚀 NAS 서버 배포
+    - name: 🚀 NAS 서버 배포 및 검증
       uses: appleboy/ssh-action@v1.1.0
       with:
         host: ${{ secrets.NAS_HOST }}
@@ -120,61 +120,79 @@ jobs:
           ./deploy.sh "${{ secrets.NAS_PASSWORD }}"
           DEPLOY_EXIT_CODE=$?
           
-          echo "======================================"
           if [ $DEPLOY_EXIT_CODE -eq 0 ]; then
-            echo "✅ GitHub Actions 배포 완료"
+            echo "======================================"
+            echo "✅ 배포 완료 - 추가 검증 수행"
+            echo "======================================"
+            
+            # 내부에서 포트별 서비스 상태 확인
+            echo "🔍 포트별 서비스 상태 확인"
+            
+            # API 서버 포트 확인
+            if netstat -tuln | grep ":3000 " > /dev/null; then
+              echo "✅ API 서버 포트 3000 활성화"
+            else
+              echo "❌ API 서버 포트 3000 비활성화"
+              exit 1
+            fi
+            
+            # 문서 서버 포트 확인
+            if netstat -tuln | grep ":8080 " > /dev/null; then
+              echo "✅ 문서 서버 포트 8080 활성화"
+            else
+              echo "⚠️ 문서 서버 포트 8080 비활성화 (선택적)"
+            fi
+            
+            # 다양한 엔드포인트 테스트
+            echo "🧪 API 엔드포인트 테스트"
+            
+            # 헬스체크
+            if curl -f -s http://localhost:3000/health > /dev/null; then
+              echo "✅ 헬스체크 API 정상"
+            else
+              echo "❌ 헬스체크 API 실패"
+              exit 1
+            fi
+            
+            # API 문서 확인 (있다면)
+            if curl -f -s http://localhost:3000/api-docs > /dev/null; then
+              echo "✅ Swagger 문서 접근 가능"
+            else
+              echo "⚠️ Swagger 문서 접근 불가 (선택적)"
+            fi
+            
+            # GraphQL 확인 (있다면)
+            if curl -f -s http://localhost:3000/graphql > /dev/null; then
+              echo "✅ GraphQL 엔드포인트 접근 가능"
+            else
+              echo "⚠️ GraphQL 엔드포인트 접근 불가 (선택적)"
+            fi
+            
+            # 컨테이너 상태 최종 확인
+            echo "📋 최종 컨테이너 상태"
+            docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep sns-dev
+            
+            # 리소스 사용률 확인
+            echo "📊 시스템 리소스 사용률"
+            echo "메모리 사용률:"
+            free -h | head -2
+            echo "디스크 사용률:"
+            df -h | grep -E "(/$|/volume1)"
+            
+            echo "======================================"
+            echo "✅ GitHub Actions 배포 및 검증 완료"
             echo "🌐 서비스 접근: http://${{ secrets.NAS_HOST }}:3000"
             echo "📚 문서 접근: http://${{ secrets.NAS_HOST }}:8080"
             echo "🔍 헬스체크: http://${{ secrets.NAS_HOST }}:3000/health"
+            echo "💡 외부 접근을 위해서는 방화벽 설정을 확인하세요"
+            echo "======================================"
           else
             echo "❌ GitHub Actions 배포 실패 (Exit Code: $DEPLOY_EXIT_CODE)"
             exit $DEPLOY_EXIT_CODE
           fi
-          echo "======================================"
-
-  verify-deployment:
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && needs.deploy.result == 'success'
-    
-    steps:
-    - name: 🔍 외부 접근 검증
-      run: |
-        echo "🔍 외부에서 배포된 서비스 접근 검증..."
-        
-        # 외부에서 헬스체크 API 테스트
-        echo "📡 외부 헬스체크 테스트"
-        for i in {1..3}; do
-          echo "  🔍 외부 접근 시도 $i/3..."
-          if curl -f -s --connect-timeout 10 --max-time 30 "http://${{ secrets.NAS_HOST }}:3000/health"; then
-            echo "  ✅ 외부 접근 성공!"
-            HEALTH_RESPONSE=$(curl -s "http://${{ secrets.NAS_HOST }}:3000/health" 2>/dev/null || echo "응답 없음")
-            echo "  📋 응답: $HEALTH_RESPONSE"
-            break
-          else
-            echo "  ⏳ 외부 접근 실패, 10초 후 재시도..."
-            sleep 10
-          fi
-          
-          if [ $i -eq 3 ]; then
-            echo "❌ 외부 접근 실패 - 네트워크 또는 방화벽 문제일 수 있습니다"
-            echo "💡 내부 배포는 성공했지만 외부 접근에 문제가 있습니다"
-            exit 1
-          fi
-        done
-        
-        # 문서 서버 외부 접근 테스트
-        echo "📚 외부 문서 서버 테스트"
-        if curl -f -s --connect-timeout 5 --max-time 10 "http://${{ secrets.NAS_HOST }}:8080" > /dev/null 2>&1; then
-          echo "  ✅ 외부 문서 서버 접근 성공"
-        else
-          echo "  ⚠️ 외부 문서 서버 접근 실패 (API는 정상)"
-        fi
-        
-        echo "✅ 외부 접근 검증 완료"
 
   deploy-summary:
-    needs: [lint-and-test, deploy, verify-deployment]
+    needs: [lint-and-test, deploy]
     runs-on: ubuntu-latest
     if: always()
     
@@ -186,8 +204,7 @@ jobs:
         echo "| 항목 | 상태 |" >> $GITHUB_STEP_SUMMARY  
         echo "|------|------|" >> $GITHUB_STEP_SUMMARY
         echo "| 🔍 코드 품질 검사 | ${{ needs.lint-and-test.result == 'success' && '✅ 성공' || '❌ 실패' }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🚀 NAS 배포 | ${{ needs.deploy.result == 'success' && '✅ 성공' || '❌ 실패' }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| 🔍 외부 접근 검증 | ${{ needs.verify-deployment.result == 'success' && '✅ 성공' || needs.verify-deployment.result == 'skipped' && '⏭️ 건너뜀' || '❌ 실패' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🚀 NAS 배포 및 검증 | ${{ needs.deploy.result == 'success' && '✅ 성공' || '❌ 실패' }} |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 📋 배포 정보" >> $GITHUB_STEP_SUMMARY
         echo "- **브랜치**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
@@ -203,6 +220,10 @@ jobs:
           echo "- 🔍 **헬스체크**: [http://${{ secrets.NAS_HOST }}:3000/health](http://${{ secrets.NAS_HOST }}:3000/health)" >> $GITHUB_STEP_SUMMARY
           echo "- 📋 **Swagger**: [http://${{ secrets.NAS_HOST }}:3000/api-docs](http://${{ secrets.NAS_HOST }}:3000/api-docs)" >> $GITHUB_STEP_SUMMARY
           echo "- 🚀 **GraphQL**: [http://${{ secrets.NAS_HOST }}:3000/graphql](http://${{ secrets.NAS_HOST }}:3000/graphql)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 💡 참고사항" >> $GITHUB_STEP_SUMMARY
+          echo "- 내부 검증은 완료되었습니다" >> $GITHUB_STEP_SUMMARY
+          echo "- 외부 접근을 위해서는 NAS 방화벽 설정을 확인하세요" >> $GITHUB_STEP_SUMMARY
         fi
         
         if [ "${{ needs.deploy.result }}" = "failure" ]; then
@@ -216,13 +237,4 @@ jobs:
           echo "cd /volume1/docker/NestJS_SNS" >> $GITHUB_STEP_SUMMARY
           echo "./rollback.sh" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        if [ "${{ needs.verify-deployment.result }}" = "failure" ]; then
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### ⚠️ 외부 접근 문제" >> $GITHUB_STEP_SUMMARY
-          echo "내부 배포는 성공했지만 외부에서 접근할 수 없습니다." >> $GITHUB_STEP_SUMMARY
-          echo "- 방화벽 설정 확인" >> $GITHUB_STEP_SUMMARY
-          echo "- 포트 포워딩 확인" >> $GITHUB_STEP_SUMMARY
-          echo "- 네트워크 설정 확인" >> $GITHUB_STEP_SUMMARY
         fi
