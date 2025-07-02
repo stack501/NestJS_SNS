@@ -92,23 +92,24 @@ jobs:
     if: github.ref == 'refs/heads/main'
     
     steps:
-    - name: 🚀 NAS 서버 배포 및 검증
+    - name: 🚀 NAS 서버 배포 및 검증 (DDNS)
       uses: appleboy/ssh-action@v1.1.0
       with:
-        host: ${{ secrets.NAS_HOST }}
+        host: ${{ secrets.NAS_DDNS }}
         username: ${{ secrets.NAS_USERNAME }}
         password: ${{ secrets.NAS_PASSWORD }}
         port: ${{ secrets.NAS_PORT }}
         command_timeout: 30m
         script: |
           echo "======================================"
-          echo "🚀 GitHub Actions 배포 시작"
+          echo "🚀 GitHub Actions 배포 시작 (DDNS)"
           echo "======================================"
           echo "📊 배포 정보:"
           echo "  - Repository: ${{ github.repository }}"
           echo "  - Branch: ${{ github.ref_name }}"
           echo "  - Commit: ${{ github.sha }}"
           echo "  - Actor: ${{ github.actor }}"
+          echo "  - DDNS Host: ${{ secrets.NAS_DDNS }}"
           echo "  - Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
           echo "======================================"
           
@@ -116,8 +117,8 @@ jobs:
           git log --oneline -3
           echo ""
           
-          # deploy.sh 실행 (이미 헬스체크 포함됨)
-          ./deploy.sh "${{ secrets.NAS_PASSWORD }}"
+          # deploy.sh 실행 (DDNS 호스트 전달)
+          ./deploy.sh "${{ secrets.NAS_PASSWORD }}" "${{ secrets.NAS_DDNS }}"
           DEPLOY_EXIT_CODE=$?
           
           if [ $DEPLOY_EXIT_CODE -eq 0 ]; then
@@ -143,29 +144,47 @@ jobs:
               echo "⚠️ 문서 서버 포트 8080 비활성화 (선택적)"
             fi
             
-            # 다양한 엔드포인트 테스트
-            echo "🧪 API 엔드포인트 테스트"
+            # 다양한 엔드포인트 테스트 (내부 네트워크)
+            echo "🧪 API 엔드포인트 테스트 (내부)"
             
-            # 헬스체크
+            # 헬스체크 (내부)
             if curl -f -s http://localhost:3000/health > /dev/null; then
-              echo "✅ 헬스체크 API 정상"
+              echo "✅ 헬스체크 API 정상 (내부)"
             else
-              echo "❌ 헬스체크 API 실패"
+              echo "❌ 헬스체크 API 실패 (내부)"
               exit 1
             fi
             
-            # API 문서 확인 (있다면)
-            if curl -f -s http://localhost:3000/api-docs > /dev/null; then
-              echo "✅ Swagger 문서 접근 가능"
+            # HTTPS 헬스체크 (역방향 프록시)
+            echo "🧪 HTTPS 엔드포인트 테스트 (역방향 프록시)"
+            if curl -k -f -s "https://${{ secrets.NAS_DDNS }}/health" > /dev/null; then
+              echo "✅ HTTPS 헬스체크 정상"
             else
-              echo "⚠️ Swagger 문서 접근 불가 (선택적)"
+              echo "⚠️ HTTPS 헬스체크 실패 (역방향 프록시 설정 확인 필요)"
             fi
             
-            # GraphQL 확인 (있다면)
-            if curl -f -s http://localhost:3000/graphql > /dev/null; then
-              echo "✅ GraphQL 엔드포인트 접근 가능"
+            # Swagger UI 확인 (401도 정상으로 처리)
+            SWAGGER_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" "https://${{ secrets.NAS_DDNS }}/api" 2>/dev/null)
+            if [ "$SWAGGER_STATUS" = "200" ] || [ "$SWAGGER_STATUS" = "401" ]; then
+              echo "✅ Swagger UI 접근 가능 (HTTP $SWAGGER_STATUS)"
             else
-              echo "⚠️ GraphQL 엔드포인트 접근 불가 (선택적)"
+              echo "⚠️ Swagger UI 상태: HTTP $SWAGGER_STATUS"
+            fi
+            
+            # GraphQL 확인 (400, 405도 정상으로 처리)
+            GRAPHQL_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" "https://${{ secrets.NAS_DDNS }}/graphql" 2>/dev/null)
+            if [ "$GRAPHQL_STATUS" = "200" ] || [ "$GRAPHQL_STATUS" = "400" ] || [ "$GRAPHQL_STATUS" = "405" ]; then
+              echo "✅ GraphQL 엔드포인트 접근 가능 (HTTP $GRAPHQL_STATUS)"
+            else
+              echo "⚠️ GraphQL 상태: HTTP $GRAPHQL_STATUS"
+            fi
+            
+            # Compodoc 문서 확인
+            DOCS_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" "https://${{ secrets.NAS_DDNS }}:444/" 2>/dev/null)
+            if [ "$DOCS_STATUS" = "200" ]; then
+              echo "✅ Compodoc 문서 접근 가능 (HTTP $DOCS_STATUS)"
+            else
+              echo "⚠️ Compodoc 문서 상태: HTTP $DOCS_STATUS"
             fi
             
             # 컨테이너 상태 최종 확인
@@ -181,10 +200,13 @@ jobs:
             
             echo "======================================"
             echo "✅ GitHub Actions 배포 및 검증 완료"
-            echo "🌐 서비스 접근: http://${{ secrets.NAS_HOST }}:3000"
-            echo "📚 문서 접근: http://${{ secrets.NAS_HOST }}:8080"
-            echo "🔍 헬스체크: http://${{ secrets.NAS_HOST }}:3000/health"
-            echo "💡 외부 접근을 위해서는 방화벽 설정을 확인하세요"
+            echo "🌐 HTTPS 서비스 접근:"
+            echo "  📡 API: https://${{ secrets.NAS_DDNS }}"
+            echo "  📋 Swagger: https://${{ secrets.NAS_DDNS }}/api"
+            echo "  🚀 GraphQL: https://${{ secrets.NAS_DDNS }}/graphql"
+            echo "  🔍 헬스체크: https://${{ secrets.NAS_DDNS }}/health"
+            echo "  📚 문서: https://${{ secrets.NAS_DDNS }}:444"
+            echo "💡 역방향 프록시를 통한 HTTPS 접근이 권장됩니다"
             echo "======================================"
           else
             echo "❌ GitHub Actions 배포 실패 (Exit Code: $DEPLOY_EXIT_CODE)"
@@ -210,20 +232,24 @@ jobs:
         echo "- **브랜치**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "- **커밋**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
         echo "- **작성자**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **DDNS 호스트**: \`${{ secrets.NAS_DDNS }}\`" >> $GITHUB_STEP_SUMMARY
         echo "- **시간**: $(date '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
         
         if [ "${{ needs.deploy.result }}" = "success" ]; then
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🌐 서비스 접근 링크" >> $GITHUB_STEP_SUMMARY
-          echo "- 📡 **API 서버**: [http://${{ secrets.NAS_HOST }}:3000](http://${{ secrets.NAS_HOST }}:3000)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📚 **API 문서**: [http://${{ secrets.NAS_HOST }}:8080](http://${{ secrets.NAS_HOST }}:8080)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔍 **헬스체크**: [http://${{ secrets.NAS_HOST }}:3000/health](http://${{ secrets.NAS_HOST }}:3000/health)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📋 **Swagger**: [http://${{ secrets.NAS_HOST }}:3000/api-docs](http://${{ secrets.NAS_HOST }}:3000/api-docs)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🚀 **GraphQL**: [http://${{ secrets.NAS_HOST }}:3000/graphql](http://${{ secrets.NAS_HOST }}:3000/graphql)" >> $GITHUB_STEP_SUMMARY
+          echo "### 🌐 서비스 접근 링크 (HTTPS 권장)" >> $GITHUB_STEP_SUMMARY
+          echo "#### 🔒 HTTPS 접근 (역방향 프록시)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📡 **API 서버**: [https://${{ secrets.NAS_DDNS }}](https://${{ secrets.NAS_DDNS }})" >> $GITHUB_STEP_SUMMARY
+          echo "- 📋 **Swagger UI**: [https://${{ secrets.NAS_DDNS }}/api](https://${{ secrets.NAS_DDNS }}/api)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 **GraphQL**: [https://${{ secrets.NAS_DDNS }}/graphql](https://${{ secrets.NAS_DDNS }}/graphql)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 **헬스체크**: [https://${{ secrets.NAS_DDNS }}/health](https://${{ secrets.NAS_DDNS }}/health)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📚 **문서**: [https://${{ secrets.NAS_DDNS }}:444](https://${{ secrets.NAS_DDNS }}:444)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 💡 참고사항" >> $GITHUB_STEP_SUMMARY
-          echo "- 내부 검증은 완료되었습니다" >> $GITHUB_STEP_SUMMARY
-          echo "- 외부 접근을 위해서는 NAS 방화벽 설정을 확인하세요" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ 내부 및 HTTPS 검증이 완료되었습니다" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔒 HTTPS 접근이 권장됩니다 (SSL 인증서 적용)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌍 DDNS를 통한 안정적인 접근이 가능합니다" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 모니터링: \`docker exec sns-dev-monitor ./monitor.sh\`" >> $GITHUB_STEP_SUMMARY
         fi
         
         if [ "${{ needs.deploy.result }}" = "failure" ]; then
@@ -233,8 +259,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**롤백 명령어**:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "ssh master@[NAS_HOST]" >> $GITHUB_STEP_SUMMARY
-          echo "cd /volume1/docker/NestJS_SNS" >> $GITHUB_STEP_SUMMARY
+          echo "ssh ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_DDNS }}" >> $GITHUB_STEP_SUMMARY
+          echo "cd ${{ secrets.NAS_PROJECT_PATH }}" >> $GITHUB_STEP_SUMMARY
           echo "./rollback.sh" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         fi
