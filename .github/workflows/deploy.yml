@@ -9,7 +9,6 @@ on:
 
 env:
   NODE_VERSION: '20'
-  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # 환경변수로 설정
 
 jobs:
   lint-and-test:
@@ -89,25 +88,23 @@ jobs:
     # 테스트 실패 시 즉시 알림
     - name: 📢 테스트 실패 알림
       if: failure()
-      uses: 8398a7/action-slack@v3
+      uses: slackapi/slack-github-action@v1.24.0
       with:
-        status: failure
-        channel: '#ci-cd-alerts'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-        text: |
+        channel-id: 'C123456789'  # 채널 ID (실제 채널 ID로 변경)
+        slack-message: |
           🚨 **테스트가 실패했습니다!**
           
-          Repository: ${{ github.repository }}
-          Branch: ${{ github.ref_name }}
-          Commit: ${{ github.sha }}
-          Author: ${{ github.actor }}
+          📋 **정보**
+          • Repository: ${{ github.repository }}
+          • Branch: ${{ github.ref_name }}
+          • Commit: ${{ github.sha }}
+          • Author: ${{ github.actor }}
           
           코드 품질 검사 또는 테스트에서 오류가 발생했습니다.
-          GitHub Actions 로그를 확인하여 문제를 해결해주세요.
           
           **액션 링크**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   deploy:
     needs: lint-and-test
@@ -120,58 +117,71 @@ jobs:
 
     # 배포 시작 알림
     - name: 📢 배포 시작 알림
-      uses: 8398a7/action-slack@v3
+      uses: slackapi/slack-github-action@v1.24.0
       with:
-        status: custom
-        channel: '#ci-cd-alerts'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-        custom_payload: |
+        channel-id: 'C123456789'  # 채널 ID (실제 채널 ID로 변경)
+        payload: |
           {
-            "username": "GitHub Actions",
-            "icon_emoji": ":rocket:",
-            "attachments": [{
-              "color": "#2eb886",
-              "pretext": "🚀 **배포 시작**",
-              "title": "NAS 서버 배포가 시작되었습니다",
-              "title_link": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "fields": [
-                {
-                  "title": "Repository",
-                  "value": "<${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}>",
-                  "short": true
-                },
-                {
-                  "title": "Branch",
-                  "value": "`${{ github.ref_name }}`",
-                  "short": true
-                },
-                {
-                  "title": "Commit",
-                  "value": "<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>",
-                  "short": true
-                },
-                {
-                  "title": "Author",
-                  "value": "${{ github.actor }}",
-                  "short": true
-                },
-                {
-                  "title": "DDNS Host",
-                  "value": "`${{ secrets.NAS_DDNS }}`",
-                  "short": true
-                },
-                {
-                  "title": "Workflow",
-                  "value": "${{ github.workflow }}",
-                  "short": true
-                }
-              ],
-              "footer": "GitHub Actions CI/CD",
-              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-            }]
+            "text": "🚀 **배포 시작**",
+            "attachments": [
+              {
+                "color": "#2eb886",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "🚀 *NAS 서버 배포가 시작되었습니다*"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Repository:*\n<${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}>"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Branch:*\n`${{ github.ref_name }}`"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Author:*\n${{ github.actor }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*DDNS Host:*\n`${{ secrets.NAS_DDNS }}`"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Workflow:*\n${{ github.workflow }}"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "View Action"
+                        },
+                        "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
     - name: 🚀 NAS 서버 배포 및 검증 (DDNS)
       id: deploy
@@ -298,74 +308,161 @@ jobs:
     # 배포 성공 알림
     - name: 📢 배포 성공 알림
       if: success()
-      uses: 8398a7/action-slack@v3
+      uses: slackapi/slack-github-action@v1.24.0
       with:
-        status: success
-        channel: '#ci-cd-alerts'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-        text: |
-          🎉 **NAS 서버 배포가 성공적으로 완료되었습니다!**
-          
-          📋 **배포 정보**
-          • Repository: ${{ github.repository }}
-          • Branch: ${{ github.ref_name }}
-          • Commit: ${{ github.sha }}
-          • Author: ${{ github.actor }}
-          • DDNS Host: ${{ secrets.NAS_DDNS }}
-          
-          🌐 **서비스 접근 링크**
-          • 📡 API 서버: https://${{ secrets.NAS_DDNS }}
-          • 📋 Swagger UI: https://${{ secrets.NAS_DDNS }}/api
-          • 🚀 GraphQL: https://${{ secrets.NAS_DDNS }}/graphql
-          • 🔍 헬스체크: https://${{ secrets.NAS_DDNS }}/health
-          • 📚 문서: https://${{ secrets.NAS_DDNS }}:444
-          
-          ✅ **검증 완료**
-          • 컨테이너 상태: 정상
-          • 내부 API: 정상
-          • HTTPS 프록시: 정상
-          • 데이터베이스: 연결됨
-          
-          **액션 로그**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        channel-id: 'C123456789'  # 채널 ID (실제 채널 ID로 변경)
+        payload: |
+          {
+            "text": "✅ **배포 성공**",
+            "attachments": [
+              {
+                "color": "good",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "🎉 *NAS 서버 배포가 성공적으로 완료되었습니다!*"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Repository:*\n${{ github.repository }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Branch:*\n`${{ github.ref_name }}`"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Author:*\n${{ github.actor }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*DDNS Host:*\n`${{ secrets.NAS_DDNS }}`"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*🌐 서비스 접근 링크*\n• 📡 <https://${{ secrets.NAS_DDNS }}|API 서버>\n• 📋 <https://${{ secrets.NAS_DDNS }}/api|Swagger UI>\n• 🚀 <https://${{ secrets.NAS_DDNS }}/graphql|GraphQL>\n• 🔍 <https://${{ secrets.NAS_DDNS }}/health|헬스체크>\n• 📚 <https://${{ secrets.NAS_DDNS }}:444|문서>"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*✅ 검증 완료*\n• 컨테이너 상태: 정상\n• 내부 API: 정상\n• HTTPS 프록시: 정상\n• 데이터베이스: 연결됨"
+                    }
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "View Logs"
+                        },
+                        "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      },
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "Open API"
+                        },
+                        "url": "https://${{ secrets.NAS_DDNS }}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         
     # 배포 실패 알림
     - name: 📢 배포 실패 알림
       if: failure()
-      uses: 8398a7/action-slack@v3
+      uses: slackapi/slack-github-action@v1.24.0
       with:
-        status: failure
-        channel: '#ci-cd-alerts'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-        text: |
-          🚨 **NAS 서버 배포가 실패했습니다!**
-          
-          📋 **배포 정보**
-          • Repository: ${{ github.repository }}
-          • Branch: ${{ github.ref_name }}
-          • Commit: ${{ github.sha }}
-          • Author: ${{ github.actor }}
-          • DDNS Host: ${{ secrets.NAS_DDNS }}
-          
-          🔧 **롤백 명령어**
-          ```bash
-          ssh ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_DDNS }}
-          cd ${{ secrets.NAS_PROJECT_PATH }}
-          ./rollback.sh
-          ```
-          
-          📊 **문제 진단**
-          1. **액션 로그 확인**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          2. **서버 로그 확인**: `docker logs sns-dev-app`
-          3. **컨테이너 상태 확인**: `docker ps -a`
-          4. **리소스 확인**: `df -h && free -h`
-          
-          🆘 **긴급 연락처**
-          • 담당자: ${{ github.actor }}
-          • 시간: $(date '+%Y-%m-%d %H:%M:%S UTC')
+        channel-id: 'C123456789'  # 채널 ID (실제 채널 ID로 변경)
+        payload: |
+          {
+            "text": "❌ **배포 실패**",
+            "attachments": [
+              {
+                "color": "danger",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "🚨 *NAS 서버 배포가 실패했습니다!*"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Repository:*\n${{ github.repository }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Branch:*\n`${{ github.ref_name }}`"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*Author:*\n${{ github.actor }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*DDNS Host:*\n`${{ secrets.NAS_DDNS }}`"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*🔧 롤백 명령어*\n```ssh ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_DDNS }}\ncd ${{ secrets.NAS_PROJECT_PATH }}\n./rollback.sh```"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*📊 문제 진단*\n1. 액션 로그 확인\n2. 서버 로그 확인: `docker logs sns-dev-app`\n3. 컨테이너 상태: `docker ps -a`\n4. 리소스 확인: `df -h && free -h`"
+                    }
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "View Logs"
+                        },
+                        "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                        "style": "danger"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   # 배포 후 모니터링 및 헬스체크
   post-deploy-monitoring:
@@ -417,67 +514,71 @@ jobs:
         fi
         
     - name: 📢 서비스 상태 알림
-      uses: 8398a7/action-slack@v3
+      uses: slackapi/slack-github-action@v1.24.0
       with:
-        status: custom
-        channel: '#ci-cd-alerts'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-        custom_payload: |
+        channel-id: 'C123456789'  # 채널 ID (실제 채널 ID로 변경)
+        payload: |
           {
-            "username": "Health Monitor",
-            "icon_emoji": ":stethoscope:",
-            "attachments": [{
-              "color": "${{ steps.healthcheck.outputs.overall_status == 'healthy' && 'good' || 'danger' }}",
-              "pretext": "${{ steps.healthcheck.outputs.status_emoji }} **배포 후 서비스 상태 점검 완료**",
-              "title": "${{ steps.healthcheck.outputs.overall_status == 'healthy' && '모든 서비스가 정상적으로 운영 중입니다' || '일부 서비스에 문제가 감지되었습니다' }}",
-              "title_link": "https://${{ secrets.NAS_DDNS }}",
-              "fields": [
-                {
-                  "title": "🔍 Health Check API",
-                  "value": "${{ steps.healthcheck.outputs.health_status == '200' && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.health_status }})",
-                  "short": true
-                },
-                {
-                  "title": "📋 Swagger API",
-                  "value": "${{ (steps.healthcheck.outputs.api_status == '200' || steps.healthcheck.outputs.api_status == '401') && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.api_status }})",
-                  "short": true
-                },
-                {
-                  "title": "🚀 GraphQL",
-                  "value": "${{ (steps.healthcheck.outputs.graphql_status == '200' || steps.healthcheck.outputs.graphql_status == '400' || steps.healthcheck.outputs.graphql_status == '405') && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.graphql_status }})",
-                  "short": true
-                },
-                {
-                  "title": "📚 Documentation",
-                  "value": "${{ steps.healthcheck.outputs.docs_status == '200' && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.docs_status }})",
-                  "short": true
-                },
-                {
-                  "title": "🌐 DDNS Host",
-                  "value": "`${{ secrets.NAS_DDNS }}`",
-                  "short": true
-                },
-                {
-                  "title": "⏱️ 점검 시간",
-                  "value": "방금 전",
-                  "short": true
-                }
-              ],
-              "footer": "Post-Deploy Health Check"
-            }]
+            "text": "${{ steps.healthcheck.outputs.status_emoji }} **서비스 상태 점검 완료**",
+            "attachments": [
+              {
+                "color": "${{ steps.healthcheck.outputs.overall_status == 'healthy' && 'good' || 'danger' }}",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "${{ steps.healthcheck.outputs.status_emoji }} *${{ steps.healthcheck.outputs.overall_status == 'healthy' && '모든 서비스가 정상적으로 운영 중입니다' || '일부 서비스에 문제가 감지되었습니다' }}*"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*🔍 Health Check API:*\n${{ steps.healthcheck.outputs.health_status == '200' && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.health_status }})"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*📋 Swagger API:*\n${{ (steps.healthcheck.outputs.api_status == '200' || steps.healthcheck.outputs.api_status == '401') && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.api_status }})"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*🚀 GraphQL:*\n${{ (steps.healthcheck.outputs.graphql_status == '200' || steps.healthcheck.outputs.graphql_status == '400' || steps.healthcheck.outputs.graphql_status == '405') && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.graphql_status }})"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*📚 Documentation:*\n${{ steps.healthcheck.outputs.docs_status == '200' && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.docs_status }})"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "Open API"
+                        },
+                        "url": "https://${{ secrets.NAS_DDNS }}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
     # 서비스 문제 감지 시 추가 알림
     - name: 🚨 서비스 이상 긴급 알림
       if: steps.healthcheck.outputs.overall_status == 'unhealthy'
-      uses: 8398a7/action-slack@v3
+      uses: slackapi/slack-github-action@v1.24.0
       with:
-        status: failure
-        channel: '#ci-cd-alerts'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-        text: |
+        channel-id: 'C123456789'  # 채널 ID (실제 채널 ID로 변경)
+        slack-message: |
           🚨 **긴급: 배포는 성공했지만 서비스 상태에 문제가 있습니다!**
           
           📊 **문제 상황**
@@ -494,7 +595,7 @@ jobs:
           
           **모니터링 링크**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   deploy-summary:
     needs: [lint-and-test, deploy, post-deploy-monitoring]
@@ -552,49 +653,67 @@ jobs:
     # 최종 파이프라인 요약 알림
     - name: 📢 파이프라인 완료 요약 알림
       if: always()
-      uses: 8398a7/action-slack@v3
+      uses: slackapi/slack-github-action@v1.24.0
       with:
-        status: custom
-        channel: '#ci-cd-summary'
-        fields: repo,message,commit,author,action,eventName,ref,workflow
-        custom_payload: |
+        channel-id: 'C123456789'  # 채널 ID (실제 채널 ID로 변경)
+        payload: |
           {
-            "username": "Pipeline Summary",
-            "icon_emoji": ":clipboard:",
-            "attachments": [{
-              "color": "${{ needs.deploy.result == 'success' && 'good' || 'danger' }}",
-              "pretext": "📊 **CI/CD 파이프라인 완료 요약**",
-              "title": "${{ needs.deploy.result == 'success' && '✅ 전체 파이프라인 성공' || '❌ 파이프라인 실패' }}",
-              "title_link": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "fields": [
-                {
-                  "title": "🔍 코드 품질 검사",
-                  "value": "${{ needs.lint-and-test.result == 'success' && '✅ 성공' || '❌ 실패' }}",
-                  "short": true
-                },
-                {
-                  "title": "🚀 NAS 배포",
-                  "value": "${{ needs.deploy.result == 'success' && '✅ 성공' || '❌ 실패' }}",
-                  "short": true
-                },
-                {
-                  "title": "🔍 배포 후 모니터링",
-                  "value": "${{ needs.post-deploy-monitoring.result == 'success' && '✅ 완료' || needs.post-deploy-monitoring.result == 'skipped' && '⏭️ 생략됨' || '❌ 실패' }}",
-                  "short": true
-                },
-                {
-                  "title": "⏱️ 총 실행 시간",
-                  "value": "약 5-10분",
-                  "short": true
-                },
-                {
-                  "title": "📝 커밋 메시지",
-                  "value": "${{ github.event.head_commit.message || 'Manual trigger' }}",
-                  "short": false
-                }
-              ],
-              "footer": "GitHub Actions CI/CD Pipeline • ${{ github.repository }}"
-            }]
+            "text": "📊 **CI/CD 파이프라인 완료 요약**",
+            "attachments": [
+              {
+                "color": "${{ needs.deploy.result == 'success' && 'good' || 'danger' }}",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "📊 *CI/CD 파이프라인 완료 요약*\n${{ needs.deploy.result == 'success' && '✅ 전체 파이프라인 성공' || '❌ 파이프라인 실패' }}"
+                    }
+                  },
+                  {
+                    "type": "section",
+                    "fields": [
+                      {
+                        "type": "mrkdwn",
+                        "text": "*🔍 코드 품질 검사:*\n${{ needs.lint-and-test.result == 'success' && '✅ 성공' || '❌ 실패' }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*🚀 NAS 배포:*\n${{ needs.deploy.result == 'success' && '✅ 성공' || '❌ 실패' }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*🔍 배포 후 모니터링:*\n${{ needs.post-deploy-monitoring.result == 'success' && '✅ 완료' || needs.post-deploy-monitoring.result == 'skipped' && '⏭️ 생략됨' || '❌ 실패' }}"
+                      },
+                      {
+                        "type": "mrkdwn",
+                        "text": "*⏱️ 총 실행 시간:*\n약 5-10분"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "*📝 커밋 메시지:*\n${{ github.event.head_commit.message || 'Manual trigger' }}"
+                    }
+                  },
+                  {
+                    "type": "actions",
+                    "elements": [
+                      {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "View Pipeline"
+                        },
+                        "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
