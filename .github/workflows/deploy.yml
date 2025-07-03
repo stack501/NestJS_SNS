@@ -9,6 +9,7 @@ on:
 
 env:
   NODE_VERSION: '20'
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}  # 환경변수로 설정
 
 jobs:
   lint-and-test:
@@ -92,24 +93,21 @@ jobs:
       with:
         status: failure
         channel: '#ci-cd-alerts'
-        title: "❌ 테스트 실패"
-        fields: |
-          {
-            "Repository": "${{ github.repository }}",
-            "Branch": "${{ github.ref_name }}",
-            "Commit": "${{ github.sha }}",
-            "Author": "${{ github.actor }}",
-            "Workflow": "${{ github.workflow }}",
-            "Failed Job": "lint-and-test"
-          }
+        fields: repo,message,commit,author,action,eventName,ref,workflow
         text: |
           🚨 **테스트가 실패했습니다!**
+          
+          Repository: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+          Commit: ${{ github.sha }}
+          Author: ${{ github.actor }}
           
           코드 품질 검사 또는 테스트에서 오류가 발생했습니다.
           GitHub Actions 로그를 확인하여 문제를 해결해주세요.
           
           **액션 링크**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy:
     needs: lint-and-test
@@ -125,9 +123,10 @@ jobs:
       uses: 8398a7/action-slack@v3
       with:
         status: custom
+        channel: '#ci-cd-alerts'
+        fields: repo,message,commit,author,action,eventName,ref,workflow
         custom_payload: |
           {
-            "channel": "#ci-cd-alerts",
             "username": "GitHub Actions",
             "icon_emoji": ":rocket:",
             "attachments": [{
@@ -168,11 +167,11 @@ jobs:
                 }
               ],
               "footer": "GitHub Actions CI/CD",
-              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-              "ts": ${{ github.event.head_commit.timestamp && 'github.event.head_commit.timestamp' || 'null' }}
+              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
             }]
           }
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     - name: 🚀 NAS 서버 배포 및 검증 (DDNS)
       id: deploy
@@ -281,12 +280,6 @@ jobs:
             echo "디스크 사용률:"
             df -h | grep -E "(/$|/volume1)"
             
-            # 배포 성공 정보를 GitHub Actions로 전달
-            echo "DEPLOY_SUCCESS=true" >> $GITHUB_ENV
-            echo "SWAGGER_STATUS=$SWAGGER_STATUS" >> $GITHUB_ENV
-            echo "GRAPHQL_STATUS=$GRAPHQL_STATUS" >> $GITHUB_ENV
-            echo "DOCS_STATUS=$DOCS_STATUS" >> $GITHUB_ENV
-            
             echo "======================================"
             echo "✅ GitHub Actions 배포 및 검증 완료"
             echo "🌐 HTTPS 서비스 접근:"
@@ -309,18 +302,16 @@ jobs:
       with:
         status: success
         channel: '#ci-cd-alerts'
-        title: "✅ 배포 성공"
-        fields: |
-          {
-            "Repository": "${{ github.repository }}",
-            "Branch": "${{ github.ref_name }}",
-            "Commit": "${{ github.sha }}",
-            "Author": "${{ github.actor }}",
-            "DDNS Host": "${{ secrets.NAS_DDNS }}",
-            "Deployment Time": "약 ${{ github.event.head_commit.timestamp && '계산중' || 'N/A' }}"
-          }
+        fields: repo,message,commit,author,action,eventName,ref,workflow
         text: |
           🎉 **NAS 서버 배포가 성공적으로 완료되었습니다!**
+          
+          📋 **배포 정보**
+          • Repository: ${{ github.repository }}
+          • Branch: ${{ github.ref_name }}
+          • Commit: ${{ github.sha }}
+          • Author: ${{ github.actor }}
+          • DDNS Host: ${{ secrets.NAS_DDNS }}
           
           🌐 **서비스 접근 링크**
           • 📡 API 서버: https://${{ secrets.NAS_DDNS }}
@@ -336,7 +327,8 @@ jobs:
           • 데이터베이스: 연결됨
           
           **액션 로그**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         
     # 배포 실패 알림
     - name: 📢 배포 실패 알림
@@ -345,20 +337,16 @@ jobs:
       with:
         status: failure
         channel: '#ci-cd-alerts'
-        title: "❌ 배포 실패"
-        fields: |
-          {
-            "Repository": "${{ github.repository }}",
-            "Branch": "${{ github.ref_name }}",
-            "Commit": "${{ github.sha }}",
-            "Author": "${{ github.actor }}",
-            "DDNS Host": "${{ secrets.NAS_DDNS }}",
-            "Failed Step": "${{ job.status }}"
-          }
+        fields: repo,message,commit,author,action,eventName,ref,workflow
         text: |
           🚨 **NAS 서버 배포가 실패했습니다!**
           
-          배포 프로세스 중 오류가 발생했습니다. 즉시 확인이 필요합니다.
+          📋 **배포 정보**
+          • Repository: ${{ github.repository }}
+          • Branch: ${{ github.ref_name }}
+          • Commit: ${{ github.sha }}
+          • Author: ${{ github.actor }}
+          • DDNS Host: ${{ secrets.NAS_DDNS }}
           
           🔧 **롤백 명령어**
           ```bash
@@ -376,7 +364,8 @@ jobs:
           🆘 **긴급 연락처**
           • 담당자: ${{ github.actor }}
           • 시간: $(date '+%Y-%m-%d %H:%M:%S UTC')
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # 배포 후 모니터링 및 헬스체크
   post-deploy-monitoring:
@@ -421,58 +410,46 @@ jobs:
         # 전체 상태 판단
         if [ "$HEALTH_STATUS" = "200" ]; then
           echo "overall_status=healthy" >> $GITHUB_OUTPUT
-          echo "status_color=good" >> $GITHUB_OUTPUT
           echo "status_emoji=✅" >> $GITHUB_OUTPUT
         else
           echo "overall_status=unhealthy" >> $GITHUB_OUTPUT
-          echo "status_color=danger" >> $GITHUB_OUTPUT
           echo "status_emoji=⚠️" >> $GITHUB_OUTPUT
         fi
-        
-        # 각 서비스별 상태 텍스트 생성
-        HEALTH_TEXT=$([ "$HEALTH_STATUS" = "200" ] && echo "✅ 정상" || echo "❌ 이상")
-        API_TEXT=$([ "$API_STATUS" = "200" ] || [ "$API_STATUS" = "401" ] && echo "✅ 정상" || echo "❌ 이상")
-        GRAPHQL_TEXT=$([ "$GRAPHQL_STATUS" = "200" ] || [ "$GRAPHQL_STATUS" = "400" ] || [ "$GRAPHQL_STATUS" = "405" ] && echo "✅ 정상" || echo "❌ 이상")
-        DOCS_TEXT=$([ "$DOCS_STATUS" = "200" ] && echo "✅ 정상" || echo "❌ 이상")
-        
-        echo "health_text=$HEALTH_TEXT" >> $GITHUB_OUTPUT
-        echo "api_text=$API_TEXT" >> $GITHUB_OUTPUT
-        echo "graphql_text=$GRAPHQL_TEXT" >> $GITHUB_OUTPUT
-        echo "docs_text=$DOCS_TEXT" >> $GITHUB_OUTPUT
         
     - name: 📢 서비스 상태 알림
       uses: 8398a7/action-slack@v3
       with:
         status: custom
+        channel: '#ci-cd-alerts'
+        fields: repo,message,commit,author,action,eventName,ref,workflow
         custom_payload: |
           {
-            "channel": "#ci-cd-alerts",
             "username": "Health Monitor",
             "icon_emoji": ":stethoscope:",
             "attachments": [{
-              "color": "${{ steps.healthcheck.outputs.status_color }}",
+              "color": "${{ steps.healthcheck.outputs.overall_status == 'healthy' && 'good' || 'danger' }}",
               "pretext": "${{ steps.healthcheck.outputs.status_emoji }} **배포 후 서비스 상태 점검 완료**",
               "title": "${{ steps.healthcheck.outputs.overall_status == 'healthy' && '모든 서비스가 정상적으로 운영 중입니다' || '일부 서비스에 문제가 감지되었습니다' }}",
               "title_link": "https://${{ secrets.NAS_DDNS }}",
               "fields": [
                 {
                   "title": "🔍 Health Check API",
-                  "value": "${{ steps.healthcheck.outputs.health_text }} (HTTP ${{ steps.healthcheck.outputs.health_status }})",
+                  "value": "${{ steps.healthcheck.outputs.health_status == '200' && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.health_status }})",
                   "short": true
                 },
                 {
                   "title": "📋 Swagger API",
-                  "value": "${{ steps.healthcheck.outputs.api_text }} (HTTP ${{ steps.healthcheck.outputs.api_status }})",
+                  "value": "${{ (steps.healthcheck.outputs.api_status == '200' || steps.healthcheck.outputs.api_status == '401') && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.api_status }})",
                   "short": true
                 },
                 {
                   "title": "🚀 GraphQL",
-                  "value": "${{ steps.healthcheck.outputs.graphql_text }} (HTTP ${{ steps.healthcheck.outputs.graphql_status }})",
+                  "value": "${{ (steps.healthcheck.outputs.graphql_status == '200' || steps.healthcheck.outputs.graphql_status == '400' || steps.healthcheck.outputs.graphql_status == '405') && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.graphql_status }})",
                   "short": true
                 },
                 {
                   "title": "📚 Documentation",
-                  "value": "${{ steps.healthcheck.outputs.docs_text }} (HTTP ${{ steps.healthcheck.outputs.docs_status }})",
+                  "value": "${{ steps.healthcheck.outputs.docs_status == '200' && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.docs_status }})",
                   "short": true
                 },
                 {
@@ -482,16 +459,15 @@ jobs:
                 },
                 {
                   "title": "⏱️ 점검 시간",
-                  "value": "$(date '+%Y-%m-%d %H:%M:%S UTC')",
+                  "value": "방금 전",
                   "short": true
                 }
               ],
-              "footer": "Post-Deploy Health Check",
-              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-              "ts": ${{ github.event.head_commit.timestamp && 'github.event.head_commit.timestamp' || 'null' }}
+              "footer": "Post-Deploy Health Check"
             }]
           }
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     # 서비스 문제 감지 시 추가 알림
     - name: 🚨 서비스 이상 긴급 알림
@@ -499,21 +475,13 @@ jobs:
       uses: 8398a7/action-slack@v3
       with:
         status: failure
-        channel: '#ci-cd-urgent'
-        title: "🚨 긴급: 배포 후 서비스 상태 이상"
-        fields: |
-          {
-            "Repository": "${{ github.repository }}",
-            "DDNS Host": "${{ secrets.NAS_DDNS }}",
-            "Health Status": "${{ steps.healthcheck.outputs.health_status }}",
-            "Detection Time": "$(date '+%Y-%m-%d %H:%M:%S UTC')",
-            "Action Required": "즉시 확인 필요"
-          }
+        channel: '#ci-cd-alerts'
+        fields: repo,message,commit,author,action,eventName,ref,workflow
         text: |
           🚨 **긴급: 배포는 성공했지만 서비스 상태에 문제가 있습니다!**
           
           📊 **문제 상황**
-          • Health Check: ${{ steps.healthcheck.outputs.health_text }} (HTTP ${{ steps.healthcheck.outputs.health_status }})
+          • Health Check: ${{ steps.healthcheck.outputs.health_status == '200' && '✅ 정상' || '❌ 이상' }} (HTTP ${{ steps.healthcheck.outputs.health_status }})
           • 메인 API가 응답하지 않고 있습니다
           
           🔧 **즉시 조치사항**
@@ -525,7 +493,8 @@ jobs:
           🆘 **담당자 즉시 확인 필요**
           
           **모니터링 링크**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy-summary:
     needs: [lint-and-test, deploy, post-deploy-monitoring]
@@ -586,9 +555,10 @@ jobs:
       uses: 8398a7/action-slack@v3
       with:
         status: custom
+        channel: '#ci-cd-summary'
+        fields: repo,message,commit,author,action,eventName,ref,workflow
         custom_payload: |
           {
-            "channel": "#ci-cd-summary",
             "username": "Pipeline Summary",
             "icon_emoji": ":clipboard:",
             "attachments": [{
@@ -614,7 +584,7 @@ jobs:
                 },
                 {
                   "title": "⏱️ 총 실행 시간",
-                  "value": "약 ${{ github.event.head_commit.timestamp && '계산 중...' || 'N/A' }}",
+                  "value": "약 5-10분",
                   "short": true
                 },
                 {
@@ -623,25 +593,8 @@ jobs:
                   "short": false
                 }
               ],
-              "footer": "GitHub Actions CI/CD Pipeline • ${{ github.repository }}",
-              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-              "ts": ${{ github.event.head_commit.timestamp && 'github.event.head_commit.timestamp' || 'null' }}
+              "footer": "GitHub Actions CI/CD Pipeline • ${{ github.repository }}"
             }]
           }
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-    # 주간 통계를 위한 메트릭 수집 (선택적)
-    - name: 📈 배포 메트릭 수집
-      if: success()
-      run: |
-        # 향후 분석을 위한 메트릭 수집
-        echo "📊 배포 메트릭 수집 중..."
-        echo "Repository: ${{ github.repository }}" 
-        echo "Branch: ${{ github.ref_name }}"
-        echo "Author: ${{ github.actor }}"
-        echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S UTC')"
-        echo "Deploy Result: ${{ needs.deploy.result }}"
-        echo "Test Result: ${{ needs.lint-and-test.result }}"
-        echo "Monitor Result: ${{ needs.post-deploy-monitoring.result }}"
-        
-        # 향후 주간/월간 리포트 생성에 활용 가능
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
