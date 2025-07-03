@@ -62,7 +62,6 @@ jobs:
         echo "=== 의존성 설치 시작 ==="
         if [ -f pnpm-lock.yaml ]; then
           echo "📦 pnpm-lock.yaml 발견 - lock 파일 검증 중..."
-          # lock 파일 호환성 확인
           if pnpm install --frozen-lockfile --dry-run; then
             echo "✅ lock 파일 호환됨 - frozen-lockfile 모드 사용"
             pnpm install --frozen-lockfile
@@ -86,13 +85,97 @@ jobs:
     - name: 🏗️ 빌드 테스트
       run: pnpm run build
 
+    # 테스트 실패 시 즉시 알림
+    - name: 📢 테스트 실패 알림
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#ci-cd-alerts'
+        title: "❌ 테스트 실패"
+        fields: |
+          {
+            "Repository": "${{ github.repository }}",
+            "Branch": "${{ github.ref_name }}",
+            "Commit": "${{ github.sha }}",
+            "Author": "${{ github.actor }}",
+            "Workflow": "${{ github.workflow }}",
+            "Failed Job": "lint-and-test"
+          }
+        text: |
+          🚨 **테스트가 실패했습니다!**
+          
+          코드 품질 검사 또는 테스트에서 오류가 발생했습니다.
+          GitHub Actions 로그를 확인하여 문제를 해결해주세요.
+          
+          **액션 링크**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
   deploy:
     needs: lint-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
     steps:
+    - name: 📥 체크아웃
+      uses: actions/checkout@v4
+
+    # 배포 시작 알림
+    - name: 📢 배포 시작 알림
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "channel": "#ci-cd-alerts",
+            "username": "GitHub Actions",
+            "icon_emoji": ":rocket:",
+            "attachments": [{
+              "color": "#2eb886",
+              "pretext": "🚀 **배포 시작**",
+              "title": "NAS 서버 배포가 시작되었습니다",
+              "title_link": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "fields": [
+                {
+                  "title": "Repository",
+                  "value": "<${{ github.server_url }}/${{ github.repository }}|${{ github.repository }}>",
+                  "short": true
+                },
+                {
+                  "title": "Branch",
+                  "value": "`${{ github.ref_name }}`",
+                  "short": true
+                },
+                {
+                  "title": "Commit",
+                  "value": "<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|`${{ github.sha }}`>",
+                  "short": true
+                },
+                {
+                  "title": "Author",
+                  "value": "${{ github.actor }}",
+                  "short": true
+                },
+                {
+                  "title": "DDNS Host",
+                  "value": "`${{ secrets.NAS_DDNS }}`",
+                  "short": true
+                },
+                {
+                  "title": "Workflow",
+                  "value": "${{ github.workflow }}",
+                  "short": true
+                }
+              ],
+              "footer": "GitHub Actions CI/CD",
+              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              "ts": ${{ github.event.head_commit.timestamp && 'github.event.head_commit.timestamp' || 'null' }}
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
     - name: 🚀 NAS 서버 배포 및 검증 (DDNS)
+      id: deploy
       uses: appleboy/ssh-action@v1.1.0
       with:
         host: ${{ secrets.NAS_DDNS }}
@@ -198,6 +281,12 @@ jobs:
             echo "디스크 사용률:"
             df -h | grep -E "(/$|/volume1)"
             
+            # 배포 성공 정보를 GitHub Actions로 전달
+            echo "DEPLOY_SUCCESS=true" >> $GITHUB_ENV
+            echo "SWAGGER_STATUS=$SWAGGER_STATUS" >> $GITHUB_ENV
+            echo "GRAPHQL_STATUS=$GRAPHQL_STATUS" >> $GITHUB_ENV
+            echo "DOCS_STATUS=$DOCS_STATUS" >> $GITHUB_ENV
+            
             echo "======================================"
             echo "✅ GitHub Actions 배포 및 검증 완료"
             echo "🌐 HTTPS 서비스 접근:"
@@ -212,9 +301,234 @@ jobs:
             echo "❌ GitHub Actions 배포 실패 (Exit Code: $DEPLOY_EXIT_CODE)"
             exit $DEPLOY_EXIT_CODE
           fi
+        
+    # 배포 성공 알림
+    - name: 📢 배포 성공 알림
+      if: success()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        channel: '#ci-cd-alerts'
+        title: "✅ 배포 성공"
+        fields: |
+          {
+            "Repository": "${{ github.repository }}",
+            "Branch": "${{ github.ref_name }}",
+            "Commit": "${{ github.sha }}",
+            "Author": "${{ github.actor }}",
+            "DDNS Host": "${{ secrets.NAS_DDNS }}",
+            "Deployment Time": "약 ${{ github.event.head_commit.timestamp && '계산중' || 'N/A' }}"
+          }
+        text: |
+          🎉 **NAS 서버 배포가 성공적으로 완료되었습니다!**
+          
+          🌐 **서비스 접근 링크**
+          • 📡 API 서버: https://${{ secrets.NAS_DDNS }}
+          • 📋 Swagger UI: https://${{ secrets.NAS_DDNS }}/api
+          • 🚀 GraphQL: https://${{ secrets.NAS_DDNS }}/graphql
+          • 🔍 헬스체크: https://${{ secrets.NAS_DDNS }}/health
+          • 📚 문서: https://${{ secrets.NAS_DDNS }}:444
+          
+          ✅ **검증 완료**
+          • 컨테이너 상태: 정상
+          • 내부 API: 정상
+          • HTTPS 프록시: 정상
+          • 데이터베이스: 연결됨
+          
+          **액션 로그**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+    # 배포 실패 알림
+    - name: 📢 배포 실패 알림
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#ci-cd-alerts'
+        title: "❌ 배포 실패"
+        fields: |
+          {
+            "Repository": "${{ github.repository }}",
+            "Branch": "${{ github.ref_name }}",
+            "Commit": "${{ github.sha }}",
+            "Author": "${{ github.actor }}",
+            "DDNS Host": "${{ secrets.NAS_DDNS }}",
+            "Failed Step": "${{ job.status }}"
+          }
+        text: |
+          🚨 **NAS 서버 배포가 실패했습니다!**
+          
+          배포 프로세스 중 오류가 발생했습니다. 즉시 확인이 필요합니다.
+          
+          🔧 **롤백 명령어**
+          ```bash
+          ssh ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_DDNS }}
+          cd ${{ secrets.NAS_PROJECT_PATH }}
+          ./rollback.sh
+          ```
+          
+          📊 **문제 진단**
+          1. **액션 로그 확인**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          2. **서버 로그 확인**: `docker logs sns-dev-app`
+          3. **컨테이너 상태 확인**: `docker ps -a`
+          4. **리소스 확인**: `df -h && free -h`
+          
+          🆘 **긴급 연락처**
+          • 담당자: ${{ github.actor }}
+          • 시간: $(date '+%Y-%m-%d %H:%M:%S UTC')
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # 배포 후 모니터링 및 헬스체크
+  post-deploy-monitoring:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+    - name: ⏳ 배포 안정화 대기
+      run: |
+        echo "🔄 서비스 완전 시작을 위해 60초 대기 중..."
+        sleep 60
+      
+    - name: 🔍 서비스 헬스체크
+      id: healthcheck
+      run: |
+        echo "🔍 서비스 상태 점검 시작..."
+        
+        # 헬스체크 수행
+        echo "📡 API 헬스체크 중..."
+        HEALTH_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" --max-time 10 "https://${{ secrets.NAS_DDNS }}/health" || echo "000")
+        echo "Health API Status: $HEALTH_STATUS"
+        
+        echo "📋 Swagger API 체크 중..."
+        API_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" --max-time 10 "https://${{ secrets.NAS_DDNS }}/api" || echo "000")
+        echo "Swagger API Status: $API_STATUS"
+        
+        echo "🚀 GraphQL 체크 중..."
+        GRAPHQL_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" --max-time 10 "https://${{ secrets.NAS_DDNS }}/graphql" || echo "000")
+        echo "GraphQL Status: $GRAPHQL_STATUS"
+        
+        echo "📚 문서 서비스 체크 중..."
+        DOCS_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" --max-time 10 "https://${{ secrets.NAS_DDNS }}:444/" || echo "000")
+        echo "Docs Status: $DOCS_STATUS"
+        
+        # GitHub Actions 출력으로 전달
+        echo "health_status=$HEALTH_STATUS" >> $GITHUB_OUTPUT
+        echo "api_status=$API_STATUS" >> $GITHUB_OUTPUT
+        echo "graphql_status=$GRAPHQL_STATUS" >> $GITHUB_OUTPUT
+        echo "docs_status=$DOCS_STATUS" >> $GITHUB_OUTPUT
+        
+        # 전체 상태 판단
+        if [ "$HEALTH_STATUS" = "200" ]; then
+          echo "overall_status=healthy" >> $GITHUB_OUTPUT
+          echo "status_color=good" >> $GITHUB_OUTPUT
+          echo "status_emoji=✅" >> $GITHUB_OUTPUT
+        else
+          echo "overall_status=unhealthy" >> $GITHUB_OUTPUT
+          echo "status_color=danger" >> $GITHUB_OUTPUT
+          echo "status_emoji=⚠️" >> $GITHUB_OUTPUT
+        fi
+        
+        # 각 서비스별 상태 텍스트 생성
+        HEALTH_TEXT=$([ "$HEALTH_STATUS" = "200" ] && echo "✅ 정상" || echo "❌ 이상")
+        API_TEXT=$([ "$API_STATUS" = "200" ] || [ "$API_STATUS" = "401" ] && echo "✅ 정상" || echo "❌ 이상")
+        GRAPHQL_TEXT=$([ "$GRAPHQL_STATUS" = "200" ] || [ "$GRAPHQL_STATUS" = "400" ] || [ "$GRAPHQL_STATUS" = "405" ] && echo "✅ 정상" || echo "❌ 이상")
+        DOCS_TEXT=$([ "$DOCS_STATUS" = "200" ] && echo "✅ 정상" || echo "❌ 이상")
+        
+        echo "health_text=$HEALTH_TEXT" >> $GITHUB_OUTPUT
+        echo "api_text=$API_TEXT" >> $GITHUB_OUTPUT
+        echo "graphql_text=$GRAPHQL_TEXT" >> $GITHUB_OUTPUT
+        echo "docs_text=$DOCS_TEXT" >> $GITHUB_OUTPUT
+        
+    - name: 📢 서비스 상태 알림
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "channel": "#ci-cd-alerts",
+            "username": "Health Monitor",
+            "icon_emoji": ":stethoscope:",
+            "attachments": [{
+              "color": "${{ steps.healthcheck.outputs.status_color }}",
+              "pretext": "${{ steps.healthcheck.outputs.status_emoji }} **배포 후 서비스 상태 점검 완료**",
+              "title": "${{ steps.healthcheck.outputs.overall_status == 'healthy' && '모든 서비스가 정상적으로 운영 중입니다' || '일부 서비스에 문제가 감지되었습니다' }}",
+              "title_link": "https://${{ secrets.NAS_DDNS }}",
+              "fields": [
+                {
+                  "title": "🔍 Health Check API",
+                  "value": "${{ steps.healthcheck.outputs.health_text }} (HTTP ${{ steps.healthcheck.outputs.health_status }})",
+                  "short": true
+                },
+                {
+                  "title": "📋 Swagger API",
+                  "value": "${{ steps.healthcheck.outputs.api_text }} (HTTP ${{ steps.healthcheck.outputs.api_status }})",
+                  "short": true
+                },
+                {
+                  "title": "🚀 GraphQL",
+                  "value": "${{ steps.healthcheck.outputs.graphql_text }} (HTTP ${{ steps.healthcheck.outputs.graphql_status }})",
+                  "short": true
+                },
+                {
+                  "title": "📚 Documentation",
+                  "value": "${{ steps.healthcheck.outputs.docs_text }} (HTTP ${{ steps.healthcheck.outputs.docs_status }})",
+                  "short": true
+                },
+                {
+                  "title": "🌐 DDNS Host",
+                  "value": "`${{ secrets.NAS_DDNS }}`",
+                  "short": true
+                },
+                {
+                  "title": "⏱️ 점검 시간",
+                  "value": "$(date '+%Y-%m-%d %H:%M:%S UTC')",
+                  "short": true
+                }
+              ],
+              "footer": "Post-Deploy Health Check",
+              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              "ts": ${{ github.event.head_commit.timestamp && 'github.event.head_commit.timestamp' || 'null' }}
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    # 서비스 문제 감지 시 추가 알림
+    - name: 🚨 서비스 이상 긴급 알림
+      if: steps.healthcheck.outputs.overall_status == 'unhealthy'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#ci-cd-urgent'
+        title: "🚨 긴급: 배포 후 서비스 상태 이상"
+        fields: |
+          {
+            "Repository": "${{ github.repository }}",
+            "DDNS Host": "${{ secrets.NAS_DDNS }}",
+            "Health Status": "${{ steps.healthcheck.outputs.health_status }}",
+            "Detection Time": "$(date '+%Y-%m-%d %H:%M:%S UTC')",
+            "Action Required": "즉시 확인 필요"
+          }
+        text: |
+          🚨 **긴급: 배포는 성공했지만 서비스 상태에 문제가 있습니다!**
+          
+          📊 **문제 상황**
+          • Health Check: ${{ steps.healthcheck.outputs.health_text }} (HTTP ${{ steps.healthcheck.outputs.health_status }})
+          • 메인 API가 응답하지 않고 있습니다
+          
+          🔧 **즉시 조치사항**
+          1. 서버 상태 확인: `ssh ${{ secrets.NAS_USERNAME }}@${{ secrets.NAS_DDNS }}`
+          2. 컨테이너 로그 확인: `docker logs sns-dev-app --tail=50`
+          3. 컨테이너 재시작: `docker restart sns-dev-app`
+          4. 필요시 롤백: `./rollback.sh`
+          
+          🆘 **담당자 즉시 확인 필요**
+          
+          **모니터링 링크**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   deploy-summary:
-    needs: [lint-and-test, deploy]
+    needs: [lint-and-test, deploy, post-deploy-monitoring]
     runs-on: ubuntu-latest
     if: always()
     
@@ -227,6 +541,7 @@ jobs:
         echo "|------|------|" >> $GITHUB_STEP_SUMMARY
         echo "| 🔍 코드 품질 검사 | ${{ needs.lint-and-test.result == 'success' && '✅ 성공' || '❌ 실패' }} |" >> $GITHUB_STEP_SUMMARY
         echo "| 🚀 NAS 배포 및 검증 | ${{ needs.deploy.result == 'success' && '✅ 성공' || '❌ 실패' }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| 🔍 배포 후 모니터링 | ${{ needs.post-deploy-monitoring.result == 'success' && '✅ 완료' || '❌ 실패' }} |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 📋 배포 정보" >> $GITHUB_STEP_SUMMARY
         echo "- **브랜치**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
@@ -264,3 +579,69 @@ jobs:
           echo "./rollback.sh" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         fi
+
+    # 최종 파이프라인 요약 알림
+    - name: 📢 파이프라인 완료 요약 알림
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: custom
+        custom_payload: |
+          {
+            "channel": "#ci-cd-summary",
+            "username": "Pipeline Summary",
+            "icon_emoji": ":clipboard:",
+            "attachments": [{
+              "color": "${{ needs.deploy.result == 'success' && 'good' || 'danger' }}",
+              "pretext": "📊 **CI/CD 파이프라인 완료 요약**",
+              "title": "${{ needs.deploy.result == 'success' && '✅ 전체 파이프라인 성공' || '❌ 파이프라인 실패' }}",
+              "title_link": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "fields": [
+                {
+                  "title": "🔍 코드 품질 검사",
+                  "value": "${{ needs.lint-and-test.result == 'success' && '✅ 성공' || '❌ 실패' }}",
+                  "short": true
+                },
+                {
+                  "title": "🚀 NAS 배포",
+                  "value": "${{ needs.deploy.result == 'success' && '✅ 성공' || '❌ 실패' }}",
+                  "short": true
+                },
+                {
+                  "title": "🔍 배포 후 모니터링",
+                  "value": "${{ needs.post-deploy-monitoring.result == 'success' && '✅ 완료' || needs.post-deploy-monitoring.result == 'skipped' && '⏭️ 생략됨' || '❌ 실패' }}",
+                  "short": true
+                },
+                {
+                  "title": "⏱️ 총 실행 시간",
+                  "value": "약 ${{ github.event.head_commit.timestamp && '계산 중...' || 'N/A' }}",
+                  "short": true
+                },
+                {
+                  "title": "📝 커밋 메시지",
+                  "value": "${{ github.event.head_commit.message || 'Manual trigger' }}",
+                  "short": false
+                }
+              ],
+              "footer": "GitHub Actions CI/CD Pipeline • ${{ github.repository }}",
+              "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              "ts": ${{ github.event.head_commit.timestamp && 'github.event.head_commit.timestamp' || 'null' }}
+            }]
+          }
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    # 주간 통계를 위한 메트릭 수집 (선택적)
+    - name: 📈 배포 메트릭 수집
+      if: success()
+      run: |
+        # 향후 분석을 위한 메트릭 수집
+        echo "📊 배포 메트릭 수집 중..."
+        echo "Repository: ${{ github.repository }}" 
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Author: ${{ github.actor }}"
+        echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S UTC')"
+        echo "Deploy Result: ${{ needs.deploy.result }}"
+        echo "Test Result: ${{ needs.lint-and-test.result }}"
+        echo "Monitor Result: ${{ needs.post-deploy-monitoring.result }}"
+        
+        # 향후 주간/월간 리포트 생성에 활용 가능
