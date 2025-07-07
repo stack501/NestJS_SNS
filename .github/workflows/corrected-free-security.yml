@@ -1,4 +1,4 @@
-name: 🛡️ Fixed Free Security Scan
+name: 🛡️ Corrected Free Security Scan
 
 on:
   push:
@@ -173,40 +173,38 @@ jobs:
         echo "- 🔍 **Security Tab**: [View all findings](${{ github.server_url }}/${{ github.repository }}/security)" >> $GITHUB_STEP_SUMMARY
         echo "- 📋 **Code Scanning**: [Detailed analysis](${{ github.server_url }}/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
         echo "- 🔐 **Secret Scanning**: [Secret detection results](${{ github.server_url }}/${{ github.repository }}/security/secret-scanning)" >> $GITHUB_STEP_SUMMARY
-
-  # ===== 선택적 Slack 알림 =====
-  notify-results:
-    name: 📱 Notification
-    runs-on: ubuntu-latest
-    needs: free-security-scan
-    if: always() && secrets.SLACK_WEBHOOK_URL != ''
     
-    steps:
+    # ===== 선택적 Slack 알림 (같은 Job 내에서) =====
     - name: 📱 Send Slack Notification
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ needs.free-security-scan.result }}
-        fields: repo,message,commit,author,ref,workflow
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        channel: '#security-alerts'
-        text: |
-          🛡️ **Free Security Scan Completed**
+      if: always()
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: |
+        # SLACK_WEBHOOK_URL이 설정된 경우에만 알림 전송
+        if [[ -n "$SLACK_WEBHOOK_URL" ]]; then
+          echo "📱 Slack 알림 전송 중..."
           
-          **Repository:** ${{ github.repository }}
-          **Status:** ${{ needs.free-security-scan.result == 'success' && '✅ CLEAN' || '⚠️ ISSUES FOUND' }}
-          **Branch:** ${{ github.ref_name }}
-          **Cost:** $0.00 💰
+          # Job 상태 결정
+          if [[ "${{ job.status }}" == "success" ]]; then
+            STATUS_EMOJI="✅"
+            STATUS_TEXT="CLEAN"
+          else
+            STATUS_EMOJI="⚠️"
+            STATUS_TEXT="ISSUES FOUND"
+          fi
           
-          **8 Security Tools Executed:**
-          • CodeQL Static Analysis ✅
-          • NPM Dependency Audit ✅
-          • Container Security Check ✅
-          • Secret Pattern Detection ✅
-          • Infrastructure Security ✅
-          • Dependency Review ✅
-          • Pattern-based Security ✅
-          • Git History Scanning ✅
+          # Slack 메시지 생성
+          MESSAGE="{
+            \"text\": \"🛡️ **Free Security Scan Completed**\n\n**Repository:** ${{ github.repository }}\n**Status:** $STATUS_EMOJI $STATUS_TEXT\n**Branch:** ${{ github.ref_name }}\n**Cost:** \$0.00 💰\n\n**8 Security Tools Executed:**\n• CodeQL Static Analysis ✅\n• NPM Dependency Audit ✅\n• Container Security Check ✅\n• Secret Pattern Detection ✅\n• Infrastructure Security ✅\n• Dependency Review ✅\n• Pattern-based Security ✅\n• Git History Scanning ✅\n\n📊 **Details:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n🔍 **Security:** ${{ github.server_url }}/${{ github.repository }}/security\"
+          }"
           
-          📊 **Details:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          🔍 **Security:** ${{ github.server_url }}/${{ github.repository }}/security
+          # Slack으로 전송
+          curl -X POST -H 'Content-type: application/json' \
+            --data "$MESSAGE" \
+            "$SLACK_WEBHOOK_URL" || echo "⚠️ Slack 알림 전송 실패"
+          
+          echo "✅ Slack 알림 전송 완료"
+        else
+          echo "ℹ️ SLACK_WEBHOOK_URL이 설정되지 않음 - 알림 스킵"
+        fi
       continue-on-error: true
