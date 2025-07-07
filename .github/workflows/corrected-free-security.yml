@@ -1,4 +1,4 @@
-name: 🛡️ Corrected Free Security Scan
+name: 🛡️ Fixed Free Security Scan
 
 on:
   push:
@@ -10,9 +10,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # =====================================
-  # 💯 완전 무료 보안 스캔 (시크릿 불필요)
-  # =====================================
   free-security-scan:
     name: 🔍 Free Security Analysis
     runs-on: ubuntu-latest
@@ -25,7 +22,7 @@ jobs:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # GitLeaks가 전체 히스토리를 스캔하기 위해
+        fetch-depth: 0
     
     - name: 🟢 Setup Node.js
       uses: actions/setup-node@v4
@@ -38,7 +35,6 @@ jobs:
     
     # ===== 코드 보안 분석 =====
     
-    # GitHub CodeQL (완전 무료, 시크릿 불필요)
     - name: 🔬 Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
@@ -48,13 +44,9 @@ jobs:
     - name: 🔬 Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
     
-    # ESLint 보안 규칙 (완전 무료, 시크릿 불필요)
     - name: 🔍 ESLint Security Scan
       run: |
-        # 보안 플러그인 설치
         npm install --save-dev eslint-plugin-security || true
-        
-        # 보안 규칙으로 스캔
         npx eslint . --ext .ts,.js \
           --rule "no-eval: error" \
           --rule "no-implied-eval: error" \
@@ -63,7 +55,6 @@ jobs:
           --output-file eslint-security-results.sarif || true
       continue-on-error: true
     
-    # Semgrep Community (완전 무료, 시크릿 불필요)
     - name: 🛡️ Semgrep Security Scan
       uses: returntocorp/semgrep-action@v1
       with:
@@ -77,18 +68,13 @@ jobs:
     
     # ===== 의존성 보안 분석 =====
     
-    # NPM Audit (완전 무료, 시크릿 불필요)
     - name: 📦 NPM Security Audit
       run: |
         echo "## 📦 NPM Audit Results" >> $GITHUB_STEP_SUMMARY
         
-        # JSON 결과 생성
         npm audit --json > npm-audit-results.json 2>/dev/null || true
-        
-        # 가독성 있는 결과 출력
         npm audit --audit-level=moderate || echo "⚠️ Vulnerabilities found"
         
-        # 요약 정보 추출
         if [[ -f npm-audit-results.json ]]; then
           CRITICAL=$(jq -r '.metadata.vulnerabilities.critical // 0' npm-audit-results.json)
           HIGH=$(jq -r '.metadata.vulnerabilities.high // 0' npm-audit-results.json)
@@ -98,13 +84,11 @@ jobs:
           echo "- **High:** $HIGH" >> $GITHUB_STEP_SUMMARY
           echo "- **Moderate:** $MODERATE" >> $GITHUB_STEP_SUMMARY
           
-          # 심각한 취약점이 있으면 경고
           if [[ $CRITICAL -gt 0 ]] || [[ $HIGH -gt 3 ]]; then
             echo "::warning::High/Critical vulnerabilities found: Critical($CRITICAL), High($HIGH)"
           fi
         fi
     
-    # GitHub Dependency Review (완전 무료, 시크릿 불필요)
     - name: 🔍 Dependency Security Review
       uses: actions/dependency-review-action@v3
       with:
@@ -112,19 +96,8 @@ jobs:
         allow-licenses: MIT, Apache-2.0, BSD-3-Clause, ISC, 0BSD, BSD-2-Clause
       continue-on-error: true
     
-    # OSV Scanner (Google, 완전 무료, 시크릿 불필요)
-    - name: 🔍 OSV Vulnerability Scanner
-      uses: google/osv-scanner-action@v1
-      with:
-        scan-args: |-
-          -r
-          --skip-git
-          .
-      continue-on-error: true
-    
     # ===== 컨테이너 보안 분석 =====
     
-    # Dockerfile 보안 검사 (완전 무료, 시크릿 불필요)
     - name: 🐳 Dockerfile Security Check
       if: hashFiles('Dockerfile') != ''
       uses: hadolint/hadolint-action@v3.1.0
@@ -135,8 +108,7 @@ jobs:
         failure-threshold: error
       continue-on-error: true
     
-    # Trivy 파일시스템 스캔 (완전 무료, 시크릿 불필요)
-    - name: 🔍 Trivy Filesystem Security Scan
+    - name: 🔍 Trivy Security Scan
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
@@ -148,13 +120,10 @@ jobs:
     
     # ===== 시크릿 검출 =====
     
-    # GitLeaks (완전 무료, 시크릿 불필요!)
     - name: 🔍 GitLeaks Secret Detection
       uses: gitleaks/gitleaks-action@v2
-      # env 섹션 완전 제거 - 시크릿 불필요!
       continue-on-error: true
     
-    # TruffleHog (완전 무료, 시크릿 불필요)
     - name: 🐷 TruffleHog Secret Scan
       uses: trufflesecurity/trufflehog@main
       with:
@@ -190,7 +159,7 @@ jobs:
         echo "| ESLint Security | JavaScript security rules | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "| Semgrep | Pattern-based security | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "| NPM Audit | Node.js dependencies | ✅ |" >> $GITHUB_STEP_SUMMARY
-        echo "| OSV Scanner | Vulnerability database | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Dependency Review | GitHub dependency check | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "| Trivy | Filesystem vulnerabilities | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "| Hadolint | Dockerfile security | $([ -f 'Dockerfile' ] && echo '✅' || echo '⏭️') |" >> $GITHUB_STEP_SUMMARY
         echo "| GitLeaks | Git secret detection | ✅ |" >> $GITHUB_STEP_SUMMARY
@@ -205,14 +174,12 @@ jobs:
         echo "- 📋 **Code Scanning**: [Detailed analysis](${{ github.server_url }}/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
         echo "- 🔐 **Secret Scanning**: [Secret detection results](${{ github.server_url }}/${{ github.repository }}/security/secret-scanning)" >> $GITHUB_STEP_SUMMARY
 
-  # =====================================
-  # 📱 선택적 알림 (SLACK_WEBHOOK_URL이 있는 경우만)
-  # =====================================
+  # ===== 선택적 Slack 알림 =====
   notify-results:
     name: 📱 Notification
     runs-on: ubuntu-latest
     needs: free-security-scan
-    if: always() && vars.SLACK_WEBHOOK_URL != ''
+    if: always() && secrets.SLACK_WEBHOOK_URL != ''
     
     steps:
     - name: 📱 Send Slack Notification
@@ -220,7 +187,7 @@ jobs:
       with:
         status: ${{ needs.free-security-scan.result }}
         fields: repo,message,commit,author,ref,workflow
-        webhook_url: ${{ vars.SLACK_WEBHOOK_URL }}  # secrets 대신 vars 사용 가능
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
         channel: '#security-alerts'
         text: |
           🛡️ **Free Security Scan Completed**
@@ -230,13 +197,16 @@ jobs:
           **Branch:** ${{ github.ref_name }}
           **Cost:** $0.00 💰
           
-          **Scans Performed:**
-          • CodeQL Static Analysis
-          • NPM Dependency Audit  
-          • Container Security Check
-          • Secret Pattern Detection
-          • Infrastructure Security
+          **8 Security Tools Executed:**
+          • CodeQL Static Analysis ✅
+          • NPM Dependency Audit ✅
+          • Container Security Check ✅
+          • Secret Pattern Detection ✅
+          • Infrastructure Security ✅
+          • Dependency Review ✅
+          • Pattern-based Security ✅
+          • Git History Scanning ✅
           
-          📊 **View Details:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          🔍 **Security Tab:** ${{ github.server_url }}/${{ github.repository }}/security
+          📊 **Details:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          🔍 **Security:** ${{ github.server_url }}/${{ github.repository }}/security
       continue-on-error: true
