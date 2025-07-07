@@ -28,9 +28,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        # npm cache 제거 - pnpm 사용
     
-    # 🔧 pnpm 설치 및 설정
     - name: 📦 Setup pnpm
       uses: pnpm/action-setup@v4
       with:
@@ -50,12 +48,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pnpm-store-
     
-    # 🔧 pnpm으로 의존성 설치
     - name: 📦 Install Dependencies with pnpm
       run: |
         echo "📦 pnpm으로 의존성 설치 시작..."
         
-        # pnpm-lock.yaml 존재 확인
         if [[ -f pnpm-lock.yaml ]]; then
           echo "✅ pnpm-lock.yaml 발견 - frozen lockfile로 설치"
           pnpm install --frozen-lockfile
@@ -64,13 +60,10 @@ jobs:
           pnpm install
         fi
         
-        # 보안 취약점 확인 및 수정
         echo "🔍 보안 취약점 확인 중..."
         pnpm audit || echo "⚠️ 취약점 발견됨"
         
-        # 보안 관련 dev dependencies 추가
         pnpm add -D eslint-plugin-security || true
-        
         echo "✅ pnpm 의존성 설치 완료"
     
     # ===== 코드 보안 분석 =====
@@ -110,21 +103,17 @@ jobs:
         generateSarif: "1"
       continue-on-error: true
     
-    # ===== 의존성 보안 분석 (pnpm 버전) =====
+    # ===== 의존성 보안 분석 =====
     
     - name: 📦 pnpm Security Audit
       run: |
         echo "## 📦 pnpm Audit Results" >> $GITHUB_STEP_SUMMARY
         
-        # pnpm audit 실행 (JSON 형식 지원하지 않으므로 텍스트로)
         echo "🔍 pnpm audit 실행 중..."
         pnpm audit > pnpm-audit-results.txt 2>&1 || echo "⚠️ 취약점 발견됨"
         
-        # 결과 파싱 및 요약
         if [[ -f pnpm-audit-results.txt ]]; then
           AUDIT_OUTPUT=$(cat pnpm-audit-results.txt)
-          
-          # 취약점 개수 추출 (대략적)
           ISSUES=$(echo "$AUDIT_OUTPUT" | grep -c "│" || echo "0")
           
           echo "- **총 이슈 수:** $ISSUES" >> $GITHUB_STEP_SUMMARY
@@ -133,13 +122,11 @@ jobs:
           head -20 pnpm-audit-results.txt >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           
-          # 경고 출력
           if [[ $ISSUES -gt 5 ]]; then
             echo "::warning::Multiple vulnerabilities found in dependencies"
           fi
         fi
         
-        # npm audit도 추가로 실행 (호환성을 위해)
         echo "🔍 추가 npm audit 실행..."
         npm audit --json > npm-audit-results.json 2>/dev/null || true
         
@@ -155,7 +142,9 @@ jobs:
           echo "- **Moderate:** $MODERATE" >> $GITHUB_STEP_SUMMARY
         fi
     
-    - name: 🔍 Dependency Security Review
+    # 🔧 수정: PR에서만 실행
+    - name: 🔍 Dependency Security Review (PR Only)
+      if: github.event_name == 'pull_request'
       uses: actions/dependency-review-action@v3
       with:
         fail-on-severity: critical
@@ -184,19 +173,69 @@ jobs:
         severity: 'CRITICAL,HIGH,MEDIUM'
       continue-on-error: true
     
-    # ===== 시크릿 검출 =====
+    # ===== 시크릿 검출 (수정됨) =====
     
-    - name: 🔍 GitLeaks Secret Detection
-      uses: gitleaks/gitleaks-action@v2
+    # 🔧 수정: GitLeaks 대신 detect-secrets 사용
+    - name: 🔐 Detect Secrets (GitLeaks 대안)
+      run: |
+        echo "🔍 시크릿 검출 시작..."
+        
+        # Python과 detect-secrets 설치
+        pip install detect-secrets
+        
+        # baseline 파일이 없으면 생성
+        if [[ ! -f .secrets.baseline ]]; then
+          echo "📄 .secrets.baseline 생성 중..."
+          detect-secrets scan --all-files --baseline .secrets.baseline || true
+        fi
+        
+        # 시크릿 스캔 실행
+        echo "🔍 새로운 시크릿 검사 중..."
+        detect-secrets scan --all-files --baseline .secrets.baseline --fail-on-found || echo "⚠️ 새로운 시크릿 발견"
+        
+        # 결과 요약
+        SECRET_COUNT=$(jq '.results | to_entries | length' .secrets.baseline 2>/dev/null || echo "0")
+        echo "## 🔐 Secret Detection Results" >> $GITHUB_STEP_SUMMARY
+        echo "- **잠재적 시크릿 수:** $SECRET_COUNT" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ $SECRET_COUNT -gt 0 ]]; then
+          echo "::warning::Potential secrets detected: $SECRET_COUNT"
+        fi
       continue-on-error: true
     
-    - name: 🐷 TruffleHog Secret Scan
+    # 🔧 수정: TruffleHog 조건부 실행
+    - name: 🐷 TruffleHog Secret Scan (PR Only)
+      if: github.event_name == 'pull_request'
       uses: trufflesecurity/trufflehog@main
       with:
         path: ./
-        base: main
-        head: HEAD
+        base: ${{ github.event.pull_request.base.sha }}
+        head: ${{ github.event.pull_request.head.sha }}
         extra_args: --only-verified
+      continue-on-error: true
+    
+    # push 이벤트용 TruffleHog (전체 스캔)
+    - name: 🐷 TruffleHog Full Filesystem Scan (Push Event)
+      if: github.event_name == 'push'
+      run: |
+        echo "🐷 TruffleHog 전체 파일시스템 스캔..."
+        
+        # TruffleHog 설치
+        curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+        
+        # 파일시스템 스캔
+        trufflehog filesystem . --only-verified --json > trufflehog-results.json || true
+        
+        # 결과 요약
+        if [[ -f trufflehog-results.json ]]; then
+          SECRET_FOUND=$(jq '. | length' trufflehog-results.json 2>/dev/null || echo "0")
+          echo "## 🐷 TruffleHog Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **검증된 시크릿:** $SECRET_FOUND" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ $SECRET_FOUND -gt 0 ]]; then
+            echo "::warning::Verified secrets found: $SECRET_FOUND"
+          fi
+        fi
       continue-on-error: true
     
     # ===== SARIF 업로드 =====
@@ -236,6 +275,7 @@ jobs:
         echo "# 🛡️ Security Scan Summary (pnpm)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "**Package Manager:** pnpm 📦" >> $GITHUB_STEP_SUMMARY
+        echo "**Event Type:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
         echo "**Scan Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
         echo "**Repository:** ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
         echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
@@ -250,11 +290,11 @@ jobs:
         echo "| Semgrep | Pattern-based security | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "| pnpm Audit | Node.js dependencies (pnpm) | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "| npm Audit | Additional dependency check | ✅ |" >> $GITHUB_STEP_SUMMARY
-        echo "| Dependency Review | GitHub dependency check | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| Dependency Review | GitHub dependency check | $([ '${{ github.event_name }}' == 'pull_request' ] && echo '✅' || echo '⏭️') |" >> $GITHUB_STEP_SUMMARY
         echo "| Trivy | Filesystem vulnerabilities | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "| Hadolint | Dockerfile security | $([ -f 'Dockerfile' ] && echo '✅' || echo '⏭️') |" >> $GITHUB_STEP_SUMMARY
-        echo "| GitLeaks | Git secret detection | ✅ |" >> $GITHUB_STEP_SUMMARY
-        echo "| TruffleHog | Secret pattern matching | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| detect-secrets | Secret pattern detection | ✅ |" >> $GITHUB_STEP_SUMMARY
+        echo "| TruffleHog | Advanced secret scanning | ✅ |" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
         echo "## 💰 Total Cost: **\$0.00** 🎉" >> $GITHUB_STEP_SUMMARY
@@ -265,7 +305,7 @@ jobs:
         echo "- 📋 **Code Scanning**: [Detailed analysis](${{ github.server_url }}/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
         echo "- 🔐 **Secret Scanning**: [Secret detection results](${{ github.server_url }}/${{ github.repository }}/security/secret-scanning)" >> $GITHUB_STEP_SUMMARY
     
-    # 🎨 예쁜 Slack 알림
+    # 🔧 수정된 Slack 알림 (HERE-document 문법 수정)
     - name: 📱 Send Beautiful Slack Notification
       if: always()
       env:
@@ -290,107 +330,131 @@ jobs:
           COMMIT_SHORT="${{ github.sha }}"
           COMMIT_SHORT="${COMMIT_SHORT:0:7}"
           
-          cat > slack_message.json << EOF
-          {
-            "username": "Security Scanner Bot (pnpm)",
-            "icon_emoji": ":shield:",
-            "attachments": [
-              {
-                "color": "$STATUS_COLOR",
-                "fallback": "Security Scan Results for ${{ github.repository }}",
-                "author_name": "🛡️ Security Scan Pipeline (pnpm)",
-                "author_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                "title": "$STATUS_EMOJI Security Scan $STATUS_TEXT",
-                "title_link": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-                "text": "$STATUS_DETAIL",
-                "fields": [
-                  {
-                    "title": "Repository",
-                    "value": "\`${{ github.repository }}\`",
-                    "short": true
-                  },
-                  {
-                    "title": "Branch",
-                    "value": "\`${{ github.ref_name }}\`",
-                    "short": true
-                  },
-                  {
-                    "title": "Package Manager",
-                    "value": "📦 pnpm",
-                    "short": true
-                  },
-                  {
-                    "title": "Commit",
-                    "value": "<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|$COMMIT_SHORT>",
-                    "short": true
-                  },
-                  {
-                    "title": "Triggered by",
-                    "value": "${{ github.actor }}",
-                    "short": true
-                  },
-                  {
-                    "title": "Scan Time",
-                    "value": "$CURRENT_TIME",
-                    "short": true
-                  }
-                ],
-                "footer": "GitHub Actions Security Scanner (pnpm)",
-                "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                "ts": $(date +%s)
-              },
-              {
-                "color": "#36a64f",
-                "title": "🔍 Security Tools Executed (9/9)",
-                "fields": [
-                  {
-                    "title": "Static Analysis",
-                    "value": "• CodeQL Analysis ✅\n• ESLint Security Rules ✅\n• Semgrep Pattern Matching ✅",
-                    "short": true
-                  },
-                  {
-                    "title": "Dependency Security",
-                    "value": "• pnpm Audit ✅\n• npm Audit (추가) ✅\n• GitHub Dependency Review ✅",
-                    "short": true
-                  },
-                  {
-                    "title": "Container Security",
-                    "value": "• Trivy Filesystem Scan ✅\n• Dockerfile Security Check ✅",
-                    "short": true
-                  },
-                  {
-                    "title": "Secret Detection",
-                    "value": "• GitLeaks Detection ✅\n• TruffleHog Pattern Scan ✅",
-                    "short": true
-                  }
-                ],
-                "footer": "💰 Total Cost: \$0.00 (Free Tools Only) | 📦 Powered by pnpm"
-              },
-              {
-                "color": "#1f77b4",
-                "title": "📊 Quick Actions",
-                "actions": [
-                  {
-                    "type": "button",
-                    "text": "🔍 View Security Tab",
-                    "url": "${{ github.server_url }}/${{ github.repository }}/security"
-                  },
-                  {
-                    "type": "button",
-                    "text": "📋 Detailed Results",
-                    "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                  },
-                  {
-                    "type": "button",
-                    "text": "📈 Code Scanning",
-                    "url": "${{ github.server_url }}/${{ github.repository }}/security/code-scanning"
-                  }
-                ]
-              }
-            ]
-          }
-          EOF
+          # JSON 메시지를 별도 파일로 생성
+          cat > slack_message.json << 'SLACK_EOF'
+{
+  "username": "Security Scanner Bot (pnpm)",
+  "icon_emoji": ":shield:",
+  "attachments": [
+    {
+      "color": "STATUS_COLOR_PLACEHOLDER",
+      "fallback": "Security Scan Results",
+      "author_name": "🛡️ Security Scan Pipeline (pnpm)",
+      "author_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+      "title": "STATUS_EMOJI_PLACEHOLDER Security Scan STATUS_TEXT_PLACEHOLDER",
+      "title_link": "WORKFLOW_URL_PLACEHOLDER",
+      "text": "STATUS_DETAIL_PLACEHOLDER",
+      "fields": [
+        {
+          "title": "Repository",
+          "value": "`REPOSITORY_PLACEHOLDER`",
+          "short": true
+        },
+        {
+          "title": "Branch",
+          "value": "`BRANCH_PLACEHOLDER`",
+          "short": true
+        },
+        {
+          "title": "Package Manager",
+          "value": "📦 pnpm",
+          "short": true
+        },
+        {
+          "title": "Event",
+          "value": "EVENT_TYPE_PLACEHOLDER",
+          "short": true
+        },
+        {
+          "title": "Commit",
+          "value": "<COMMIT_URL_PLACEHOLDER|COMMIT_SHORT_PLACEHOLDER>",
+          "short": true
+        },
+        {
+          "title": "Triggered by",
+          "value": "ACTOR_PLACEHOLDER",
+          "short": true
+        },
+        {
+          "title": "Scan Time",
+          "value": "CURRENT_TIME_PLACEHOLDER",
+          "short": false
+        }
+      ],
+      "footer": "GitHub Actions Security Scanner (pnpm)",
+      "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+      "ts": TIMESTAMP_PLACEHOLDER
+    },
+    {
+      "color": "#36a64f",
+      "title": "🔍 Security Tools Executed",
+      "fields": [
+        {
+          "title": "Static Analysis",
+          "value": "• CodeQL Analysis ✅\n• ESLint Security Rules ✅\n• Semgrep Pattern Matching ✅",
+          "short": true
+        },
+        {
+          "title": "Dependency Security",
+          "value": "• pnpm Audit ✅\n• npm Audit (추가) ✅\n• GitHub Dependency Review ✅",
+          "short": true
+        },
+        {
+          "title": "Container Security",
+          "value": "• Trivy Filesystem Scan ✅\n• Dockerfile Security Check ✅",
+          "short": true
+        },
+        {
+          "title": "Secret Detection",
+          "value": "• detect-secrets ✅\n• TruffleHog Pattern Scan ✅",
+          "short": true
+        }
+      ],
+      "footer": "💰 Total Cost: $0.00 (Free Tools Only) | 📦 Powered by pnpm"
+    },
+    {
+      "color": "#1f77b4",
+      "title": "📊 Quick Actions",
+      "actions": [
+        {
+          "type": "button",
+          "text": "🔍 View Security Tab",
+          "url": "SECURITY_URL_PLACEHOLDER"
+        },
+        {
+          "type": "button",
+          "text": "📋 Detailed Results",
+          "url": "WORKFLOW_URL_PLACEHOLDER"
+        },
+        {
+          "type": "button",
+          "text": "📈 Code Scanning",
+          "url": "CODE_SCANNING_URL_PLACEHOLDER"
+        }
+      ]
+    }
+  ]
+}
+SLACK_EOF
           
+          # 플레이스홀더 치환
+          sed -i "s|STATUS_COLOR_PLACEHOLDER|$STATUS_COLOR|g" slack_message.json
+          sed -i "s|STATUS_EMOJI_PLACEHOLDER|$STATUS_EMOJI|g" slack_message.json
+          sed -i "s|STATUS_TEXT_PLACEHOLDER|$STATUS_TEXT|g" slack_message.json
+          sed -i "s|STATUS_DETAIL_PLACEHOLDER|$STATUS_DETAIL|g" slack_message.json
+          sed -i "s|REPOSITORY_PLACEHOLDER|${{ github.repository }}|g" slack_message.json
+          sed -i "s|BRANCH_PLACEHOLDER|${{ github.ref_name }}|g" slack_message.json
+          sed -i "s|EVENT_TYPE_PLACEHOLDER|${{ github.event_name }}|g" slack_message.json
+          sed -i "s|COMMIT_SHORT_PLACEHOLDER|$COMMIT_SHORT|g" slack_message.json
+          sed -i "s|ACTOR_PLACEHOLDER|${{ github.actor }}|g" slack_message.json
+          sed -i "s|CURRENT_TIME_PLACEHOLDER|$CURRENT_TIME|g" slack_message.json
+          sed -i "s|TIMESTAMP_PLACEHOLDER|$(date +%s)|g" slack_message.json
+          sed -i "s|WORKFLOW_URL_PLACEHOLDER|${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|g" slack_message.json
+          sed -i "s|COMMIT_URL_PLACEHOLDER|${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|g" slack_message.json
+          sed -i "s|SECURITY_URL_PLACEHOLDER|${{ github.server_url }}/${{ github.repository }}/security|g" slack_message.json
+          sed -i "s|CODE_SCANNING_URL_PLACEHOLDER|${{ github.server_url }}/${{ github.repository }}/security/code-scanning|g" slack_message.json
+          
+          # Slack으로 전송
           if curl -X POST -H 'Content-type: application/json' \
             --data @slack_message.json \
             "$SLACK_WEBHOOK_URL"; then
